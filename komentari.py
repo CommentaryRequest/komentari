@@ -11,7 +11,7 @@ import json
 import sys
 import argparse
 
-__version__ = "1.1"
+__version__ = "1.2"
 
 def dprint(message):
     if not settings.DEBUGMODE:
@@ -28,7 +28,10 @@ def main():
 
     aparser = argparse.ArgumentParser()
     aparser.add_argument("--page", type=int, default=1)
+    aparser.add_argument("--query", type=str, default="-commentary+-commentary_request")
     args = aparser.parse_args()
+
+    print(f"Query = {args.query}")
 
     auth = Auth()
 
@@ -40,7 +43,7 @@ def main():
             posts = None
             while True:
                 try:
-                    posts = requests.get(f"{get_booru_url()}/posts.json?tags=-commentary+-commentary_request&{str(auth)}&page={page}", timeout=10).json()
+                    posts = requests.get(f"{get_booru_url()}/posts.json?tags={args.query}&{str(auth)}&page={page}", timeout=10).json()
                     break
                 except (
                     urllib.error.URLError,
