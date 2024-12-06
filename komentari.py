@@ -4,13 +4,14 @@ from auth import Auth
 from booru_url import get_booru_url
 from commentary import get_commentary
 import requests
+import urllib.error
 import settings
 import parser
 import json
 import sys
 import argparse
 
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 def dprint(message):
     if not settings.DEBUGMODE:
@@ -36,7 +37,17 @@ def main():
     try:
         while True:
             print(f"Now gardening page {page}")
-            posts = requests.get(f"{get_booru_url()}/posts.json?tags=-commentary+-commentary_request&{str(auth)}&page={page}").json()
+            posts = None
+            while True:
+                try:
+                    posts = requests.get(f"{get_booru_url()}/posts.json?tags=-commentary+-commentary_request&{str(auth)}&page={page}", timeout=10).json()
+                    break
+                except (
+                    urllib.error.URLError,
+                    requests.exceptions.ReadTimeout,
+                    requests.exceptions.ConnectionError
+                ) as exc:
+                    print(f"Failed to fetch page because of {exc}")
 
             for post in posts:
                 dprint(f"Working with post = {json.dumps(post, indent=2)}")
