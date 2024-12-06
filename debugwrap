@@ -1,0 +1,3 @@
+#!/bin/sh
+
+./komentari.py 2>&1 | tee Debug.log

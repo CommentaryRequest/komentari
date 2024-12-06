@@ -1,0 +1,4 @@
+Debug.log
+__pycache__/
+*.swp
+authsettings.py
