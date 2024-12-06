@@ -11,7 +11,7 @@ import json
 import sys
 import argparse
 
-__version__ = "1.0.1"
+__version__ = "1.1"
 
 def dprint(message):
     if not settings.DEBUGMODE:
@@ -62,7 +62,10 @@ def main():
                 if len(title) == 0 and len(description) == 0:
                     print("No commentary skipping")
                     continue
-                
+                if post["is_banned"] == True:
+                    print("Is banned skipping")
+                    continue
+
                 bad_tag = False
                 for tag_ini_gen in post_tags_ini_gen.split():
                     if tag_ini_gen.strip() in settings.CENTAGS:
@@ -109,19 +112,23 @@ def main():
                             dprint(f"Request data = {json.dumps(request_data, indent=2)}")
                             request = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data)
                             dprint(f"Server said this: {json.dumps(request.json(), indent=2)}")
-                            new_tags_gen = request.json()["tag_string_general"]
-                            new_tags_copy = request.json()["tag_string_copyright"]
-                            new_tags_char = request.json()["tag_string_character"]
-                            new_tags_meta = request.json()["tag_string_meta"]
-                            print(f"\nTags now:\ng: \033[0;34m{new_tags_gen}\033[0m\n\nco:\033[0;35m{new_tags_copy}\033[0m\n\nch:\033[0;32m{new_tags_char}\033[0m\n\nm:\033[0;33m{new_tags_meta}\033[0m\n\n")
-                            if request.status_code != 200 and request.status_code != 204:
-                                print(f"Error {request.status_code}")
-                            elif request.status_code == 403:
-                                print("Post forbidden to edit. Skip.")
-                                ok = True
-                            else:
-                                print("Edited successfully.")
-                                edits += 1
+                            try:
+                                new_tags_gen = request.json()["tag_string_general"]
+                                new_tags_copy = request.json()["tag_string_copyright"]
+                                new_tags_char = request.json()["tag_string_character"]
+                                new_tags_meta = request.json()["tag_string_meta"]
+                                print(f"\nTags now:\ng: \033[0;34m{new_tags_gen}\033[0m\n\nco:\033[0;35m{new_tags_copy}\033[0m\n\nch:\033[0;32m{new_tags_char}\033[0m\n\nm:\033[0;33m{new_tags_meta}\033[0m\n\n")
+                                if request.status_code != 200 and request.status_code != 204:
+                                    print(f"Error {request.status_code}")
+                                elif request.status_code == 403:
+                                    print("Post forbidden to edit. Skip.")
+                                    ok = True
+                                else:
+                                    print("Edited successfully.")
+                                    edits += 1
+                                    ok = True
+                            except KeyError:
+                                print("Could not edit not sure why") # TODO why
                                 ok = True
                             input("press enter...")
                         else:
