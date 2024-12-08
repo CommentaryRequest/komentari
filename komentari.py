@@ -5,13 +5,14 @@ from booru_url import get_booru_url
 from commentary import get_commentary
 import requests
 import urllib.error
+import urllib
 import settings
 import parser
 import json
 import sys
 import argparse
 
-__version__ = "1.2"
+__version__ = "1.2.1"
 
 def dprint(message):
     if not settings.DEBUGMODE:
