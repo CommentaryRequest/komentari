@@ -13,7 +13,8 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.3"
+__version__ = "1.3.1"
+USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
     if not settings.DEBUGMODE:
@@ -37,6 +38,10 @@ def main():
 
     auth = Auth()
 
+    headers = {
+        "User-Agent": USERAGENT
+    }
+
     page = args.page
     edits = 0
     try:
@@ -45,7 +50,7 @@ def main():
             posts = None
             while True:
                 try:
-                    posts = requests.get(f"{get_booru_url()}/posts.json?tags={args.query}&{str(auth)}&page={page}", timeout=10).json()
+                    posts = requests.get(f"{get_booru_url()}/posts.json?tags={args.query}&{str(auth)}&page={page}", timeout=10, headers=headers).json()
                     break
                 except (
                     urllib.error.URLError,
@@ -62,7 +67,7 @@ def main():
                 post_tags_ini_char = post["tag_string_character"]
                 post_tags_ini_meta = post["tag_string_meta"]
                 print(f"Post #{post_id}\n")
-                title, description = get_commentary(post_id, auth)
+                title, description = get_commentary(post_id, auth, headers)
 
                 if len(title) == 0 and len(description) == 0:
                     print("No commentary skipping")
@@ -110,7 +115,7 @@ def main():
                         confirm = input("(y/N)$ ")
                         if confirm.lower().strip() == "y":
                             print("Sending out change!")
-                            uptodate_post = requests.get(f"{get_booru_url()}/posts/{post_id}.json").json()
+                            uptodate_post = requests.get(f"{get_booru_url()}/posts/{post_id}.json", headers=headers).json()
                             post_tags = uptodate_post["tag_string"]
                             new_tags = post_tags + " " + parsed_input
                             dprint(f"New tag string: {new_tags}")
@@ -119,7 +124,7 @@ def main():
                                 "old_tag_string": post_tags
                             }
                             dprint(f"Request data = {json.dumps(request_data, indent=2)}")
-                            request = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data)
+                            request = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data, headers=headers)
                             dprint(f"Server said this: {json.dumps(request.json(), indent=2)}")
                             try:
                                 new_tags_gen = request.json()["tag_string_general"]

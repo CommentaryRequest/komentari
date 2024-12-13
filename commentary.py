@@ -1,13 +1,14 @@
 import requests
 import settings
+import urllib
 from auth import Auth
 from booru_url import get_booru_url
 
-def get_commentary(post_id, auth):
+def get_commentary(post_id, auth, headers):
     commentary = None
     while True:
         try:
-            commentary = requests.get(f"{get_booru_url()}/posts/{post_id}/artist_commentary.json?{str(auth)}").json()
+            commentary = requests.get(f"{get_booru_url()}/posts/{post_id}/artist_commentary.json?{str(auth)}", headers=headers).json()
             break
         except (
             urllib.error.URLError,
