@@ -11,6 +11,8 @@ def parse(user_input):
             return -2
         elif tag_clean == "q":
             return -3
+        elif tag_clean == "b":
+            return -4
         if len(tag_clean) == 0:
             continue # is empty tag
         print(f"get '{tag_clean}'")

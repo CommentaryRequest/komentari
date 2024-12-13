@@ -11,8 +11,9 @@ import parser
 import json
 import sys
 import argparse
+import webbrowser
 
-__version__ = "1.2.1"
+__version__ = "1.3"
 
 def dprint(message):
     if not settings.DEBUGMODE:
@@ -86,7 +87,7 @@ def main():
 
                 ok = False
                 while not ok:
-                    print(f"==================================================\nCurrent tags:\n\ng: \033[0;34m{post_tags_ini_gen}\033[0m\n\nco: \033[0;35m{post_tags_ini_copy}\033[0m\n\nch: \033[0;32m{post_tags_ini_char}\033[0m\n\nm: \033[0;33m{post_tags_ini_meta}\033[0m\n\nTitle: \033[0;36m{title}\033[0m\n\nDescription:\n\n\033[0;36m{description}\033[0m\n\nType tags, type h for help.")
+                    print(f"==================================================\nCurrent tags:\n\ng: \033[0;34m{post_tags_ini_gen}\033[0m\n\nco: \033[0;35m{post_tags_ini_copy}\033[0m\n\nch: \033[0;32m{post_tags_ini_char}\033[0m\n\nm: \033[0;33m{post_tags_ini_meta}\033[0m\n\nTitle: \033[0;36m{title}\033[0m\n\nDescription:\n\n\033[0;36m{description}\033[0m\n\nType tags, type h for help, type b to open in browser.")
                     user_input = input("$ ")
                     parsed_input = parser.parse(user_input)
                     if parsed_input == -1:
@@ -98,6 +99,10 @@ def main():
                     elif parsed_input == -3:
                         print(f"gardened {edits} posts")
                         sys.exit(0)
+                    elif parsed_input == -4:
+                        link = f"{get_booru_url()}/posts/{post_id}"
+                        print(f"Opening link: {link}")
+                        webbrowser.open(link)
                     elif "!!!!!!!!" in parsed_input:
                         print("Try again.")
                     else:
