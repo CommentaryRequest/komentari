@@ -3,6 +3,7 @@
 from auth import Auth
 from booru_url import get_booru_url
 from commentary import get_commentary
+from favgroup import add_to_favgroup
 import requests
 import urllib.error
 import urllib
@@ -13,7 +14,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.3.1"
+__version__ = "1.4"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -32,6 +33,8 @@ def main():
     aparser = argparse.ArgumentParser()
     aparser.add_argument("--page", type=int, default=1)
     aparser.add_argument("--query", type=str, default="-commentary+-commentary_request")
+    aparser.add_argument("--mode", type=str, default="garden", help="garden: gardening commentary tags. add: add posts with no commentary to fav group")
+    aparser.add_argument("--group", type=int, default=0, help="posts with no commentary will be added to this fav group (necessary if mode is add)")
     args = aparser.parse_args()
 
     print(f"Query = {args.query}")
@@ -42,11 +45,21 @@ def main():
         "User-Agent": USERAGENT
     }
 
+    mode = args.mode
+    group_id = args.group
+    if mode != "garden" and mode != "add":
+        print(f"Unknown operation mode: '{mode}'")
+        sys.exit(1)
+
+    if mode == "add" and group_id == 0:
+        print(f"Group id required in add mode")
+        sys.exit(1)
+
     page = args.page
     edits = 0
     try:
         while True:
-            print(f"Now gardening page {page}")
+            print(f"Now on page {page}")
             posts = None
             while True:
                 try:
@@ -69,13 +82,6 @@ def main():
                 print(f"Post #{post_id}\n")
                 title, description = get_commentary(post_id, auth, headers)
 
-                if len(title) == 0 and len(description) == 0:
-                    print("No commentary skipping")
-                    continue
-                if post["is_banned"] == True:
-                    print("Is banned skipping")
-                    continue
-
                 bad_tag = False
                 for tag_ini_gen in post_tags_ini_gen.split():
                     if tag_ini_gen.strip() in settings.CENTAGS:
@@ -88,6 +94,20 @@ def main():
                         bad_tag = True
                         break
                 if bad_tag:
+                    continue
+
+                if len(title) == 0 and len(description) == 0:
+                    print("No commentary skipping")
+                    if mode == "add":
+                        print("Adding to favgroup")
+                        add_to_favgroup(group_id, post_id, auth)
+                    continue
+                if post["is_banned"] == True:
+                    print("Is banned skipping")
+                    continue
+
+                if mode == "add":
+                    print("post ok")
                     continue
 
                 ok = False
