@@ -16,4 +16,4 @@ def get_commentary(post_id, auth, headers):
             requests.exceptions.ConnectionError
         ) as exc:
             print(f"Failed to fetch commentary because of {exc}")
-    return commentary.get("original_title", "").strip(), commentary.get("original_description", "").strip()
+    return commentary.get("original_title", "").strip(), commentary.get("original_description", "").strip(), commentary.get("translated_title", "").strip(), commentary.get("translated_description", "").strip()

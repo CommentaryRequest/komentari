@@ -14,7 +14,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.4"
+__version__ = "1.5"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -80,7 +80,7 @@ def main():
                 post_tags_ini_char = post["tag_string_character"]
                 post_tags_ini_meta = post["tag_string_meta"]
                 print(f"Post #{post_id}\n")
-                title, description = get_commentary(post_id, auth, headers)
+                title, description, translated_title, translated_description = get_commentary(post_id, auth, headers)
 
                 bad_tag = False
                 for tag_ini_gen in post_tags_ini_gen.split():
@@ -112,7 +112,10 @@ def main():
 
                 ok = False
                 while not ok:
-                    print(f"==================================================\nCurrent tags:\n\ng: \033[0;34m{post_tags_ini_gen}\033[0m\n\nco: \033[0;35m{post_tags_ini_copy}\033[0m\n\nch: \033[0;32m{post_tags_ini_char}\033[0m\n\nm: \033[0;33m{post_tags_ini_meta}\033[0m\n\nTitle: \033[0;36m{title}\033[0m\n\nDescription:\n\n\033[0;36m{description}\033[0m\n\nType tags, type h for help, type b to open in browser.")
+                    print(f"==================================================\nCurrent tags:\n\ng: \033[0;34m{post_tags_ini_gen}\033[0m\n\nco: \033[0;35m{post_tags_ini_copy}\033[0m\n\nch: \033[0;32m{post_tags_ini_char}\033[0m\n\nm: \033[0;33m{post_tags_ini_meta}\033[0m\n\nTitle: \033[0;36m{title}\033[0m\n\nDescription:\n\n\033[0;36m{description}\033[0m\n\n")
+                    if len(translated_title) != 0 or len(translated_description) != 0:
+                        print(f"TRANSLATED Title: \033[0;36m{translated_title}\033[0m\n\nTRANSLATED Description:\n\n\033[0;36m{translated_description}\033[0m\n\n")
+                    print("Type tags, type h for help, type b to open in browser.")
                     user_input = input("$ ")
                     parsed_input = parser.parse(user_input)
                     if parsed_input == -1:
