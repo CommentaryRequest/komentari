@@ -14,7 +14,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.5"
+__version__ = "1.5.1"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -147,7 +147,15 @@ def main():
                                 "old_tag_string": post_tags
                             }
                             dprint(f"Request data = {json.dumps(request_data, indent=2)}")
-                            request = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data, headers=headers)
+                            try:
+                                request = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data, headers=headers)
+                            except (
+                                urllib.error.URLError,
+                                requests.exceptions.ReadTimeout,
+                                requests.exceptions.ConnectionError
+                            ) as exc:
+                                print(f"Failed to fetch page because of {exc}")
+                                
                             dprint(f"Server said this: {json.dumps(request.json(), indent=2)}")
                             try:
                                 new_tags_gen = request.json()["tag_string_general"]
