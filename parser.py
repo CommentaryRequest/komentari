@@ -7,7 +7,7 @@ def parse(user_input):
         tag_clean = tag.strip()
         if tag_clean == "h":
             return -1
-        elif tag_clean == "skip":
+        elif tag_clean == "sk":
             return -2
         elif tag_clean == "q":
             return -3

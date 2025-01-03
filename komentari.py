@@ -16,7 +16,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.6.1"
+__version__ = "1.6.2"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
