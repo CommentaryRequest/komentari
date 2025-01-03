@@ -3,6 +3,14 @@ import settings
 import urllib
 from auth import Auth
 from booru_url import get_booru_url
+from dataclasses import dataclass
+
+@dataclass
+class Commentary:
+    og_title: str
+    og_description: str
+    tl_title: str
+    tl_description: str
 
 def get_commentary(post_id, auth, headers):
     commentary = None
@@ -16,4 +24,4 @@ def get_commentary(post_id, auth, headers):
             requests.exceptions.ConnectionError
         ) as exc:
             print(f"Failed to fetch commentary because of {exc}")
-    return commentary.get("original_title", "").strip(), commentary.get("original_description", "").strip(), commentary.get("translated_title", "").strip(), commentary.get("translated_description", "").strip()
+    return Commentary(commentary.get("original_title", "").strip(), commentary.get("original_description", "").strip(), commentary.get("translated_title", "").strip(), commentary.get("translated_description", "").strip())

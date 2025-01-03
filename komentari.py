@@ -4,6 +4,8 @@ from auth import Auth
 from booru_url import get_booru_url
 from commentary import get_commentary
 from favgroup import add_to_favgroup
+from posts import get_posts
+import post_check
 import requests
 import urllib.error
 import urllib
@@ -14,7 +16,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.5.2"
+__version__ = "1.6"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -60,17 +62,7 @@ def main():
     try:
         while True:
             print(f"Now on page {page}")
-            posts = None
-            while True:
-                try:
-                    posts = requests.get(f"{get_booru_url()}/posts.json?tags={args.query}&{str(auth)}&page={page}", timeout=10, headers=headers).json()
-                    break
-                except (
-                    urllib.error.URLError,
-                    requests.exceptions.ReadTimeout,
-                    requests.exceptions.ConnectionError
-                ) as exc:
-                    print(f"Failed to fetch page because of {exc}")
+            posts = get_posts(args.query, auth, page)
 
             for post in posts:
                 dprint(f"Working with post = {json.dumps(post, indent=2)}")
@@ -80,30 +72,22 @@ def main():
                 post_tags_ini_char = post["tag_string_character"]
                 post_tags_ini_meta = post["tag_string_meta"]
                 print(f"Post #{post_id}\n")
-                title, description, translated_title, translated_description = get_commentary(post_id, auth, headers)
+                commentary = get_commentary(post_id, auth, headers)
 
-                bad_tag = False
-                for tag_ini_gen in post_tags_ini_gen.split():
-                    if tag_ini_gen.strip() in settings.CENTAGS:
-                        print(f"Contains censored tag {tag_ini_gen}")
-                        bad_tag = True
-                        break
-                for tag_ini_meta in post_tags_ini_meta.split():
-                    if tag_ini_meta in settings.CENTAGS:
-                        print(f"Contains unwanted metatag {tag_ini_meta}")
-                        bad_tag = True
-                        break
-                if bad_tag:
+                check_result, bad_tag = post_check.check_post(post, commentary)
+
+                if check_result == post_check.POST_CHECK_CENTAG:
+                    print(f"Contains unwanted tag: {bad_tag}")
                     continue
-
-                if len(title) == 0 and len(description) == 0:
-                    print("No commentary skipping")
+                elif check_result == post_check.POST_CHECK_NO_COMMENTARY:
                     if mode == "add":
                         print("Adding to favgroup")
                         add_to_favgroup(group_id, post_id, auth)
+                    else:
+                        print("No commentary; skipping")
                     continue
-                if post["is_banned"] == True:
-                    print("Is banned skipping")
+                elif check_result == post_check.POST_CHECK_IS_BANNED:
+                    print("Is banned; skipping")
                     continue
 
                 if mode == "add":
@@ -112,9 +96,9 @@ def main():
 
                 ok = False
                 while not ok:
-                    print(f"==================================================\nCurrent tags:\n\ng: \033[0;34m{post_tags_ini_gen}\033[0m\n\nco: \033[0;35m{post_tags_ini_copy}\033[0m\n\nch: \033[0;32m{post_tags_ini_char}\033[0m\n\nm: \033[0;33m{post_tags_ini_meta}\033[0m\n\nTitle: \033[0;36m{title}\033[0m\n\nDescription:\n\n\033[0;36m{description}\033[0m\n\n")
-                    if len(translated_title) != 0 or len(translated_description) != 0:
-                        print(f"TRANSLATED Title: \033[0;36m{translated_title}\033[0m\n\nTRANSLATED Description:\n\n\033[0;36m{translated_description}\033[0m\n\n")
+                    print(f"==================================================\nCurrent tags:\n\ng: \033[0;34m{post_tags_ini_gen}\033[0m\n\nco: \033[0;35m{post_tags_ini_copy}\033[0m\n\nch: \033[0;32m{post_tags_ini_char}\033[0m\n\nm: \033[0;33m{post_tags_ini_meta}\033[0m\n\nTitle: \033[0;36m{commentary.og_title}\033[0m\n\nDescription:\n\n\033[0;36m{commentary.og_description}\033[0m\n\n")
+                    if len(commentary.tl_title) != 0 or len(commentary.tl_description) != 0:
+                        print(f"TRANSLATED Title: \033[0;36m{commentary.tl_title}\033[0m\n\nTRANSLATED Description:\n\n\033[0;36m{commentary.tl_description}\033[0m\n\n")
                     print("Type tags, type h for help, type b to open in browser.")
                     user_input = input("$ ")
                     parsed_input = parser.parse(user_input)
