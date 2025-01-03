@@ -23,9 +23,9 @@ def check_post(post, commentary):
         return POST_CHECK_CENTAG, unwanted_tag
 
     if len(commentary.og_title) == 0 and len(commentary.og_description) == 0:
-        return POST_CHECK_NO_COMMENTARY
+        return POST_CHECK_NO_COMMENTARY, None
 
     if post["is_banned"] == True:
-        return POST_CHECK_IS_BANNED
+        return POST_CHECK_IS_BANNED, None
 
-    return POST_CHECK_OK
+    return POST_CHECK_OK, None

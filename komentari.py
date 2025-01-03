@@ -16,7 +16,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.6"
+__version__ = "1.6.1"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -62,7 +62,7 @@ def main():
     try:
         while True:
             print(f"Now on page {page}")
-            posts = get_posts(args.query, auth, page)
+            posts = get_posts(args.query, auth, page, headers)
 
             for post in posts:
                 dprint(f"Working with post = {json.dumps(post, indent=2)}")
