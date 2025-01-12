@@ -1,3 +1,3 @@
 #!/bin/sh
 
-./komentari.py 2>&1 | tee Debug.log
+./komentari.py $@ 2>&1 | tee Debug.log

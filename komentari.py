@@ -16,7 +16,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.6.2"
+__version__ = "1.7"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -37,7 +37,18 @@ def main():
     aparser.add_argument("--query", type=str, default="-commentary+-commentary_request")
     aparser.add_argument("--mode", type=str, default="garden", help="garden: gardening commentary tags. add: add posts with no commentary to fav group")
     aparser.add_argument("--group", type=int, default=0, help="posts with no commentary will be added to this fav group (necessary if mode is add)")
+    aparser.add_argument("--random", action="store_true", help="select posts at random")
+    aparser.add_argument("--limit", type=int, default=None, help="change the post limit")
     args = aparser.parse_args()
+
+    random_mode = args.random
+    limit = args.limit
+
+    args.query += "+status:any"
+    if random_mode:
+        args.query += "+order:random"
+    if limit is not None:
+        args.query += f"+limit:{limit}"
 
     print(f"Query = {args.query}")
 
@@ -61,7 +72,8 @@ def main():
     edits = 0
     try:
         while True:
-            print(f"Now on page {page}")
+            if not random_mode:
+                print(f"Now on page {page}")
             posts = get_posts(args.query, auth, page, headers)
 
             for post in posts:
@@ -170,7 +182,7 @@ def main():
                         else:
                             print("Try again.")
 
-            page += 1
+            page += 0 if random_mode else 1
     except KeyboardInterrupt:
         print(f"gardened {edits} posts")
         sys.exit(0)
