@@ -16,7 +16,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.7"
+__version__ = "1.8"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -39,10 +39,14 @@ def main():
     aparser.add_argument("--group", type=int, default=0, help="posts with no commentary will be added to this fav group (necessary if mode is add)")
     aparser.add_argument("--random", action="store_true", help="select posts at random")
     aparser.add_argument("--limit", type=int, default=None, help="change the post limit")
+    aparser.add_argument("--ynt", type=str, default=None, help="yes/no tag: press enter to apply tag for each post found, any key + enter to skip")
     args = aparser.parse_args()
 
     random_mode = args.random
     limit = args.limit
+    yes_no_tag = args.ynt
+
+    confirm_string = "y" if yes_no_tag is None else ""
 
     args.query += "+status:any"
     if random_mode:
@@ -83,7 +87,7 @@ def main():
                 post_tags_ini_copy = post["tag_string_copyright"]
                 post_tags_ini_char = post["tag_string_character"]
                 post_tags_ini_meta = post["tag_string_meta"]
-                print(f"Post #{post_id}\n")
+                print(f"Post \033]8;;{get_booru_url()}/posts/{post_id}\033\\#{post_id}\033]8;;\033\\\n")
                 commentary = get_commentary(post_id, auth, headers)
 
                 check_result, bad_tag = post_check.check_post(post, commentary)
@@ -112,8 +116,12 @@ def main():
                     if len(commentary.tl_title) != 0 or len(commentary.tl_description) != 0:
                         print(f"TRANSLATED Title: \033[0;36m{commentary.tl_title}\033[0m\n\nTRANSLATED Description:\n\n\033[0;36m{commentary.tl_description}\033[0m\n\n")
                     print("Type tags, type h for help, type b to open in browser.")
-                    user_input = input("$ ")
-                    parsed_input = parser.parse(user_input)
+                    user_input = input("$ ") if yes_no_tag is None else ""
+                    parsed_input = ""
+                    if yes_no_tag is not None:
+                        parsed_input = yes_no_tag
+                    else:
+                        parsed_input = parser.parse(user_input)
                     if parsed_input == -1:
                         for short, tag in settings.TAGS.items():
                             print(f" - {short} = {tag}")
@@ -132,7 +140,7 @@ def main():
                     else:
                         print(f"The following tags will be added. Ok?\n{parsed_input}")
                         confirm = input("(y/N)$ ")
-                        if confirm.lower().strip() == "y":
+                        if confirm.lower().strip() == confirm_string:
                             print("Sending out change!")
                             try:
                                 uptodate_post = requests.get(f"{get_booru_url()}/posts/{post_id}.json", headers=headers).json()
@@ -179,6 +187,9 @@ def main():
                                 print("Could not edit not sure why") # TODO why
                                 ok = True
                             input("press enter...")
+                        elif yes_no_tag is not None:
+                            print("Skip")
+                            ok = True
                         else:
                             print("Try again.")
 
