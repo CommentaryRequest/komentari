@@ -1,6 +1,6 @@
 import settings
 
-def parse(user_input):
+def parse(user_input, suggested_tags):
     result = ""
     tags = user_input.split()
     for tag in tags:
@@ -13,6 +13,9 @@ def parse(user_input):
             return -3
         elif tag_clean == "b":
             return -4
+        elif tag_clean == "6" and suggested_tags is not None:
+            result += suggested_tags + " "
+            continue
         if len(tag_clean) == 0:
             continue # is empty tag
         print(f"get '{tag_clean}'")
