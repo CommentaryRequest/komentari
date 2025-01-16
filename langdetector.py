@@ -7,5 +7,9 @@ import sys
 
 def detectlang(text):
     if "langdetect" in sys.modules:
-        return langdetect.detect(text)
+        try:
+            return langdetect.detect(text)
+        except langdetect.lang_detect_exception.LangDetectException as exc:
+            print(f"Error suggesting tags: {exc}")
+            return None
     return None

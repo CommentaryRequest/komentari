@@ -17,7 +17,7 @@ import argparse
 import webbrowser
 import langdetector
 
-__version__ = "1.9"
+__version__ = "1.9.1"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
