@@ -16,7 +16,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.8"
+__version__ = "1.8.1"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -79,6 +79,9 @@ def main():
             if not random_mode:
                 print(f"Now on page {page}")
             posts = get_posts(args.query, auth, page, headers)
+            if posts == []:
+                print("No more posts lol")
+                break
 
             for post in posts:
                 dprint(f"Working with post = {json.dumps(post, indent=2)}")
