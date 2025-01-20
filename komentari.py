@@ -17,13 +17,13 @@ import argparse
 import webbrowser
 import langdetector
 
-__version__ = "1.9.1"
+__version__ = "1.10.1"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
     "en": "english_commentary commentary",
     "ja": "commentary_request",
-    "zh": "chinese_commentary commentary_request",
+    "cn": "chinese_commentary commentary_request",
     "th": "thai_commentary commentary_request"
 }
 
@@ -48,11 +48,13 @@ def main():
     aparser.add_argument("--random", action="store_true", help="select posts at random")
     aparser.add_argument("--limit", type=int, default=None, help="change the post limit")
     aparser.add_argument("--ynt", type=str, default=None, help="yes/no tag: press enter to apply tag for each post found, any key + enter to skip")
+    aparser.add_argument("--ynty", action="store_true", help="automatically add the chosen tag when using yes/no tag. (warning: dangerous. only use if you know what you're doing.)")
     args = aparser.parse_args()
 
     random_mode = args.random
     limit = args.limit
     yes_no_tag = args.ynt
+    yes_no_tag_force = args.ynty
 
     confirm_string = "y" if yes_no_tag is None else ""
 
@@ -138,6 +140,7 @@ def main():
                         parsed_input = yes_no_tag
                     else:
                         parsed_input = parser.parse(user_input, suggested_tags)
+                    print(f"ui: '{user_input}' pi: '{parsed_input}'")
                     if parsed_input == -1:
                         for short, tag in settings.TAGS.items():
                             print(f" - {short} = {tag}")
@@ -152,10 +155,12 @@ def main():
                         print(f"Opening link: {link}")
                         webbrowser.open(link)
                     elif "!!!!!!!!" in parsed_input:
-                        print("Try again.")
+                        print("Unknown tag. Try again.")
                     else:
                         print(f"The following tags will be added. Ok?\n{parsed_input}")
-                        confirm = input("(y/N)$ ")
+                        confirm = ""
+                        if yes_no_tag and not yes_no_tag_force or not yes_no_tag:
+                            confirm = input("(y/N)$ ")
                         if confirm.lower().strip() == confirm_string:
                             print("Sending out change!")
                             try:
@@ -202,7 +207,8 @@ def main():
                             except KeyError:
                                 print("Could not edit not sure why") # TODO why
                                 ok = True
-                            input("press enter...")
+                            if not (yes_no_tag and yes_no_tag_force):
+                                input("press enter...")
                         elif yes_no_tag is not None:
                             print("Skip")
                             ok = True
