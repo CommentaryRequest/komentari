@@ -17,7 +17,7 @@ import argparse
 import webbrowser
 import langdetector
 
-__version__ = "1.10.1"
+__version__ = "1.10.2"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
@@ -140,7 +140,7 @@ def main():
                         parsed_input = yes_no_tag
                     else:
                         parsed_input = parser.parse(user_input, suggested_tags)
-                    print(f"ui: '{user_input}' pi: '{parsed_input}'")
+                    #print(f"ui: '{user_input}' pi: '{parsed_input}'")
                     if parsed_input == -1:
                         for short, tag in settings.TAGS.items():
                             print(f" - {short} = {tag}")
