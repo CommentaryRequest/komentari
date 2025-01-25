@@ -17,7 +17,7 @@ import argparse
 import webbrowser
 import langdetector
 
-__version__ = "1.10.2"
+__version__ = "1.10.3"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
@@ -91,6 +91,7 @@ def main():
             posts = get_posts(args.query, auth, page, headers)
             if posts == []:
                 print("No more posts lol")
+                print(f"gardened {edits} posts")
                 break
 
             for post in posts:
