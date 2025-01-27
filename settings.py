@@ -29,3 +29,8 @@ CENTAGS = {
 }
 
 from usersettings import *
+
+try:
+    TAGS.update(CUSTOMTAGS)
+except NameError:
+    pass

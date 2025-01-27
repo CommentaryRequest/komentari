@@ -5,7 +5,7 @@ from booru_url import get_booru_url
 from commentary import get_commentary
 from favgroup import add_to_favgroup
 from posts import get_posts
-import usersettings as settings
+import settings
 import post_check
 import requests
 import urllib.error
@@ -16,7 +16,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.11"
+__version__ = "1.11.1"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
