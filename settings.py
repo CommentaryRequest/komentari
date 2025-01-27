@@ -21,11 +21,11 @@ TAGS = {
     "ru": "russian_commentary",
     "er": "engrish_commentary",
     "t": "thai_commentary",
+    "p": "partial_commentary"
 }
 
 CENTAGS = {
-    "hashtag-only_commentary",
-    "loli",
-    "shota",
-    "toddlercon"
+    "hashtag-only_commentary"
 }
+
+from usersettings import *

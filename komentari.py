@@ -5,18 +5,18 @@ from booru_url import get_booru_url
 from commentary import get_commentary
 from favgroup import add_to_favgroup
 from posts import get_posts
+import usersettings as settings
 import post_check
 import requests
 import urllib.error
 import urllib
-import settings
 import parser
 import json
 import sys
 import argparse
 import webbrowser
 
-__version__ = "1.10.4"
+__version__ = "1.11"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
@@ -128,7 +128,7 @@ def main():
                     print(f"==================================================\nCurrent tags:\n\ng: \033[0;34m{post_tags_ini_gen}\033[0m\n\nco: \033[0;35m{post_tags_ini_copy}\033[0m\n\nch: \033[0;32m{post_tags_ini_char}\033[0m\n\nm: \033[0;33m{post_tags_ini_meta}\033[0m\n\nTitle: \033[0;36m{commentary.og_title}\033[0m\n\nDescription:\n\n\033[0;36m{commentary.og_description}\033[0m\n\n")
                     if len(commentary.tl_title) != 0 or len(commentary.tl_description) != 0:
                         print(f"TRANSLATED Title: \033[0;36m{commentary.tl_title}\033[0m\n\nTRANSLATED Description:\n\n\033[0;36m{commentary.tl_description}\033[0m\n\n")
-                    print("Type tags, type h for help, type b to open in browser, type sk to skip.")
+                    print("(h for help)")
                     user_input = input("$ ") if yes_no_tag is None else ""
                     parsed_input = ""
                     if yes_no_tag is not None:
@@ -136,8 +136,10 @@ def main():
                     else:
                         parsed_input = parser.parse(user_input)
                     if parsed_input == -1:
+                        print("Configured tags:")
                         for short, tag in settings.TAGS.items():
                             print(f" - {short} = {tag}")
+                        print("Type h for help, b to open in browser, q to quit.")
                     elif parsed_input == -2:
                         print("User requested skip.")
                         ok = True
