@@ -17,7 +17,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.12"
+__version__ = "1.12.1"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
@@ -109,22 +109,23 @@ def main():
                     print("Skipped by user")
                     continue
 
-                commentary = get_commentary(post_id, auth, headers)
-
-                check_result, bad_tag = post_check.check_post(post, commentary)
+                check_result, bad_tag = post_check.check_post(post)
 
                 if check_result == post_check.POST_CHECK_CENTAG:
                     print(f"Contains unwanted tag: {bad_tag}")
                     continue
-                elif check_result == post_check.POST_CHECK_NO_COMMENTARY:
+                elif check_result == post_check.POST_CHECK_IS_BANNED:
+                    print("Is banned; skipping")
+                    continue
+
+                commentary = get_commentary(post_id, auth, headers)
+
+                if len(commentary.og_title.strip() + commentary.og_description.strip()) == 0:
                     if mode == "add":
                         print("Adding to favgroup")
                         add_to_favgroup(group_id, post_id, auth)
                     else:
                         print("No commentary; skipping")
-                    continue
-                elif check_result == post_check.POST_CHECK_IS_BANNED:
-                    print("Is banned; skipping")
                     continue
 
                 if mode == "add":
