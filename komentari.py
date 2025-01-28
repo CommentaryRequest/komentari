@@ -11,12 +11,13 @@ import requests
 import urllib.error
 import urllib
 import parser
+import skipped
 import json
 import sys
 import argparse
 import webbrowser
 
-__version__ = "1.11.1"
+__version__ = "1.12"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
@@ -71,6 +72,7 @@ def main():
         "User-Agent": USERAGENT
     }
 
+    skipped_posts = skipped.SkippedPosts()
     mode = args.mode
     group_id = args.group
     if mode != "garden" and mode != "add":
@@ -90,6 +92,7 @@ def main():
             posts = get_posts(args.query, auth, page, headers)
             if posts == []:
                 print("No more posts lol")
+                skipped_posts.flush()
                 print(f"gardened {edits} posts")
                 break
 
@@ -101,6 +104,11 @@ def main():
                 post_tags_ini_char = post["tag_string_character"]
                 post_tags_ini_meta = post["tag_string_meta"]
                 print(f"Post \033]8;;{get_booru_url()}/posts/{post_id}\033\\#{post_id}\033]8;;\033\\\n")
+
+                if skipped_posts.is_skipped(post_id):
+                    print("Skipped by user")
+                    continue
+
                 commentary = get_commentary(post_id, auth, headers)
 
                 check_result, bad_tag = post_check.check_post(post, commentary)
@@ -142,8 +150,10 @@ def main():
                         print("Type h for help, b to open in browser, q to quit.")
                     elif parsed_input == -2:
                         print("User requested skip.")
+                        skipped_posts.add(post_id)
                         ok = True
                     elif parsed_input == -3:
+                        skipped_posts.flush()
                         print(f"gardened {edits} posts")
                         sys.exit(0)
                     elif parsed_input == -4:
@@ -213,9 +223,11 @@ def main():
 
             page += 0 if random_mode else 1
     except KeyboardInterrupt:
+        skipped_posts.flush()
         print(f"gardened {edits} posts")
         sys.exit(0)
     except Exception as exc:
+        skipped_posts.flush()
         print(f"gardened {edits} posts")
         raise exc
 
