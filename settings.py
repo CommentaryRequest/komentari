@@ -28,9 +28,10 @@ CENTAGS = {
     "hashtag-only_commentary"
 }
 
-from usersettings import *
-
 try:
+    from usersettings import *
     TAGS.update(CUSTOMTAGS)
 except NameError:
+    pass
+except ImportError:
     pass
