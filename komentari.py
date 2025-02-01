@@ -17,7 +17,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.12.4"
+__version__ = "1.12.5"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
@@ -175,14 +175,17 @@ def main():
                             confirm = input("(y/N)$ ")
                         if confirm.lower().strip() == confirm_string:
                             print("Sending out change!")
-                            try:
-                                uptodate_post = requests.get(f"{get_booru_url()}/posts/{post_id}.json", headers=headers).json()
-                            except (
-                                urllib.error.URLError,
-                                requests.exceptions.ReadTimeout,
-                                requests.exceptions.ConnectionError
-                            ) as exc:
-                                print(f"Failed to fetch page because of {exc}")
+                            uptodate_post = None
+                            while True:
+                                try:
+                                    uptodate_post = requests.get(f"{get_booru_url()}/posts/{post_id}.json", headers=headers).json()
+                                    break
+                                except (
+                                    urllib.error.URLError,
+                                    requests.exceptions.ReadTimeout,
+                                    requests.exceptions.ConnectionError
+                                ) as exc:
+                                    print(f"Failed to fetch page because of {exc}")
                             post_tags = uptodate_post["tag_string"]
                             new_tags = post_tags + " " + parsed_input
                             dprint(f"New tag string: {new_tags}")
