@@ -17,7 +17,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.12.3"
+__version__ = "1.12.4"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
@@ -87,7 +87,9 @@ def main():
     edits = 0
     try:
         while True:
-            if not random_mode:
+            if random_mode:
+                print("Getting more posts...")
+            else:
                 print(f"Now on page {page}")
             posts = get_posts(args.query, auth, page, headers)
             if posts == []:
@@ -138,12 +140,15 @@ def main():
                     if len(commentary.tl_title) != 0 or len(commentary.tl_description) != 0:
                         print(f"TRANSLATED Title: \033[0;36m{commentary.tl_title}\033[0m\n\nTRANSLATED Description:\n\n\033[0;36m{commentary.tl_description}\033[0m\n\n")
                     print("(h for help)")
-                    user_input = input("$ ") if yes_no_tag is None else ""
                     parsed_input = ""
-                    if yes_no_tag is not None:
-                        parsed_input = yes_no_tag
-                    else:
-                        parsed_input = parser.parse(user_input)
+                    while True:
+                        user_input = input("$ ") if yes_no_tag is None else ""
+                        if yes_no_tag is not None:
+                            parsed_input = yes_no_tag
+                        else:
+                            parsed_input = parser.parse(user_input)
+                        if isinstance(parsed_input, int) or parsed_input.strip() != "":
+                            break
                     if parsed_input == -1:
                         print("Configured tags:")
                         for short, tag in settings.TAGS.items():
