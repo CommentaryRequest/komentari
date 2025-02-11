@@ -11,6 +11,8 @@ TAGS = {
     "ee": "english_commentary commentary",
     "s": "symbol-only_commentary",
     "ho": "hashtag-only_commentary",
+    "hr": "hashtag-only_commentary commentary_request",
+    "hc": "hashtag-only_commentary commentary",
     "d": "dated_commentary",
     "z": "chinese_commentary",
     "zz": "chinese_commentary commentary_request",
