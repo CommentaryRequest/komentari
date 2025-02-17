@@ -23,6 +23,7 @@ TAGS = {
     "ru": "russian_commentary",
     "er": "engrish_commentary",
     "t": "thai_commentary",
+    "f": "french_commentary",
     "p": "partial_commentary"
 }
 
