@@ -17,7 +17,7 @@ import sys
 import argparse
 import webbrowser
 
-__version__ = "1.12.3"
+__version__ = "1.13"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
@@ -31,6 +31,10 @@ def dprint(message):
     if not settings.DEBUGMODE:
         return
     print(f"dbg: {message}")
+
+def add_negative_tags():
+    for tag, expand in settings.TAGS.copy().items(): # TODO might be a breaking change but rename to lowercase (not really a const...)
+        settings.TAGS["-" + tag] = "-" + expand
 
 def main():
     print(f"komentari {__version__} is up")
@@ -82,6 +86,8 @@ def main():
     if mode == "add" and group_id == 0:
         print(f"Group id required in add mode")
         sys.exit(1)
+
+    add_negative_tags()
 
     page = args.page
     edits = 0
@@ -147,7 +153,8 @@ def main():
                     if parsed_input == -1:
                         print("Configured tags:")
                         for short, tag in settings.TAGS.items():
-                            print(f" - {short} = {tag}")
+                            if not short.startswith("-"):
+                                print(f" - {short} = {tag}")
                         print("Type h for help, b to open in browser, q to quit.")
                     elif parsed_input == -2:
                         print("User requested skip.")
