@@ -7,6 +7,8 @@ TAGS = {
     "r": "commentary_request",
     "c": "commentary",
     "m": "mixed-language_commentary",
+    "b": "bilingual_commentary",
+    "bb": "bilingual_commentary commentary",
     "e": "english_commentary",
     "ee": "english_commentary commentary",
     "s": "symbol-only_commentary",
@@ -24,7 +26,8 @@ TAGS = {
     "er": "engrish_commentary",
     "t": "thai_commentary",
     "f": "french_commentary",
-    "p": "partial_commentary"
+    "p": "partial_commentary",
+    "at": "alt_text"
 }
 
 CENTAGS = {
