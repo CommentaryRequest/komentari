@@ -7,7 +7,7 @@ TAGS = {
     "r": "commentary_request",
     "c": "commentary",
     "m": "mixed-language_commentary",
-    "b": "bilingual_commentary",
+    "bi": "bilingual_commentary",
     "bb": "bilingual_commentary commentary",
     "e": "english_commentary",
     "ee": "english_commentary commentary",
