@@ -93,7 +93,9 @@ def main():
     edits = 0
     try:
         while True:
-            if not random_mode:
+            if random_mode:
+                print("Getting more posts...")
+            else:
                 print(f"Now on page {page}")
             posts = get_posts(args.query, auth, page, headers)
             if posts == []:
@@ -144,12 +146,15 @@ def main():
                     if len(commentary.tl_title) != 0 or len(commentary.tl_description) != 0:
                         print(f"TRANSLATED Title: \033[0;36m{commentary.tl_title}\033[0m\n\nTRANSLATED Description:\n\n\033[0;36m{commentary.tl_description}\033[0m\n\n")
                     print("(h for help)")
-                    user_input = input("$ ") if yes_no_tag is None else ""
                     parsed_input = ""
-                    if yes_no_tag is not None:
-                        parsed_input = yes_no_tag
-                    else:
-                        parsed_input = parser.parse(user_input)
+                    while True:
+                        user_input = input("$ ") if yes_no_tag is None else ""
+                        if yes_no_tag is not None:
+                            parsed_input = yes_no_tag
+                        else:
+                            parsed_input = parser.parse(user_input)
+                        if isinstance(parsed_input, int) or parsed_input.strip() != "":
+                            break
                     if parsed_input == -1:
                         print("Configured tags:")
                         for short, tag in settings.TAGS.items():
@@ -177,14 +182,17 @@ def main():
                             confirm = input("(y/N)$ ")
                         if confirm.lower().strip() == confirm_string:
                             print("Sending out change!")
-                            try:
-                                uptodate_post = requests.get(f"{get_booru_url()}/posts/{post_id}.json", headers=headers).json()
-                            except (
-                                urllib.error.URLError,
-                                requests.exceptions.ReadTimeout,
-                                requests.exceptions.ConnectionError
-                            ) as exc:
-                                print(f"Failed to fetch page because of {exc}")
+                            uptodate_post = None
+                            while True:
+                                try:
+                                    uptodate_post = requests.get(f"{get_booru_url()}/posts/{post_id}.json", headers=headers).json()
+                                    break
+                                except (
+                                    urllib.error.URLError,
+                                    requests.exceptions.ReadTimeout,
+                                    requests.exceptions.ConnectionError
+                                ) as exc:
+                                    print(f"Failed to fetch page because of {exc}")
                             post_tags = uptodate_post["tag_string"]
                             new_tags = post_tags + " " + parsed_input
                             dprint(f"New tag string: {new_tags}")
