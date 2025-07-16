@@ -9,6 +9,8 @@ TAGS = {
     "m": "mixed-language_commentary",
     "bi": "bilingual_commentary",
     "bb": "bilingual_commentary commentary",
+    "ml": "multilingual_commentary",
+    "mll": "multilingual_commentary commentary",
     "e": "english_commentary",
     "ee": "english_commentary commentary",
     "s": "symbol-only_commentary",
@@ -26,8 +28,10 @@ TAGS = {
     "er": "engrish_commentary",
     "t": "thai_commentary",
     "f": "french_commentary",
+    "v": "vietnamese_commentary",
+    "vv": "vietnamese_commentary commentary_request",
     "p": "partial_commentary",
-    "at": "alt_text"
+    "at": "alt_text",
 }
 
 CENTAGS = {
