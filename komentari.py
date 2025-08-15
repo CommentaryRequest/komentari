@@ -16,8 +16,9 @@ import json
 import sys
 import argparse
 import webbrowser
+import jpchk
 
-__version__ = "1.13"
+__version__ = "1.14"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
@@ -53,14 +54,18 @@ def main():
     aparser.add_argument("--limit", type=int, default=None, help="change the post limit")
     aparser.add_argument("--ynt", type=str, default=None, help="yes/no tag: press enter to apply tag for each post found, any key + enter to skip")
     aparser.add_argument("--ynty", action="store_true", help="automatically add the chosen tag when using yes/no tag. (warning: dangerous. only use if you know what you're doing.)")
+    aparser.add_argument("--auto", action="store_true", help="automatically detect language and add tag. if language not detected, skip post")
     args = aparser.parse_args()
 
     random_mode = args.random
     limit = args.limit
     yes_no_tag = args.ynt
     yes_no_tag_force = args.ynty
+    auto = args.auto
 
-    confirm_string = "y" if yes_no_tag is None else ""
+    confirm_string = "y"
+    if yes_no_tag is not None or auto:
+        confirm_string = ""
 
     args.query += "+status:any"
     if random_mode:
@@ -148,10 +153,16 @@ def main():
                     print("(h for help)")
                     parsed_input = ""
                     while True:
-                        user_input = input("$ ") if yes_no_tag is None else ""
                         if yes_no_tag is not None:
                             parsed_input = yes_no_tag
+                        elif auto:
+                            is_japan = jpchk.is_japan(commentary.og_title + commentary.og_description)
+                            if is_japan:
+                                parsed_input = "commentary_request"
+                            else:
+                                parsed_input = -5
                         else:
+                            user_input = input("$ ")
                             parsed_input = parser.parse(user_input)
                         if isinstance(parsed_input, int) or parsed_input.strip() != "":
                             break
@@ -173,12 +184,15 @@ def main():
                         link = f"{get_booru_url()}/posts/{post_id}"
                         print(f"Opening link: {link}")
                         webbrowser.open(link)
+                    elif parsed_input == -5:
+                        print("User requested non-permanent skip.")
+                        ok = True
                     elif "!!!!!!!!" in parsed_input:
                         print("Unknown tag. Try again.")
                     else:
                         print(f"The following tags will be added. Ok?\n{parsed_input}")
                         confirm = ""
-                        if yes_no_tag and not yes_no_tag_force or not yes_no_tag:
+                        if (yes_no_tag and not yes_no_tag_force or not yes_no_tag) and not auto:
                             confirm = input("(y/N)$ ")
                         if confirm.lower().strip() == confirm_string:
                             print("Sending out change!")
@@ -229,7 +243,7 @@ def main():
                             except KeyError:
                                 print("Could not edit not sure why") # TODO why
                                 ok = True
-                            if not (yes_no_tag and yes_no_tag_force):
+                            if not (yes_no_tag and yes_no_tag_force) and not auto:
                                 input("press enter...")
                         elif yes_no_tag is not None:
                             print("Skip")

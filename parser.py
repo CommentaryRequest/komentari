@@ -13,6 +13,8 @@ def parse(user_input):
             return -3
         elif tag_clean == "b":
             return -4
+        elif tag_clean == "skk":
+            return -5
         if len(tag_clean) == 0:
             continue # is empty tag
         print(f"get '{tag_clean}'")
