@@ -16,9 +16,11 @@ import json
 import sys
 import argparse
 import webbrowser
+import re
 import jpchk
+import kkchk
 
-__version__ = "1.14"
+__version__ = "1.14.1"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
@@ -156,11 +158,21 @@ def main():
                         if yes_no_tag is not None:
                             parsed_input = yes_no_tag
                         elif auto:
-                            is_japan = jpchk.is_japan(commentary.og_title + commentary.og_description)
-                            if is_japan:
-                                parsed_input = "commentary_request"
+                            clean_commentary = commentary.og_title + commentary.og_description
+                            clean_commentary = re.sub(r'"#.*?":\[\S+?\]', "", clean_commentary)
+                            if len(clean_commentary.strip()) == 0:
+                                parsed_input = "hashtag-only_commentary"
                             else:
-                                parsed_input = -5
+                                clean_commentary = re.sub(r"https?://\S+", "", clean_commentary)
+                                print(f"Clean commentary = {clean_commentary}")
+                                is_japan = jpchk.is_japan(clean_commentary)
+                                is_korea = kkchk.is_korea(clean_commentary)
+                                if is_korea:
+                                    parsed_input = "commentary_request korean_commentary"
+                                elif is_japan:
+                                    parsed_input = "commentary_request"
+                                else:
+                                    parsed_input = -5
                         else:
                             user_input = input("$ ")
                             parsed_input = parser.parse(user_input)
