@@ -8,5 +8,5 @@ def is_japan(text):
     if not jp_chars:
         return False
 
-    return len(latin_chars) < len(jp_chars) * 0.2  # still allow <20% romaji
+    return len(latin_chars) < len(jp_chars) * 0.15
 
