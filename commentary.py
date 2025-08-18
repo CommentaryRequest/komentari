@@ -22,7 +22,8 @@ def get_commentary(post_id, auth, headers):
         except (
             urllib.error.URLError,
             requests.exceptions.ReadTimeout,
-            requests.exceptions.ConnectionError
+            requests.exceptions.ConnectionError,
+            requests.exceptions.ChunkedEncodingError
         ) as exc:
             print(f"Failed to fetch commentary because of {exc}")
         except requests.exceptions.JSONDecodeError:
