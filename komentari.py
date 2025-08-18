@@ -20,7 +20,7 @@ import re
 import jpchk
 import kkchk
 
-__version__ = "1.14.1"
+__version__ = "1.14.2"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
