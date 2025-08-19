@@ -9,9 +9,7 @@ def get_posts(query, auth, page, headers):
             return response.json()
         except (
             urllib.error.URLError,
-            requests.exceptions.ReadTimeout,
-            requests.exceptions.ConnectionError,
-            requests.exceptions.ChunkedEncodingError
+            requests.exceptions.RequestException
         ) as exc:
             print(f"Failed to fetch page because of {exc}")
         except requests.exceptions.JSONDecodeError:
