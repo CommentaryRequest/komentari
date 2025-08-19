@@ -19,8 +19,9 @@ import webbrowser
 import re
 import jpchk
 import kkchk
+import cleaner
 
-__version__ = "1.14.6"
+__version__ = "1.14.7"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -155,11 +156,12 @@ def main():
                             parsed_input = yes_no_tag
                         elif auto:
                             clean_commentary = commentary.og_title + commentary.og_description
-                            clean_commentary = re.sub(r'"#.*?":\[\S+?\]', "", clean_commentary)
+                            clean_commentary = cleaner.remove_hashtags(clean_commentary)
                             if len(clean_commentary.strip()) == 0:
                                 parsed_input = "hashtag-only_commentary"
                             else:
-                                clean_commentary = re.sub(r"https?://\S+", "", clean_commentary)
+                                clean_commentary = cleaner.remove_urls(clean_commentary)
+                                clean_commentary = cleaner.remove_bloat(clean_commentary)
                                 print(f"Clean commentary = {clean_commentary}")
                                 is_japan = jpchk.is_japan(clean_commentary)
                                 is_korea = kkchk.is_korea(clean_commentary)
