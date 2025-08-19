@@ -20,7 +20,7 @@ import re
 import jpchk
 import kkchk
 
-__version__ = "1.14.4"
+__version__ = "1.14.5"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 LANGS = {
@@ -211,7 +211,8 @@ def main():
                             uptodate_post = None
                             while True:
                                 try:
-                                    uptodate_post = requests.get(f"{get_booru_url()}/posts/{post_id}.json", headers=headers).json()
+                                    response = requests.get(f"{get_booru_url()}/posts/{post_id}.json", headers=headers)
+                                    uptodate_post = response.json()
                                     break
                                 except (
                                     urllib.error.URLError,
@@ -219,6 +220,8 @@ def main():
                                     requests.exceptions.ConnectionError
                                 ) as exc:
                                     print(f"Failed to fetch page because of {exc}")
+                                except requests.exceptions.JSONDecodeError:
+                                    print(f"Server returned non-JSON response: {response.text}")
                             post_tags = uptodate_post["tag_string"]
                             new_tags = post_tags + " " + parsed_input
                             dprint(f"New tag string: {new_tags}")
