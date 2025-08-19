@@ -21,7 +21,7 @@ import jpchk
 import kkchk
 import cleaner
 
-__version__ = "1.14.8"
+__version__ = "1.14.9"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -35,6 +35,14 @@ def add_negative_tags():
         negative_expand_split = ["-" + tag for tag in expand_split]
         negative_expand = " ".join(negative_expand_split)
         settings.TAGS["-" + tag] = negative_expand
+
+def print_tags(g, co, ch, m):
+    print(
+        f"g: \033[0;34m{g}\033[0m\n"
+        f"co: \033[0;35m{co}\033[0m\n"
+        f"ch: \033[0;32m{ch}\033[0m\n"
+        f"m: \033[0;33m{m}\033[0m\n"
+    )
 
 def main():
     print(f"komentari {__version__} is up")
@@ -149,10 +157,9 @@ def main():
                 while not ok:
                     print(
                         "==================================================\nCurrent tags:\n\n"
-                        f"g: \033[0;34m{post_tags_ini_gen}\033[0m\n\n"
-                        f"co: \033[0;35m{post_tags_ini_copy}\033[0m\n\n"
-                        f"ch: \033[0;32m{post_tags_ini_char}\033[0m\n\n"
-                        f"m: \033[0;33m{post_tags_ini_meta}\033[0m\n\n"
+                    )
+                    print_tags(post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta)
+                    print(
                         f"Title: \033[0;36m{commentary.og_title}\033[0m\n\n"
                         f"Description:\n\n\033[0;36m{commentary.og_description}\033[0m\n\n"
                     )
@@ -262,10 +269,8 @@ def main():
                                 new_tags_meta = request.json()["tag_string_meta"]
                                 print(
                                     "\nTags now:\n"
-                                    f"g: \033[0;34m{new_tags_gen}\033[0m\n\n"
-                                    f"co:\033[0;35m{new_tags_copy}\033[0m\n\n"
-                                    f"ch:\033[0;32m{new_tags_char}\033[0m\n\n"
-                                    f"m:\033[0;33m{new_tags_meta}\033[0m\n\n")
+                                )
+                                print_tags(new_tags_gen, new_tags_copy, new_tags_char, new_tags_meta)
                                 if request.status_code != 200 and request.status_code != 204:
                                     print(f"Error {request.status_code}")
                                 elif request.status_code == 403:
