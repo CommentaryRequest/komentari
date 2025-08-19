@@ -21,11 +21,9 @@ def get_commentary(post_id, auth, headers):
             break
         except (
             urllib.error.URLError,
-            requests.exceptions.ReadTimeout,
-            requests.exceptions.ConnectionError,
-            requests.exceptions.ChunkedEncodingError
+            requests.exceptions.RequestException
         ) as exc:
-            print(f"Failed to fetch commentary because of {exc}")
+            print(f"Failed to fetch page because of {exc}")
         except requests.exceptions.JSONDecodeError:
             print(f"Server returned non-JSON response: {response.text}")
     return Commentary(commentary.get("original_title", "").strip(), commentary.get("original_description", "").strip(), commentary.get("translated_title", "").strip(), commentary.get("translated_description", "").strip())

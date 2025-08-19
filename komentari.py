@@ -21,7 +21,7 @@ import jpchk
 import kkchk
 import cleaner
 
-__version__ = "1.14.7"
+__version__ = "1.14.8"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -132,6 +132,7 @@ def main():
 
                 commentary = get_commentary(post_id, auth, headers)
 
+                # Empty commentary
                 if len(commentary.og_title.strip() + commentary.og_description.strip()) == 0:
                     if mode == "add":
                         print("Adding to favgroup")
@@ -146,18 +147,30 @@ def main():
 
                 ok = False
                 while not ok:
-                    print(f"==================================================\nCurrent tags:\n\ng: \033[0;34m{post_tags_ini_gen}\033[0m\n\nco: \033[0;35m{post_tags_ini_copy}\033[0m\n\nch: \033[0;32m{post_tags_ini_char}\033[0m\n\nm: \033[0;33m{post_tags_ini_meta}\033[0m\n\nTitle: \033[0;36m{commentary.og_title}\033[0m\n\nDescription:\n\n\033[0;36m{commentary.og_description}\033[0m\n\n")
+                    print(
+                        "==================================================\nCurrent tags:\n\n"
+                        f"g: \033[0;34m{post_tags_ini_gen}\033[0m\n\n"
+                        f"co: \033[0;35m{post_tags_ini_copy}\033[0m\n\n"
+                        f"ch: \033[0;32m{post_tags_ini_char}\033[0m\n\n"
+                        f"m: \033[0;33m{post_tags_ini_meta}\033[0m\n\n"
+                        f"Title: \033[0;36m{commentary.og_title}\033[0m\n\n"
+                        f"Description:\n\n\033[0;36m{commentary.og_description}\033[0m\n\n"
+                    )
                     if len(commentary.tl_title) != 0 or len(commentary.tl_description) != 0:
-                        print(f"TRANSLATED Title: \033[0;36m{commentary.tl_title}\033[0m\n\nTRANSLATED Description:\n\n\033[0;36m{commentary.tl_description}\033[0m\n\n")
-                    print("(h for help)")
+                        print(
+                            f"TRANSLATED Title: \033[0;36m{commentary.tl_title}\033[0m\n\n"
+                            f"TRANSLATED Description:\n\n\033[0;36m{commentary.tl_description}\033[0m\n\n"
+                        )
                     parsed_input = ""
                     while True:
                         if yes_no_tag is not None:
                             parsed_input = yes_no_tag
                         elif auto:
                             clean_commentary = commentary.og_title + commentary.og_description
+
                             clean_commentary = cleaner.remove_hashtags(clean_commentary)
                             if len(clean_commentary.strip()) == 0:
+                                # The commentary only contained hashtags
                                 parsed_input = "hashtag-only_commentary"
                             else:
                                 clean_commentary = cleaner.remove_urls(clean_commentary)
@@ -172,8 +185,10 @@ def main():
                                 else:
                                     parsed_input = -5
                         else:
+                            print("(h for help)")
                             user_input = input("$ ")
                             parsed_input = parser.parse(user_input)
+
                         if isinstance(parsed_input, int) or parsed_input.strip() != "":
                             break
                     if parsed_input == -1:
@@ -206,6 +221,9 @@ def main():
                             confirm = input("(y/N)$ ")
                         if confirm.lower().strip() == confirm_string:
                             print("Sending out change!")
+
+                            # Tags on the post may have changed between fetching the post and confirming entered tags.
+                            # This loads the latest tags, ensuring no conflict.
                             uptodate_post = None
                             while True:
                                 try:
@@ -214,13 +232,13 @@ def main():
                                     break
                                 except (
                                     urllib.error.URLError,
-                                    requests.exceptions.ReadTimeout,
-                                    requests.exceptions.ConnectionError
+                                    requests.exceptions.RequestException
                                 ) as exc:
                                     print(f"Failed to fetch page because of {exc}")
                                 except requests.exceptions.JSONDecodeError:
                                     print(f"Server returned non-JSON response: {response.text}")
                             post_tags = uptodate_post["tag_string"]
+
                             new_tags = post_tags + " " + parsed_input
                             dprint(f"New tag string: {new_tags}")
                             request_data = {
@@ -232,18 +250,22 @@ def main():
                                 request = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data, headers=headers)
                             except (
                                 urllib.error.URLError,
-                                requests.exceptions.ReadTimeout,
-                                requests.exceptions.ConnectionError
+                                requests.exceptions.RequestException
                             ) as exc:
                                 print(f"Failed to fetch page because of {exc}")
-                                
+
                             dprint(f"Server said this: {json.dumps(request.json(), indent=2)}")
                             try:
                                 new_tags_gen = request.json()["tag_string_general"]
                                 new_tags_copy = request.json()["tag_string_copyright"]
                                 new_tags_char = request.json()["tag_string_character"]
                                 new_tags_meta = request.json()["tag_string_meta"]
-                                print(f"\nTags now:\ng: \033[0;34m{new_tags_gen}\033[0m\n\nco:\033[0;35m{new_tags_copy}\033[0m\n\nch:\033[0;32m{new_tags_char}\033[0m\n\nm:\033[0;33m{new_tags_meta}\033[0m\n\n")
+                                print(
+                                    "\nTags now:\n"
+                                    f"g: \033[0;34m{new_tags_gen}\033[0m\n\n"
+                                    f"co:\033[0;35m{new_tags_copy}\033[0m\n\n"
+                                    f"ch:\033[0;32m{new_tags_char}\033[0m\n\n"
+                                    f"m:\033[0;33m{new_tags_meta}\033[0m\n\n")
                                 if request.status_code != 200 and request.status_code != 204:
                                     print(f"Error {request.status_code}")
                                 elif request.status_code == 403:
@@ -272,7 +294,7 @@ def main():
     except Exception as exc:
         skipped_posts.flush()
         print(f"gardened {edits} posts")
-        raise exc
+        raise
 
 if __name__ == "__main__":
     main()
