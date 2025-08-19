@@ -20,15 +20,8 @@ import re
 import jpchk
 import kkchk
 
-__version__ = "1.14.5"
+__version__ = "1.14.6"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
-
-LANGS = {
-    "en": "english_commentary commentary",
-    "ja": "commentary_request",
-    "cn": "chinese_commentary commentary_request",
-    "th": "thai_commentary commentary_request"
-}
 
 def dprint(message):
     if not settings.DEBUGMODE:
@@ -37,7 +30,10 @@ def dprint(message):
 
 def add_negative_tags():
     for tag, expand in settings.TAGS.copy().items(): # TODO might be a breaking change but rename to lowercase (not really a const...)
-        settings.TAGS["-" + tag] = "-" + expand
+        expand_split = expand.split()
+        negative_expand_split = ["-" + tag for tag in expand_split]
+        negative_expand = " ".join(negative_expand_split)
+        settings.TAGS["-" + tag] = negative_expand
 
 def main():
     print(f"komentari {__version__} is up")
@@ -255,8 +251,8 @@ def main():
                                     print("Edited successfully.")
                                     edits += 1
                                     ok = True
-                            except KeyError:
-                                print("Could not edit not sure why") # TODO why
+                            except KeyError as exc:
+                                print(f"Could not edit: {exc}")
                                 ok = True
                             if not (yes_no_tag and yes_no_tag_force) and not auto:
                                 input("press enter...")
