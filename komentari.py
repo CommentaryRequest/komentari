@@ -22,7 +22,7 @@ import kkchk
 import cleaner
 import cliargs
 
-__version__ = "1.14.10"
+__version__ = "1.14.11"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -173,6 +173,7 @@ def main():
                             else:
                                 clean_commentary = cleaner.remove_urls(clean_commentary)
                                 clean_commentary = cleaner.remove_bloat(clean_commentary)
+                                clean_commentary = cleaner.remove_twitter_links(clean_commentary)
                                 print(f"Clean commentary = {clean_commentary}")
                                 is_japan = jpchk.is_japan(clean_commentary)
                                 is_korea = kkchk.is_korea(clean_commentary)
