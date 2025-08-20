@@ -20,8 +20,9 @@ import re
 import jpchk
 import kkchk
 import cleaner
+import cliargs
 
-__version__ = "1.14.9"
+__version__ = "1.14.10"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -52,17 +53,7 @@ def main():
 
     dprint("Debug mode enabled")
 
-    aparser = argparse.ArgumentParser()
-    aparser.add_argument("--page", type=int, default=1)
-    aparser.add_argument("--query", type=str, default="-commentary+-commentary_request")
-    aparser.add_argument("--mode", type=str, default="garden", help="garden: gardening commentary tags. add: add posts with no commentary to fav group")
-    aparser.add_argument("--group", type=int, default=0, help="posts with no commentary will be added to this fav group (necessary if mode is add)")
-    aparser.add_argument("--random", action="store_true", help="select posts at random")
-    aparser.add_argument("--limit", type=int, default=None, help="change the post limit")
-    aparser.add_argument("--ynt", type=str, default=None, help="yes/no tag: press enter to apply tag for each post found, any key + enter to skip")
-    aparser.add_argument("--ynty", action="store_true", help="automatically add the chosen tag when using yes/no tag. (warning: dangerous. only use if you know what you're doing.)")
-    aparser.add_argument("--auto", action="store_true", help="automatically detect language and add tag. if language not detected, skip post")
-    args = aparser.parse_args()
+    args = cliargs.parse_args()
 
     random_mode = args.random
     limit = args.limit
@@ -190,7 +181,7 @@ def main():
                                 elif is_japan:
                                     parsed_input = "commentary_request"
                                 else:
-                                    parsed_input = -5
+                                    parsed_input = parser.NONPERMANENT_SKIP
                         else:
                             print("(h for help)")
                             user_input = input("$ ")
@@ -198,25 +189,25 @@ def main():
 
                         if isinstance(parsed_input, int) or parsed_input.strip() != "":
                             break
-                    if parsed_input == -1:
+                    if parsed_input == parser.HELP:
                         print("Configured tags:")
                         for short, tag in settings.TAGS.items():
                             if not short.startswith("-"):
                                 print(f" - {short} = {tag}")
                         print("Type h for help, b to open in browser, q to quit.")
-                    elif parsed_input == -2:
+                    elif parsed_input == parser.SKIP:
                         print("User requested skip.")
                         skipped_posts.add(post_id)
                         ok = True
-                    elif parsed_input == -3:
+                    elif parsed_input == parser.QUIT:
                         skipped_posts.flush()
                         print(f"gardened {edits} posts")
                         sys.exit(0)
-                    elif parsed_input == -4:
+                    elif parsed_input == parser.BROWSER:
                         link = f"{get_booru_url()}/posts/{post_id}"
                         print(f"Opening link: {link}")
                         webbrowser.open(link)
-                    elif parsed_input == -5:
+                    elif parsed_input == parser.NONPERMANENT_SKIP:
                         print("User requested non-permanent skip.")
                         ok = True
                     elif "!!!!!!!!" in parsed_input:

@@ -1,20 +1,27 @@
 import settings
 
+# returned by parse for special commands
+HELP = -1
+SKIP = -2
+QUIT = -3
+BROWSER = -4
+NONPERMANENT_SKIP = -5
+
 def parse(user_input):
     result = ""
     tags = user_input.split()
     for tag in tags:
         tag_clean = tag.strip()
         if tag_clean == "h":
-            return -1
+            return HELP
         elif tag_clean == "sk":
-            return -2
+            return SKIP
         elif tag_clean == "q":
-            return -3
+            return QUIT
         elif tag_clean == "b":
-            return -4
+            return BROWSER
         elif tag_clean == "skk":
-            return -5
+            return NONPERMANENT_SKIP
         if len(tag_clean) == 0:
             continue # is empty tag
         print(f"get '{tag_clean}'")
