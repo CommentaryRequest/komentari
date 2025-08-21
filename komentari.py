@@ -22,7 +22,7 @@ import kkchk
 import cleaner
 import cliargs
 
-__version__ = "1.14.11"
+__version__ = "1.14.12"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -44,6 +44,12 @@ def print_tags(g, co, ch, m):
         f"ch: \033[0;32m{ch}\033[0m\n"
         f"m: \033[0;33m{m}\033[0m\n"
     )
+
+def safedumps(response):
+    try:
+        return json.dumps(response.json(), indent=2)
+    except requests.exceptions.JSONDecodeError:
+        return response.text
 
 def main():
     print(f"komentari {__version__} is up")
@@ -245,20 +251,25 @@ def main():
                                 "old_tag_string": post_tags
                             }
                             dprint(f"Request data = {json.dumps(request_data, indent=2)}")
-                            try:
-                                request = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data, headers=headers)
-                            except (
-                                urllib.error.URLError,
-                                requests.exceptions.RequestException
-                            ) as exc:
-                                print(f"Failed to fetch page because of {exc}")
+                            while True:
+                                try:
+                                    request = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data, headers=headers)
+                                    updated_post = response.json()
+                                    break
+                                except (
+                                    urllib.error.URLError,
+                                    requests.exceptions.RequestException
+                                ) as exc:
+                                    print(f"Failed to fetch page because of {exc}")
+                                except requests.exceptions.JSONDecodeError:
+                                    print(f"Server returned non-JSON response: {response.text}")
 
-                            dprint(f"Server said this: {json.dumps(request.json(), indent=2)}")
+                            dprint(f"Server said this: {safedumps(request)}")
                             try:
-                                new_tags_gen = request.json()["tag_string_general"]
-                                new_tags_copy = request.json()["tag_string_copyright"]
-                                new_tags_char = request.json()["tag_string_character"]
-                                new_tags_meta = request.json()["tag_string_meta"]
+                                new_tags_gen = updated_post["tag_string_general"]
+                                new_tags_copy = updated_post["tag_string_copyright"]
+                                new_tags_char = updated_post["tag_string_character"]
+                                new_tags_meta = updated_post["tag_string_meta"]
                                 print(
                                     "\nTags now:\n"
                                 )
