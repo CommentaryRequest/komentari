@@ -22,7 +22,7 @@ import kkchk
 import cleaner
 import cliargs
 
-__version__ = "1.14.12"
+__version__ = "1.14.12.1"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -253,7 +253,7 @@ def main():
                             dprint(f"Request data = {json.dumps(request_data, indent=2)}")
                             while True:
                                 try:
-                                    request = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data, headers=headers)
+                                    response = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data, headers=headers)
                                     updated_post = response.json()
                                     break
                                 except (
@@ -264,7 +264,7 @@ def main():
                                 except requests.exceptions.JSONDecodeError:
                                     print(f"Server returned non-JSON response: {response.text}")
 
-                            dprint(f"Server said this: {safedumps(request)}")
+                            dprint(f"Server said this: {safedumps(response)}")
                             try:
                                 new_tags_gen = updated_post["tag_string_general"]
                                 new_tags_copy = updated_post["tag_string_copyright"]
@@ -274,9 +274,9 @@ def main():
                                     "\nTags now:\n"
                                 )
                                 print_tags(new_tags_gen, new_tags_copy, new_tags_char, new_tags_meta)
-                                if request.status_code != 200 and request.status_code != 204:
-                                    print(f"Error {request.status_code}")
-                                elif request.status_code == 403:
+                                if response.status_code != 200 and response.status_code != 204:
+                                    print(f"Error {response.status_code}")
+                                elif response.status_code == 403:
                                     print("Post forbidden to edit. Skip.")
                                     ok = True
                                 else:
