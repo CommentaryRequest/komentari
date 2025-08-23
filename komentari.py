@@ -22,7 +22,7 @@ import kkchk
 import cleaner
 import cliargs
 
-__version__ = "1.14.12.1"
+__version__ = "1.14.13"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -235,13 +235,13 @@ def main():
                                     response = requests.get(f"{get_booru_url()}/posts/{post_id}.json", headers=headers)
                                     uptodate_post = response.json()
                                     break
+                                except requests.exceptions.JSONDecodeError:
+                                    print(f"Server returned non-JSON response: {response.text}")
                                 except (
                                     urllib.error.URLError,
                                     requests.exceptions.RequestException
                                 ) as exc:
                                     print(f"Failed to fetch page because of {exc}")
-                                except requests.exceptions.JSONDecodeError:
-                                    print(f"Server returned non-JSON response: {response.text}")
                             post_tags = uptodate_post["tag_string"]
 
                             new_tags = post_tags + " " + parsed_input
@@ -256,13 +256,13 @@ def main():
                                     response = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data, headers=headers)
                                     updated_post = response.json()
                                     break
+                                except requests.exceptions.JSONDecodeError:
+                                    print(f"Server returned non-JSON response: {response.text}")
                                 except (
                                     urllib.error.URLError,
                                     requests.exceptions.RequestException
                                 ) as exc:
                                     print(f"Failed to fetch page because of {exc}")
-                                except requests.exceptions.JSONDecodeError:
-                                    print(f"Server returned non-JSON response: {response.text}")
 
                             dprint(f"Server said this: {safedumps(response)}")
                             try:
