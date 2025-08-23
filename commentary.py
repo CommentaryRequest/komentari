@@ -19,11 +19,11 @@ def get_commentary(post_id, auth, headers):
             response = requests.get(f"{get_booru_url()}/posts/{post_id}/artist_commentary.json?{str(auth)}", headers=headers)
             commentary = response.json()
             break
+        except requests.exceptions.JSONDecodeError:
+            print(f"Server returned non-JSON response: {response.text}")
         except (
             urllib.error.URLError,
             requests.exceptions.RequestException
         ) as exc:
             print(f"Failed to fetch page because of {exc}")
-        except requests.exceptions.JSONDecodeError:
-            print(f"Server returned non-JSON response: {response.text}")
     return Commentary(commentary.get("original_title", "").strip(), commentary.get("original_description", "").strip(), commentary.get("translated_title", "").strip(), commentary.get("translated_description", "").strip())
