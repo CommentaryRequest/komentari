@@ -24,7 +24,7 @@ import cleaner
 import cliargs
 import recog
 
-__version__ = "1.15.1"
+__version__ = "1.15.2"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -54,7 +54,7 @@ def safedumps(response):
         return response.text
 
 def write_confidence(threshold, pid, commentary, confidence):
-    with open(threshold + ".txt", "a") as file:
+    with open(threshold + ".txt", "a", encoding="utf-8") as file:
         file.write(f"================================== post #{pid} ({confidence})\n{commentary}\n\n")
 
 def check_en(commentary, pid):
