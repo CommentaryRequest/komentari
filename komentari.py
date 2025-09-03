@@ -19,11 +19,12 @@ import webbrowser
 import re
 import jpchk
 import kkchk
+import emjchk
 import cleaner
 import cliargs
 import recog
 
-__version__ = "1.15"
+__version__ = "1.15.1"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -200,10 +201,13 @@ def main():
                                 print(f"Clean commentary = {clean_commentary}")
                                 is_japan = jpchk.is_japan(clean_commentary)
                                 is_korea = kkchk.is_korea(clean_commentary)
+                                is_emoji = emjchk.is_emoji(clean_commentary)
                                 if is_korea:
                                     parsed_input = "commentary_request korean_commentary"
                                 elif is_japan:
                                     parsed_input = "commentary_request"
+                                elif is_emoji:
+                                    parsed_input = "symbol-only_commentary"
                                 else:
                                     check_en(clean_commentary, post_id)
                                     parsed_input = parser.NONPERMANENT_SKIP
