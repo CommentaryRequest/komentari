@@ -1,8 +1,11 @@
 import re
 
-def is_japan(text):
+def detect_jp_chars(text):
     # Including both full-width and half-width katakana
-    jp_chars = re.findall(r'[\u3040-\u309F\u30A0-\u30FF\uFF00-\uFFEF\u4E00-\u9FFF\uFF61-\uFF9F]', text)
+    return re.findall(r'[\u3040-\u309F\u30A0-\u30FF\uFF00-\uFFEF\u4E00-\u9FFF\uFF61-\uFF9F]', text)
+
+def is_japan(text):
+    jp_chars = detect_jp_chars(text)
     latin_chars = re.findall(r'[A-Za-z]', text)
 
     if not jp_chars:
