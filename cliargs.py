@@ -11,5 +11,6 @@ def parse_args():
     aparser.add_argument("--ynt", type=str, default=None, help="yes/no tag: press enter to apply tag for each post found, any key + enter to skip")
     aparser.add_argument("--ynty", action="store_true", help="automatically add the chosen tag when using yes/no tag. (warning: dangerous. only use if you know what you're doing.)")
     aparser.add_argument("--auto", action="store_true", help="automatically detect language and add tag. if language not detected, skip post")
+    aparser.add_argument("--semi-auto", action="store_true", help="auto mode but don't skip post, ask user instead")
     args = aparser.parse_args()
     return args

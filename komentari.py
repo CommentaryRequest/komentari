@@ -21,8 +21,9 @@ import jpchk
 import kkchk
 import cleaner
 import cliargs
+import recog
 
-__version__ = "1.14.13"
+__version__ = "1.15"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -51,6 +52,19 @@ def safedumps(response):
     except requests.exceptions.JSONDecodeError:
         return response.text
 
+def write_confidence(threshold, pid, commentary, confidence):
+    with open(threshold + ".txt", "a") as file:
+        file.write(f"================================== post #{pid} ({confidence})\n{commentary}\n\n")
+
+def check_en(commentary, pid):
+    confidence = recog.recog(commentary)
+    print(f"en confidence: {confidence}")
+
+    thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    for threshold in thresholds:
+        if confidence >= threshold:
+            write_confidence(str(threshold), pid, commentary, confidence)
+
 def main():
     print(f"komentari {__version__} is up")
 
@@ -66,10 +80,10 @@ def main():
     yes_no_tag = args.ynt
     yes_no_tag_force = args.ynty
     auto = args.auto
+    semi_auto = args.semi_auto
 
-    confirm_string = "y"
-    if yes_no_tag is not None or auto:
-        confirm_string = ""
+    if semi_auto and not auto:
+        auto = True
 
     args.query += "+status:any"
     if random_mode:
@@ -167,8 +181,10 @@ def main():
                         )
                     parsed_input = ""
                     while True:
+                        manual_input = True
                         if yes_no_tag is not None:
                             parsed_input = yes_no_tag
+                            manual_input = False
                         elif auto:
                             clean_commentary = commentary.og_title + commentary.og_description
 
@@ -177,6 +193,7 @@ def main():
                                 # The commentary only contained hashtags
                                 parsed_input = "hashtag-only_commentary"
                             else:
+                                manual_input = False
                                 clean_commentary = cleaner.remove_urls(clean_commentary)
                                 clean_commentary = cleaner.remove_bloat(clean_commentary)
                                 clean_commentary = cleaner.remove_twitter_links(clean_commentary)
@@ -188,8 +205,11 @@ def main():
                                 elif is_japan:
                                     parsed_input = "commentary_request"
                                 else:
+                                    check_en(clean_commentary, post_id)
                                     parsed_input = parser.NONPERMANENT_SKIP
-                        else:
+                                    manual_input = semi_auto
+
+                        if manual_input:
                             print("(h for help)")
                             user_input = input("$ ")
                             parsed_input = parser.parse(user_input)
@@ -222,9 +242,9 @@ def main():
                     else:
                         print(f"The following tags will be added. Ok?\n{parsed_input}")
                         confirm = ""
-                        if (yes_no_tag and not yes_no_tag_force or not yes_no_tag) and not auto:
+                        if manual_input:
                             confirm = input("(y/N)$ ")
-                        if confirm.lower().strip() == confirm_string:
+                        if confirm.lower().strip() == "y" or not manual_input:
                             print("Sending out change!")
 
                             # Tags on the post may have changed between fetching the post and confirming entered tags.
@@ -286,7 +306,7 @@ def main():
                             except KeyError as exc:
                                 print(f"Could not edit: {exc}")
                                 ok = True
-                            if not (yes_no_tag and yes_no_tag_force) and not auto:
+                            if manual_input:
                                 input("press enter...")
                         elif yes_no_tag is not None:
                             print("Skip")

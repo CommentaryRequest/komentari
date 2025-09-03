@@ -1,8 +1,11 @@
 import re
 
-def is_korea(text):
+def detect_kr_chars(text):
     # Match all Hangul blocks
-    kr_chars = re.findall(r'[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]', text)
+    return re.findall(r'[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]', text)
+
+def is_korea(text):
+    kr_chars = detect_kr_chars(text)
     latin_chars = re.findall(r'[A-Za-z]', text)
 
     if not kr_chars:
