@@ -24,7 +24,7 @@ import cleaner
 import cliargs
 import recog
 
-__version__ = "1.15.2"
+__version__ = "1.15.3"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
@@ -190,11 +190,11 @@ def main():
                             clean_commentary = commentary.og_title + commentary.og_description
 
                             clean_commentary = cleaner.remove_hashtags(clean_commentary)
+                            manual_input = False
                             if len(clean_commentary.strip()) == 0:
                                 # The commentary only contained hashtags
                                 parsed_input = "hashtag-only_commentary"
                             else:
-                                manual_input = False
                                 clean_commentary = cleaner.remove_urls(clean_commentary)
                                 clean_commentary = cleaner.remove_bloat(clean_commentary)
                                 clean_commentary = cleaner.remove_twitter_links(clean_commentary)
