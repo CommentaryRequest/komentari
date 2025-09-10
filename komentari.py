@@ -24,8 +24,14 @@ import cleaner
 import cliargs
 import recog
 
-__version__ = "1.15.6"
+__version__ = "1.15.7"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
+
+UNTITLED_TITLES = [
+    "untitled",
+    "no title",
+    "no_title"
+]
 
 def dprint(message):
     if not settings.DEBUGMODE:
@@ -187,31 +193,35 @@ def main():
                             parsed_input = yes_no_tag
                             manual_input = False
                         elif auto:
-                            clean_commentary = commentary.og_title + commentary.og_description
-
-                            clean_commentary = cleaner.remove_hashtags(clean_commentary)
-                            manual_input = False
-                            if len(clean_commentary.strip()) == 0:
-                                # The commentary only contained hashtags
-                                parsed_input = "hashtag-only_commentary"
+                            if commentary.og_title.strip().lower() in UNTITLED_TITLES and len(commentary.og_description.strip()) == 0:
+                                parsed_input = "commentary"
+                                manual_input = False
                             else:
-                                clean_commentary = cleaner.remove_urls(clean_commentary)
-                                is_emoji = emjchk.is_emoji(clean_commentary)
-                                if is_emoji:
-                                    parsed_input = "symbol-only_commentary"
+                                clean_commentary = commentary.og_title + commentary.og_description
+
+                                clean_commentary = cleaner.remove_hashtags(clean_commentary)
+                                manual_input = False
+                                if len(clean_commentary.strip()) == 0:
+                                    # The commentary only contained hashtags
+                                    parsed_input = "hashtag-only_commentary"
                                 else:
-                                    clean_commentary = cleaner.remove_bloat(clean_commentary)
-                                    print(f"Clean commentary = {clean_commentary}")
-                                    is_japan = jpchk.is_japan(clean_commentary)
-                                    is_korea = kkchk.is_korea(clean_commentary)
-                                    if is_korea:
-                                        parsed_input = "commentary_request korean_commentary"
-                                    elif is_japan:
-                                        parsed_input = "commentary_request"
+                                    clean_commentary = cleaner.remove_urls(clean_commentary)
+                                    is_emoji = emjchk.is_emoji(clean_commentary)
+                                    if is_emoji:
+                                        parsed_input = "symbol-only_commentary"
                                     else:
-                                        check_en(clean_commentary, post_id)
-                                        parsed_input = parser.NONPERMANENT_SKIP
-                                        manual_input = semi_auto
+                                        clean_commentary = cleaner.remove_bloat(clean_commentary)
+                                        print(f"Clean commentary = {clean_commentary}")
+                                        is_japan = jpchk.is_japan(clean_commentary)
+                                        is_korea = kkchk.is_korea(clean_commentary)
+                                        if is_korea:
+                                            parsed_input = "commentary_request korean_commentary"
+                                        elif is_japan:
+                                            parsed_input = "commentary_request"
+                                        else:
+                                            check_en(clean_commentary, post_id)
+                                            parsed_input = parser.NONPERMANENT_SKIP
+                                            manual_input = semi_auto
 
                         if manual_input:
                             print("(h for help)")
