@@ -200,7 +200,6 @@ def main():
                                 if is_emoji:
                                     parsed_input = "symbol-only_commentary"
                                 else:
-                                    clean_commentary = cleaner.remove_twitter_links(clean_commentary)
                                     clean_commentary = cleaner.remove_bloat(clean_commentary)
                                     print(f"Clean commentary = {clean_commentary}")
                                     is_japan = jpchk.is_japan(clean_commentary)
