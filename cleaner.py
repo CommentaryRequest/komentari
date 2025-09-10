@@ -16,7 +16,8 @@ def remove_hashtags(text):
 def remove_urls(text):
     no_dtext_urls = re.sub(r"<https?://\S+>", "", text)
     no_twitter_links = re.sub(r'\[b\]"twitter\/\S+":\[https?:\/\/\S+\]\[\/b\]', "", no_dtext_urls)
-    return re.sub(f"https?://\S+", "", no_twitter_links)
+    no_at_mentions = re.sub(r'"@\S+":\[https?://\S+\]', "", no_twitter_links)
+    return re.sub(f"https?://\S+", "", no_at_mentions)
 
 def remove_bloat(text):
     pattern = re.compile("|".join(re.escape(word) for word in BLOAT), re.IGNORECASE)
