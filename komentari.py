@@ -24,7 +24,7 @@ import cleaner
 import cliargs
 import recog
 
-__version__ = "1.15.5"
+__version__ = "1.15.6"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 def dprint(message):
