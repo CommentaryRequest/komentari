@@ -24,7 +24,7 @@ import cleaner
 import cliargs
 import recog
 
-__version__ = "1.15.7"
+__version__ = "1.15.8"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 UNTITLED_TITLES = [
@@ -71,6 +71,7 @@ def check_en(commentary, pid):
     for threshold in thresholds:
         if confidence >= threshold:
             write_confidence(str(threshold), pid, commentary, confidence)
+    return confidence
 
 def main():
     print(f"komentari {__version__} is up")
@@ -219,9 +220,12 @@ def main():
                                         elif is_japan:
                                             parsed_input = "commentary_request"
                                         else:
-                                            check_en(clean_commentary, post_id)
-                                            parsed_input = parser.NONPERMANENT_SKIP
-                                            manual_input = semi_auto
+                                            confidence = check_en(clean_commentary, post_id)
+                                            if confidence >= 0.9:
+                                                parsed_input = "commentary english_commentary"
+                                            else:
+                                                parsed_input = parser.NONPERMANENT_SKIP
+                                                manual_input = semi_auto
 
                         if manual_input:
                             print("(h for help)")
