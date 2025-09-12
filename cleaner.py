@@ -7,7 +7,10 @@ BLOAT = [
     "fantia",
     "rkgk",
     "twitter",
-    "misskey"
+    "misskey",
+    "pixiv",
+    "patreon",
+    "bluesky"
 ]
 
 def remove_hashtags(text):
@@ -20,5 +23,5 @@ def remove_urls(text):
     return re.sub(f"https?://\S+", "", no_at_mentions)
 
 def remove_bloat(text):
-    pattern = re.compile("|".join(re.escape(word) for word in BLOAT), re.IGNORECASE)
+    pattern = re.compile("|".join(r"\b(" + re.escape(word) + ")\b" for word in BLOAT), re.IGNORECASE)
     return pattern.sub("", text)
