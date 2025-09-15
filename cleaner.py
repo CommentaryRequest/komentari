@@ -23,5 +23,5 @@ def remove_urls(text):
     return re.sub(f"https?://\S+", "", no_at_mentions)
 
 def remove_bloat(text):
-    pattern = re.compile("|".join(r"\b(" + re.escape(word) + ")\b" for word in BLOAT), re.IGNORECASE)
+    pattern = re.compile(r"(?<![A-Za-z0-9])(?:" + "|".join(map(re.escape, BLOAT)) + r")(?![A-Za-z0-9])", re.IGNORECASE)
     return pattern.sub("", text)
