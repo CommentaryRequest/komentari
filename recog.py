@@ -80,11 +80,11 @@ def recog(text):
         # real word
         if cword in words:
             real_words += 1
-            print(f"real: '{cword}' (dirty: '{word}')")
+            #print(f"real: '{cword}' (dirty: '{word}')")
 
         # fake word
         else:
-            print(f"what: '{cword}' (dirty: '{word}')")
+            #print(f"what: '{cword}' (dirty: '{word}')")
             pass
 
     total_not_fake_words = (len(text_words) - fake_words)
