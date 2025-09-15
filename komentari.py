@@ -24,7 +24,7 @@ import cleaner
 import cliargs
 import recog
 
-__version__ = "1.15.9"
+__version__ = "1.16"
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 UNTITLED_TITLES = [
@@ -63,14 +63,14 @@ def write_confidence(threshold, pid, commentary, confidence):
     with open(threshold + ".txt", "a", encoding="utf-8") as file:
         file.write(f"================================== post #{pid} ({confidence})\n{commentary}\n\n")
 
-def check_en(commentary, pid):
+def check_en(commentary, pid, en_log):
     confidence = recog.recog(commentary)
-    print(f"en confidence: {confidence}")
 
-    thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    for threshold in thresholds:
-        if confidence >= threshold:
-            write_confidence(str(threshold), pid, commentary, confidence)
+    if en_log:
+        thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+        for threshold in thresholds:
+            if confidence >= threshold:
+                write_confidence(str(threshold), pid, commentary, confidence)
     return confidence
 
 def main():
@@ -89,6 +89,11 @@ def main():
     yes_no_tag_force = args.ynty
     auto = args.auto
     semi_auto = args.semi_auto
+    en_log = args.en_log
+    quiet = args.quiet
+
+    if not auto or semi_auto:
+        quiet = False
 
     if semi_auto and not auto:
         auto = True
@@ -174,19 +179,20 @@ def main():
 
                 ok = False
                 while not ok:
-                    print(
-                        "==================================================\nCurrent tags:\n\n"
-                    )
-                    print_tags(post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta)
-                    print(
-                        f"Title: \033[0;36m{commentary.og_title}\033[0m\n\n"
-                        f"Description:\n\n\033[0;36m{commentary.og_description}\033[0m\n\n"
-                    )
-                    if len(commentary.tl_title) != 0 or len(commentary.tl_description) != 0:
+                    if not quiet:
                         print(
-                            f"TRANSLATED Title: \033[0;36m{commentary.tl_title}\033[0m\n\n"
-                            f"TRANSLATED Description:\n\n\033[0;36m{commentary.tl_description}\033[0m\n\n"
+                            "==================================================\nCurrent tags:\n\n"
                         )
+                        print_tags(post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta)
+                        print(
+                            f"Title: \033[0;36m{commentary.og_title}\033[0m\n\n"
+                            f"Description:\n\n\033[0;36m{commentary.og_description}\033[0m\n\n"
+                        )
+                        if len(commentary.tl_title) != 0 or len(commentary.tl_description) != 0:
+                            print(
+                                f"TRANSLATED Title: \033[0;36m{commentary.tl_title}\033[0m\n\n"
+                                f"TRANSLATED Description:\n\n\033[0;36m{commentary.tl_description}\033[0m\n\n"
+                            )
                     parsed_input = ""
                     while True:
                         manual_input = True
@@ -212,7 +218,8 @@ def main():
                                         parsed_input = "symbol-only_commentary"
                                     else:
                                         clean_commentary = cleaner.remove_bloat(clean_commentary)
-                                        print(f"Clean commentary = {clean_commentary}")
+                                        if not quiet:
+                                            print(f"Clean commentary = {clean_commentary}")
                                         is_japan = jpchk.is_japan(clean_commentary)
                                         is_korea = kkchk.is_korea(clean_commentary)
                                         if is_korea:
@@ -220,7 +227,7 @@ def main():
                                         elif is_japan:
                                             parsed_input = "commentary_request"
                                         else:
-                                            confidence = check_en(clean_commentary, post_id)
+                                            confidence = check_en(clean_commentary, post_id, en_log)
                                             if confidence >= 0.9:
                                                 parsed_input = "commentary english_commentary"
                                             else:
@@ -253,17 +260,22 @@ def main():
                         print(f"Opening link: {link}")
                         webbrowser.open(link)
                     elif parsed_input == parser.NONPERMANENT_SKIP:
-                        print("User requested non-permanent skip.")
+                        if not quiet:
+                            print("User requested non-permanent skip.")
                         ok = True
                     elif "!!!!!!!!" in parsed_input:
                         print("Unknown tag. Try again.")
                     else:
-                        print(f"The following tags will be added. Ok?\n{parsed_input}")
+                        if not quiet:
+                            print(f"The following tags will be added. Ok?\n{parsed_input}")
                         confirm = ""
                         if manual_input:
                             confirm = input("(y/N)$ ")
                         if confirm.lower().strip() == "y" or not manual_input:
-                            print("Sending out change!")
+                            if quiet:
+                                print(parsed_input)
+                            else:
+                                print("Sending out change!")
 
                             # Tags on the post may have changed between fetching the post and confirming entered tags.
                             # This loads the latest tags, ensuring no conflict.
@@ -308,17 +320,19 @@ def main():
                                 new_tags_copy = updated_post["tag_string_copyright"]
                                 new_tags_char = updated_post["tag_string_character"]
                                 new_tags_meta = updated_post["tag_string_meta"]
-                                print(
-                                    "\nTags now:\n"
-                                )
-                                print_tags(new_tags_gen, new_tags_copy, new_tags_char, new_tags_meta)
+                                if not quiet:
+                                    print(
+                                        "\nTags now:\n"
+                                    )
+                                    print_tags(new_tags_gen, new_tags_copy, new_tags_char, new_tags_meta)
                                 if response.status_code != 200 and response.status_code != 204:
                                     print(f"Error {response.status_code}")
                                 elif response.status_code == 403:
                                     print("Post forbidden to edit. Skip.")
                                     ok = True
                                 else:
-                                    print("Edited successfully.")
+                                    if not quiet:
+                                        print("Edited successfully.")
                                     edits += 1
                                     ok = True
                             except KeyError as exc:
