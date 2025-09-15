@@ -24,7 +24,8 @@ import cleaner
 import cliargs
 import recog
 
-__version__ = "1.16"
+__version__ = "1.16.1"
+
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
 UNTITLED_TITLES = [
