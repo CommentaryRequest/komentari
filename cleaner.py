@@ -20,6 +20,7 @@ def remove_urls(text):
     text = re.sub(r"<https?://\S+>", "", text)
     text = re.sub(r'\[b\]"twitter\/\S+":\[https?:\/\/\S+\]\[\/b\]', "", text)
     text = re.sub(r'\[b\]"user\/\S+":\[https:\/\/\S+\] "»":\[\/\S+\]\[\/b\]', "", text)
+    text = re.sub(r'\[b\]pixiv #\d+ "»":\[\S+\]\[\/b\]', "", text)
     text = re.sub(r'"@\S+":\[https?://\S+\]', "", text)
     return re.sub(f"https?://\S+", "", text)
 
