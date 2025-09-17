@@ -10,7 +10,8 @@ BLOAT = [
     "misskey",
     "pixiv",
     "patreon",
-    "bluesky"
+    "bluesky",
+    "dlsite"
 ]
 
 def remove_hashtags(text):
