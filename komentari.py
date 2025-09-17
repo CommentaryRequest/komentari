@@ -24,7 +24,7 @@ import cleaner
 import cliargs
 import recog
 
-__version__ = "1.16.3"
+__version__ = "1.16.4"
 
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
@@ -205,7 +205,7 @@ def main():
                                 parsed_input = "commentary"
                                 manual_input = False
                             else:
-                                clean_commentary = commentary.og_title + commentary.og_description
+                                clean_commentary = commentary.og_title + " " + commentary.og_description
 
                                 clean_commentary = cleaner.remove_hashtags(clean_commentary)
                                 manual_input = False
