@@ -14,5 +14,6 @@ def parse_args():
     aparser.add_argument("--semi-auto", action="store_true", help="auto mode but don't skip post, ask user instead")
     aparser.add_argument("--en-log", action="store_true", help="logs enlgish commentaries into files, for analysis")
     aparser.add_argument("--quiet", action="store_true", help="removes unnecessary input, only for auto mode")
+    aparser.add_argument("--same-page", action="store_true", help="stay on the same page")
     args = aparser.parse_args()
     return args

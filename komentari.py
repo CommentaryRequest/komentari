@@ -24,7 +24,7 @@ import cleaner
 import cliargs
 import recog
 
-__version__ = "1.16.5"
+__version__ = "1.17"
 
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
@@ -92,6 +92,7 @@ def main():
     semi_auto = args.semi_auto
     en_log = args.en_log
     quiet = args.quiet
+    same_page = args.same_page
 
     if not auto or semi_auto:
         quiet = False
@@ -130,7 +131,7 @@ def main():
     edits = 0
     try:
         while True:
-            if random_mode:
+            if random_mode or same_page:
                 print("Getting more posts...")
             else:
                 print(f"Now on page {page}")
@@ -347,7 +348,7 @@ def main():
                         else:
                             print("Try again.")
 
-            page += 0 if random_mode else 1
+            page += 0 if random_mode or same_page else 1
     except KeyboardInterrupt:
         skipped_posts.flush()
         print(f"gardened {edits} posts")
