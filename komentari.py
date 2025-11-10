@@ -24,7 +24,7 @@ import cleaner
 import cliargs
 import recog
 
-__version__ = "1.18"
+__version__ = "1.18.1"
 
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
@@ -239,7 +239,10 @@ def main():
                                                 if confidence >= 0.9:
                                                     parsed_input = "commentary english_commentary"
                                                 else:
-                                                    parsed_input = f"favgroup:{settings.UNRECOG_FAVGROUP}"
+                                                    if UNRECOG_FAVGROUP == 0:
+                                                        parsed_input = parser.NONPERMANENT_SKIP
+                                                    else:
+                                                        parsed_input = f"favgroup:{settings.UNRECOG_FAVGROUP}"
                                                     manual_input = semi_auto
 
                         if manual_input:
