@@ -38,6 +38,8 @@ CENTAGS = {
     "hashtag-only_commentary"
 }
 
+UNRECOG_FAVGROUP = 0
+
 try:
     from usersettings import *
     TAGS.update(CUSTOMTAGS)

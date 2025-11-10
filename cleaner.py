@@ -14,6 +14,15 @@ BLOAT = [
     "dlsite"
 ]
 
+INVISIBLE_CHARS = [
+    chr(0x3164) # U+3164 Hangul Filler
+]
+
+def remove_invisible_chars(text):
+    for char in INVISIBLE_CHARS:
+        text = text.replace(char, "")
+    return text
+
 def remove_hashtags(text):
     return re.sub(r'"#.*?":\[\S+?\]', "", text)
 
