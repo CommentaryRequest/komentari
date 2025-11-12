@@ -1,4 +1,7 @@
 import re
+import unicodedata
+
+JP_THRESHOLD = 0.65
 
 def detect_jp_chars(text):
     # Including both full-width and half-width katakana
@@ -6,10 +9,23 @@ def detect_jp_chars(text):
 
 def is_japan(text):
     jp_chars = detect_jp_chars(text)
-    latin_chars = re.findall(r'[A-Za-z]', text)
 
     if not jp_chars:
         return False
 
-    return len(latin_chars) < len(jp_chars) * 0.15
+    total_weight = 0
+    jp_weight = 0
+
+    for char in text:
+        if detect_jp_chars(char):
+            jp_weight += 1.0
+            total_weight += 1.0
+        elif re.match(r'[A-Za-z]', char):
+            total_weight += 0.5
+        # Everything else is not weighted
+
+    if total_weight == 0:
+        return False
+
+    return (jp_weight / total_weight) >= JP_THRESHOLD
 
