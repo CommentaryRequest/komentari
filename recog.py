@@ -1,94 +1,80 @@
 import string
-import re
-import urllib.parse
+import unicodedata
 import jpchk
 import kkchk
-import unicodedata
 
 def fetch_words():
-    with open("./wl.txt", "r") as file:
-        return file.read().split("\n")
+    with open("./wl.txt", "r") as f:
+        return set([word.lower() for word in f.read().splitlines()])
 
-def rms(old, current):
-    if old == current:
-        return current
-    return rms(current, current.strip(string.digits).strip(string.punctuation))
-
-def ing(word):
-    if len(word) > 3 and word.endswith(("in", "in'")):
-        return word.rstrip("'") + "g"
+def clean_word(word: str, wl) -> str:
+    """
+    Normalize a word: strip emojis, punctuation, digits, lowercase, fix 'in' -> 'ing'.
+    """
+    # Remove emojis
+    word = "".join(ch for ch in word if not unicodedata.category(ch).startswith("So") and not ("\uFE00" <= ch <= "\uFE0F"))
+    # Fix fancy apostrophe
+    word = word.replace("’", "'")
+    # Remove digits and punctuation
+    word = word.strip(string.digits + string.punctuation).lower()
+    # Convert "in'" -> "ing"
+    if len(word) > 3 and word.endswith(("in", "in'")) and word not in wl:
+        word = word.rstrip("'") + "g"
     return word
 
-def unemoji(text):
-    return "".join(ch for ch in text if not unicodedata.category(ch).startswith("So") and not ("\uFE00" <= ch <= "\uFE0F"))
-
-def clean(word):
-    return ing(rms("", unemoji(word)).lower()).strip()
-
-def is_number(word: str):
+def is_number(word: str) -> bool:
     try:
         float(word)
         return True
     except ValueError:
         try:
             float(word.replace(",", "."))
+            return True
         except ValueError:
             return False
-        return True
 
-def is_url(word: str):
+def is_url(word: str) -> bool:
     return word.startswith(("http://", "https://"))
 
-def is_emoji(word):
-    return all(unicodedata.category(char).startswith("So") or ("\uFE00" <= char <= "\uFE0F") for char in word)
+def is_emoji(word: str) -> bool:
+    return all(unicodedata.category(ch).startswith("So") or ("\uFE00" <= ch <= "\uFE0F") for ch in word)
 
-def recog(text):
+def recog(text: str) -> float:
+    """
+    Returns confidence that text is valid English.
+    """
+    # Reject Japanese or Korean entirely
     if jpchk.detect_jp_chars(text) or kkchk.detect_kr_chars(text):
-        return 0
+        return 0.0
 
     words = fetch_words()
     text_words = text.split()
+
+    # Filter out words that are empty, emojis, numbers, URLs, or meaningless single letters
+    valid_words = []
     real_words = 0
-    fake_words = 0
-    for word in text_words:
-        # emoji
-        if is_emoji(word.strip()):
+
+    for w in text_words:
+        if is_emoji(w) or not w.strip():
+            continue
+        cw = clean_word(w, words)
+        if not cw:
+            continue
+        if len(cw) == 1 and cw not in ("a", "i"):
+            continue
+        if is_number(cw) or is_url(cw):
             continue
 
-        cword = clean(word)
-
-        # empty words
-        if not cword.strip():
-            fake_words += 1
-            continue
-
-        # single letter words
-        if len(cword) == 1 and cword.lower() not in ("a", "i"):
-            fake_words += 1
-            continue
-
-        # number words
-        if is_number(cword):
-            fake_words += 1
-            continue
-
-        # url words
-        if is_url(cword):
-            fake_words += 1
-            continue
-
-        # real word
-        if cword in words:
+        valid_words.append(cw)
+        if cw in words:
+            print(f"good word: {cw}")
             real_words += 1
-            #print(f"real: '{cword}' (dirty: '{word}')")
-
-        # fake word
         else:
-            #print(f"what: '{cword}' (dirty: '{word}')")
-            pass
+            print(f"bad word: {cw}")
 
-    total_not_fake_words = (len(text_words) - fake_words)
-    if total_not_fake_words == 0 or real_words == 0:
-        return 0
+    print(f"valid words: {valid_words} | real words: {real_words}")
 
-    return real_words / total_not_fake_words
+    if not valid_words or real_words == 0:
+        return 0.0
+
+    return real_words / len(valid_words)

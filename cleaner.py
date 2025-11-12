@@ -8,10 +8,13 @@ BLOAT = [
     "rkgk",
     "twitter",
     "misskey",
-    "pixiv",
     "patreon",
     "bluesky",
-    "dlsite"
+    "dlsite",
+    "log",
+    "oc",
+    "psd",
+    "miku"
 ]
 
 INVISIBLE_CHARS = [

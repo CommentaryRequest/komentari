@@ -17,22 +17,12 @@ import sys
 import argparse
 import webbrowser
 import re
-import jpchk
-import kkchk
-import emjchk
-import cleaner
 import cliargs
-import recog
+import automode
 
-__version__ = "1.18.1.1"
+__version__ = "1.18.2"
 
 USERAGENT = f"Komentari/{__version__} by user #1054326"
-
-UNTITLED_TITLES = [
-    "untitled",
-    "no title",
-    "no_title"
-]
 
 def dprint(message):
     if not settings.DEBUGMODE:
@@ -63,16 +53,6 @@ def safedumps(response):
 def write_confidence(threshold, pid, commentary, confidence):
     with open(threshold + ".txt", "a", encoding="utf-8") as file:
         file.write(f"================================== post #{pid} ({confidence})\n{commentary}\n\n")
-
-def check_en(commentary, pid, en_log):
-    confidence = recog.recog(commentary)
-
-    if en_log:
-        thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-        for threshold in thresholds:
-            if confidence >= threshold:
-                write_confidence(str(threshold), pid, commentary, confidence)
-    return confidence
 
 def main():
     print(f"komentari {__version__} is up")
@@ -202,48 +182,7 @@ def main():
                             parsed_input = yes_no_tag
                             manual_input = False
                         elif auto:
-                            if commentary.og_title.strip().lower() in UNTITLED_TITLES and len(commentary.og_description.strip()) == 0:
-                                parsed_input = "commentary"
-                                manual_input = False
-                            else:
-                                clean_commentary = commentary.og_title + " " + commentary.og_description
-
-                                clean_commentary = cleaner.remove_invisible_chars(clean_commentary)
-                                if len(clean_commentary.strip()) == 0:
-                                    print("Only invisible characters")
-                                    parsed_input = parser.NONPERMANENT_SKIP
-                                    manual_input = semi_auto
-                                else:
-                                    clean_commentary = cleaner.remove_hashtags(clean_commentary)
-                                    manual_input = False
-                                    if len(clean_commentary.strip()) == 0:
-                                        # The commentary only contained hashtags
-                                        parsed_input = "hashtag-only_commentary"
-                                    else:
-                                        clean_commentary = cleaner.remove_urls(clean_commentary)
-                                        is_emoji = emjchk.is_emoji(clean_commentary)
-                                        if is_emoji:
-                                            parsed_input = "symbol-only_commentary"
-                                        else:
-                                            clean_commentary = cleaner.remove_bloat(clean_commentary)
-                                            if not quiet:
-                                                print(f"Clean commentary = {clean_commentary}")
-                                            is_japan = jpchk.is_japan(clean_commentary)
-                                            is_korea = kkchk.is_korea(clean_commentary)
-                                            if is_korea:
-                                                parsed_input = "commentary_request korean_commentary"
-                                            elif is_japan:
-                                                parsed_input = "commentary_request"
-                                            else:
-                                                confidence = check_en(clean_commentary, post_id, en_log)
-                                                if confidence >= 0.9:
-                                                    parsed_input = "commentary english_commentary"
-                                                else:
-                                                    if settings.UNRECOG_FAVGROUP == 0:
-                                                        parsed_input = parser.NONPERMANENT_SKIP
-                                                    else:
-                                                        parsed_input = f"favgroup:{settings.UNRECOG_FAVGROUP}"
-                                                    manual_input = semi_auto
+                            parsed_input, manual_input = automode.parse(commentary, semi_auto, en_log, quiet, post_id)
 
                         if manual_input:
                             print("(h for help)")
