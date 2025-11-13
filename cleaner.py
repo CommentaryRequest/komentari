@@ -14,7 +14,7 @@ BLOAT = [
     "log",
     "oc",
     "psd",
-    "miku"
+    "ci-en"
 ]
 
 INVISIBLE_CHARS = [
