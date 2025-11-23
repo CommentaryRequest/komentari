@@ -13,8 +13,9 @@ def clean_word(word: str, wl) -> str:
     """
     # Remove emojis
     word = "".join(ch for ch in word if not unicodedata.category(ch).startswith("So") and not ("\uFE00" <= ch <= "\uFE0F"))
-    # Fix fancy apostrophe
+    # Fix fancy apostrophes
     word = word.replace("’", "'")
+    word = word.replace("´", "'")
     # Remove digits and punctuation
     word = word.strip(string.digits + string.punctuation).lower()
     # Convert "in'" -> "ing"
