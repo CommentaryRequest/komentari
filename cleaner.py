@@ -14,7 +14,8 @@ BLOAT = [
     "log",
     "oc",
     "psd",
-    "ci-en"
+    "ci-en",
+    "pixivfanbox"
 ]
 
 INVISIBLE_CHARS = [

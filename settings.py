@@ -32,6 +32,7 @@ TAGS = {
     "vv": "vietnamese_commentary commentary_request",
     "p": "partial_commentary",
     "at": "alt_text",
+    "ty": "commentary_typo"
 }
 
 CENTAGS = {
