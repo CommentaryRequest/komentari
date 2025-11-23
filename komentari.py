@@ -20,7 +20,7 @@ import re
 import cliargs
 import automode
 
-__version__ = "1.18.3"
+__version__ = "1.18.4"
 
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
