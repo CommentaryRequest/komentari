@@ -5,6 +5,8 @@ from booru_url import get_booru_url
 from commentary import get_commentary
 from favgroup import add_to_favgroup
 from posts import get_posts
+from debug import dprint
+from tagedit import tag_edit_post, print_tags
 import settings
 import post_check
 import requests
@@ -20,14 +22,9 @@ import re
 import cliargs
 import automode
 
-__version__ = "1.18.6"
+__version__ = "1.18.7"
 
 USERAGENT = f"Komentari/{__version__} by user #1054326"
-
-def dprint(message):
-    if not settings.DEBUGMODE:
-        return
-    print(f"dbg: {message}")
 
 def add_negative_tags():
     for tag, expand in settings.TAGS.copy().items(): # TODO might be a breaking change but rename to lowercase (not really a const...)
@@ -35,20 +32,6 @@ def add_negative_tags():
         negative_expand_split = ["-" + tag for tag in expand_split]
         negative_expand = " ".join(negative_expand_split)
         settings.TAGS["-" + tag] = negative_expand
-
-def print_tags(g, co, ch, m):
-    print(
-        f"g: \033[0;34m{g}\033[0m\n"
-        f"co: \033[0;35m{co}\033[0m\n"
-        f"ch: \033[0;32m{ch}\033[0m\n"
-        f"m: \033[0;33m{m}\033[0m\n"
-    )
-
-def safedumps(response):
-    try:
-        return json.dumps(response.json(), indent=2)
-    except requests.exceptions.JSONDecodeError:
-        return response.text
 
 def write_confidence(threshold, pid, commentary, confidence):
     with open(threshold + ".txt", "a", encoding="utf-8") as file:
@@ -123,6 +106,7 @@ def main():
                 break
 
             for post in posts:
+                # Getting post information
                 dprint(f"Working with post = {json.dumps(post, indent=2)}")
                 post_id = post["id"]
                 post_tags_ini_gen = post["tag_string_general"]
@@ -135,8 +119,8 @@ def main():
                     print("Skipped by user")
                     continue
 
+                # checking posts for unwanted tags
                 check_result, bad_tag = post_check.check_post(post)
-
                 if check_result == post_check.POST_CHECK_CENTAG:
                     print(f"Contains unwanted tag: {bad_tag}")
                     continue
@@ -162,6 +146,7 @@ def main():
                 ok = False
                 while not ok:
                     if not quiet:
+                        # Display post information
                         print(
                             "==================================================\nCurrent tags:\n\n"
                         )
@@ -175,6 +160,7 @@ def main():
                                 f"TRANSLATED Title: \033[0;36m{commentary.tl_title}\033[0m\n\n"
                                 f"TRANSLATED Description:\n\n\033[0;36m{commentary.tl_description}\033[0m\n\n"
                             )
+
                     parsed_input = ""
                     while True:
                         manual_input = True
@@ -227,67 +213,9 @@ def main():
                             else:
                                 print("Sending out change!")
 
-                            # Tags on the post may have changed between fetching the post and confirming entered tags.
-                            # This loads the latest tags, ensuring no conflict.
-                            uptodate_post = None
-                            while True:
-                                try:
-                                    response = requests.get(f"{get_booru_url()}/posts/{post_id}.json", headers=headers)
-                                    uptodate_post = response.json()
-                                    break
-                                except requests.exceptions.JSONDecodeError:
-                                    print(f"Server returned non-JSON response: {response.text}")
-                                except (
-                                    urllib.error.URLError,
-                                    requests.exceptions.RequestException
-                                ) as exc:
-                                    print(f"Failed to fetch page because of {exc}")
-                            post_tags = uptodate_post["tag_string"]
-
-                            new_tags = post_tags + " " + parsed_input
-                            dprint(f"New tag string: {new_tags}")
-                            request_data = {
-                                "tag_string": new_tags,
-                                "old_tag_string": post_tags
-                            }
-                            dprint(f"Request data = {json.dumps(request_data, indent=2)}")
-                            while True:
-                                try:
-                                    response = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data, headers=headers)
-                                    updated_post = response.json()
-                                    break
-                                except requests.exceptions.JSONDecodeError:
-                                    print(f"Server returned non-JSON response: {response.text}")
-                                except (
-                                    urllib.error.URLError,
-                                    requests.exceptions.RequestException
-                                ) as exc:
-                                    print(f"Failed to fetch page because of {exc}")
-
-                            dprint(f"Server said this: {safedumps(response)}")
-                            try:
-                                new_tags_gen = updated_post["tag_string_general"]
-                                new_tags_copy = updated_post["tag_string_copyright"]
-                                new_tags_char = updated_post["tag_string_character"]
-                                new_tags_meta = updated_post["tag_string_meta"]
-                                if not quiet:
-                                    print(
-                                        "\nTags now:\n"
-                                    )
-                                    print_tags(new_tags_gen, new_tags_copy, new_tags_char, new_tags_meta)
-                                if response.status_code != 200 and response.status_code != 204:
-                                    print(f"Error {response.status_code}")
-                                elif response.status_code == 403:
-                                    print("Post forbidden to edit. Skip.")
-                                    ok = True
-                                else:
-                                    if not quiet:
-                                        print("Edited successfully.")
-                                    edits += 1
-                                    ok = True
-                            except KeyError as exc:
-                                print(f"Could not edit: {exc}")
-                                ok = True
+                            edit_result = tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits)
+                            ok = edit_result != -1
+                            edits += max(0, edit_result)
                             if manual_input:
                                 input("press enter...")
                         elif yes_no_tag is not None:
