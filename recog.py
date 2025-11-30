@@ -3,21 +3,33 @@ import unicodedata
 import jpchk
 import kkchk
 
+wordlist = set()
+wordlist_initialized = False
+
 def fetch_words():
-    with open("./wl.txt", "r") as f:
-        return set([word.lower() for word in f.read().splitlines()])
+    if not wordlist_initialized:
+        with open("./wl.txt", "r") as f:
+            wordlist = set([word.lower() for word in f.read().splitlines()])
+    return wordlist
+
+def strip_emoji(word):
+    return "".join(ch for ch in word if not unicodedata.category(ch).startswith("So") and not ("\uFE00" <= ch <= "\uFE0F"))
+
+def strip_punct(word):
+    return word.strip(string.digits + string.punctuation + "…【】”“").lower()
 
 def clean_word(word: str, wl) -> str:
     """
     Normalize a word: strip emojis, punctuation, digits, lowercase, fix 'in' -> 'ing'.
     """
-    # Remove emojis
-    word = "".join(ch for ch in word if not unicodedata.category(ch).startswith("So") and not ("\uFE00" <= ch <= "\uFE0F"))
+    word = strip_emoji(word)
+
     # Fix fancy apostrophes
     word = word.replace("’", "'")
     word = word.replace("´", "'")
-    # Remove digits and punctuation
-    word = word.strip(string.digits + string.punctuation).lower()
+
+    word = strip_punct(word)
+
     # Convert "in'" -> "ing"
     if len(word) > 3 and word.endswith(("in", "in'")) and word not in wl:
         word = word.rstrip("'") + "g"

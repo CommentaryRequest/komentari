@@ -22,7 +22,7 @@ import re
 import cliargs
 import automode
 
-__version__ = "1.18.8"
+__version__ = "1.19"
 
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
@@ -168,7 +168,7 @@ def main():
                             parsed_input = yes_no_tag
                             manual_input = False
                         elif auto:
-                            parsed_input, manual_input = automode.parse(commentary, semi_auto, en_log, quiet, post_id)
+                            parsed_input, manual_input = automode.parse(commentary, semi_auto, en_log, quiet, post_id, post_tags_ini_char.split())
 
                         if manual_input:
                             print("(h for help)")
