@@ -29,10 +29,11 @@ def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits):
             print(f"Failed to fetch page because of {exc}")
     post_tags = uptodate_post["tag_string"]
 
+    new_tags = parsed_input + " " + post_tags
     dprint(f"New tag string: {new_tags}")
     request_data = {
         "old_tag_string": post_tags,
-        "tag_string": parsed_input + " " + post_tags
+        "tag_string": new_tags
     }
     dprint(f"Request data = {json.dumps(request_data, indent=2)}")
     while True:
