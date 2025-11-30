@@ -6,6 +6,7 @@ import emjchk
 import numchk
 import cleaner
 import settings
+import chartag_annihilater
 
 UNTITLED_TITLES = [
     "untitled",
@@ -23,30 +24,36 @@ def check_en(commentary, pid, en_log):
                 write_confidence(str(threshold), pid, commentary, confidence)
     return confidence
 
-def parse(commentary, semi_auto, en_log, quiet, post_id):
+def parse(commentary, semi_auto, en_log, quiet, post_id, chartags):
     if commentary.og_title.strip().lower() in UNTITLED_TITLES and len(commentary.og_description.strip()) == 0:
         parsed_input = "commentary"
         manual_input = False
     else:
         clean_commentary = commentary.og_title + " " + commentary.og_description
 
+        # Remove invisible chars
         clean_commentary = cleaner.remove_invisible_chars(clean_commentary)
         if len(clean_commentary.strip()) == 0:
             print("Only invisible characters")
             parsed_input = parser.NONPERMANENT_SKIP
             manual_input = False
         else:
+            # Remove hashtags
             clean_commentary = cleaner.remove_hashtags(clean_commentary)
             manual_input = False
             if len(clean_commentary.strip()) == 0:
                 # The commentary only contained hashtags
                 parsed_input = "hashtag-only_commentary"
             else:
+                # Remove URLs
                 clean_commentary = cleaner.remove_urls(clean_commentary)
+
+                # Check if there's only symbols left
                 is_emoji = emjchk.is_emoji(clean_commentary)
                 if is_emoji:
                     parsed_input = "symbol-only_commentary"
                 else:
+                    # Remove bloat
                     clean_commentary = cleaner.remove_bloat(clean_commentary)
                     if not quiet:
                         print(f"Clean commentary = {clean_commentary}")
@@ -56,23 +63,30 @@ def parse(commentary, semi_auto, en_log, quiet, post_id):
                         parsed_input = "commentary"
                         manual_input = False
                     else:
-                        is_japan = jpchk.is_japan(clean_commentary)
-                        is_korea = kkchk.is_korea(clean_commentary)
-                        is_numbers = False #numchk.is_numbers(clean_commentary)
-                        if is_korea:
-                            parsed_input = "commentary_request korean_commentary"
-                        elif is_japan:
-                            parsed_input = "commentary_request"
-                        elif is_numbers:
+                        # Annihilate chartags
+                        clean_commentary = chartag_annihilater.chartag_annihilate(clean_commentary, chartags)
+                        print(f"Clean commentary (after chartag annihilation) = {clean_commentary}")
+                        if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary.strip()): # only chartags w emojis
                             parsed_input = "commentary"
+                            manual_input = False
                         else:
-                            confidence = check_en(clean_commentary, post_id, en_log)
-                            if confidence >= 0.8:
-                                parsed_input = "commentary english_commentary"
+                            is_japan = jpchk.is_japan(clean_commentary)
+                            is_korea = kkchk.is_korea(clean_commentary)
+                            is_numbers = False #numchk.is_numbers(clean_commentary)
+                            if is_korea:
+                                parsed_input = "commentary_request korean_commentary"
+                            elif is_japan:
+                                parsed_input = "commentary_request"
+                            elif is_numbers:
+                                parsed_input = "commentary"
                             else:
-                                if settings.UNRECOG_FAVGROUP == 0:
-                                    parsed_input = parser.NONPERMANENT_SKIP
+                                confidence = check_en(clean_commentary, post_id, en_log)
+                                if confidence >= 0.8:
+                                    parsed_input = "commentary english_commentary"
                                 else:
-                                    parsed_input = f"favgroup:{settings.UNRECOG_FAVGROUP}"
-                                manual_input = semi_auto
+                                    if settings.UNRECOG_FAVGROUP == 0:
+                                        parsed_input = parser.NONPERMANENT_SKIP
+                                    else:
+                                        parsed_input = f"favgroup:{settings.UNRECOG_FAVGROUP}"
+                                    manual_input = semi_auto
     return parsed_input, manual_input
