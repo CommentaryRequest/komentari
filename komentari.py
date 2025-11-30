@@ -22,7 +22,7 @@ import re
 import cliargs
 import automode
 
-__version__ = "1.19"
+__version__ = "1.19.1"
 
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
@@ -205,6 +205,8 @@ def main():
                         if not quiet:
                             print(f"The following tags will be added. Ok?\n{parsed_input}")
                         confirm = ""
+                        if yes_no_tag is not None and not yes_no_tag_force:
+                            manual_input = True
                         if manual_input:
                             confirm = input("(y/N)$ ")
                         if confirm.lower().strip() == "y" or not manual_input:
