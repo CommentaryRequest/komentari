@@ -14,8 +14,6 @@ def print_tags(g, co, ch, m):
     )
 
 def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits): 
-    # Tags on the post may have changed between fetching the post and confirming entered tags.
-    # This loads the latest tags, ensuring no conflict.
     uptodate_post = None
     while True:
         try:
@@ -31,11 +29,10 @@ def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits):
             print(f"Failed to fetch page because of {exc}")
     post_tags = uptodate_post["tag_string"]
 
-    new_tags = post_tags + " " + parsed_input
     dprint(f"New tag string: {new_tags}")
     request_data = {
-        "tag_string": new_tags,
-        "old_tag_string": post_tags
+        "old_tag_string": post_tags,
+        "tag_string": parsed_input + " " + post_tags
     }
     dprint(f"Request data = {json.dumps(request_data, indent=2)}")
     while True:
