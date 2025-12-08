@@ -16,7 +16,10 @@ BLOAT = [
     "psd",
     "ci-en",
     "pixivfanbox",
-    "baraag"
+    "baraag",
+    "instagram",
+    "booth",
+    "niconico"
 ]
 
 INVISIBLE_CHARS = [

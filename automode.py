@@ -24,7 +24,7 @@ def check_en(commentary, pid, en_log):
                 write_confidence(str(threshold), pid, commentary, confidence)
     return confidence
 
-def parse(commentary, semi_auto, en_log, quiet, post_id, chartags):
+def parse(commentary, semi_auto, en_log, quiet, post_id, chartags, dry):
     if commentary.og_title.strip().lower() in UNTITLED_TITLES and len(commentary.og_description.strip()) == 0:
         parsed_input = "commentary"
         manual_input = False
@@ -89,4 +89,7 @@ def parse(commentary, semi_auto, en_log, quiet, post_id, chartags):
                                     else:
                                         parsed_input = f"favgroup:{settings.UNRECOG_FAVGROUP}"
                                     manual_input = semi_auto
+    if dry:
+        print(f"Detected tags: {parsed_input or 'none'}")
+        return "", True
     return parsed_input, manual_input
