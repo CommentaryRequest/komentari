@@ -19,7 +19,7 @@ TAGS = {
     "hc": "hashtag-only_commentary commentary",
     "d": "dated_commentary",
     "z": "chinese_commentary",
-    "zz": "chinese_commentary commentary_request",
+"zz": "chinese_commentary commentary_request",
     "k": "korean_commentary",
     "kk": "korean_commentary commentary_request",
     "sp": "spanish_commentary",
@@ -34,6 +34,16 @@ TAGS = {
     "at": "alt_text",
     "ty": "commentary_typo"
 }
+
+AUTOTAG_EN = "commentary english_commentary"
+AUTOTAG_HT = "hashtag-only_commentary"
+AUTOTAG_SY = "symbol-only_commentary"
+AUTOTAG_BL = "commentary"
+AUTOTAG_CT = "commentary"
+AUTOTAG_UN = "commentary"
+AUTOTAG_KK = "commentary_request korean_commentary"
+AUTOTAG_JP = "commentary_request"
+AUTOTAG_NM = "commentary"
 
 CENTAGS = {
     "hashtag-only_commentary"
