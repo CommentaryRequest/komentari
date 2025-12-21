@@ -46,6 +46,8 @@ AUTOTAG_JP = "commentary_request" # Japanese commentary
 AUTOTAG_NM = "commentary" # Number-only commentary
 AUTOTAG_FW = "commentary" # Fullwidth-only commentary
 
+ENGLISH_CONFIDENCE = 0.8
+
 CENTAGS = {
     "hashtag-only_commentary"
 }

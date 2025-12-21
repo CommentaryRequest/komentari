@@ -24,78 +24,82 @@ def check_en(commentary, pid, en_log):
                 write_confidence(str(threshold), pid, commentary, confidence)
     return confidence
 
-def parse(commentary, semi_auto, en_log, quiet, post_id, chartags, dry):
+def detect_tags(commentary, post_id, en_log, chartags, quiet):
     if commentary.og_title.strip().lower() in UNTITLED_TITLES and len(commentary.og_description.strip()) == 0:
-        parsed_input = settings.AUTOTAG_UN
-        manual_input = False
-    else:
-        clean_commentary = commentary.og_title + " " + commentary.og_description
+        return settings.AUTOTAG_UN
 
-        # Remove invisible chars
-        clean_commentary = cleaner.remove_invisible_chars(clean_commentary)
-        if len(clean_commentary.strip()) == 0:
-            print("Only invisible characters")
-            parsed_input = parser.NONPERMANENT_SKIP
-            manual_input = False
-        else:
-            # Remove hashtags
-            clean_commentary = cleaner.remove_hashtags(clean_commentary)
-            manual_input = False
-            if len(clean_commentary.strip()) == 0:
-                # The commentary only contained hashtags
-                parsed_input = settings.AUTOTAG_HT
-            else:
-                # Remove URLs
-                clean_commentary = cleaner.remove_urls(clean_commentary)
 
-                # Check if there's only symbols left
-                is_emoji = emjchk.is_emoji(clean_commentary)
-                if is_emoji:
-                    parsed_input = settings.AUTOTAG_SY
-                else:
-                    # Remove bloat
-                    clean_commentary = cleaner.remove_bloat(clean_commentary)
-                    if not quiet:
-                        print(f"Clean commentary = {clean_commentary}")
+    clean_commentary = commentary.og_title + " " + commentary.og_description
 
-                    # If there's only bloat or bloat with emojis
-                    if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary):
-                        parsed_input = settings.AUTOTAG_BL
-                        manual_input = False
-                    else:
-                        # Annihilate chartags
-                        clean_commentary = chartag_annihilater.chartag_annihilate(clean_commentary, chartags)
-                        print(f"Clean commentary (after chartag annihilation) = {clean_commentary}")
-                        if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary.strip()): # only chartags w emojis
-                            parsed_input = settings.AUTOTAG_CT
-                            manual_input = False
-                        else:
-                            # Remove fullwidth characters
-                            clean_commentary = cleaner.remove_fullwidth(clean_commentary)
-                            if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary.strip()):
-                                parsed_input = settings.AUTOTAG_FW
-                                manual_input = False
-                            else:
-                                is_japan = jpchk.is_japan(clean_commentary)
-                                is_korea = kkchk.is_korea(clean_commentary)
-                                is_numbers = False #numchk.is_numbers(clean_commentary)
-                                if is_korea:
-                                    parsed_input = settings.AUTOTAG_KK
-                                elif is_japan:
-                                    parsed_input = settings.AUTOTAG_JP
-                                elif is_numbers:
-                                    parsed_input = settings.AUTOTAG_NM
-                                else:
-                                    confidence = check_en(clean_commentary, post_id, en_log)
-                                    if confidence >= 0.8:
-                                        parsed_input = settings.AUTOTAG_EN
-                                    else:
-                                        if settings.UNRECOG_FAVGROUP == 0:
-                                            parsed_input = parser.NONPERMANENT_SKIP
-                                        else:
-                                            parsed_input = f"favgroup:{settings.UNRECOG_FAVGROUP}"
-                                        manual_input = semi_auto
+    # Remove invisible chars
+    clean_commentary = cleaner.remove_invisible_chars(clean_commentary)
+    if len(clean_commentary.strip()) == 0:
+        print("Only invisible characters")
+        return parser.NONPERMANENT_SKIP
+
+    # Remove hashtags
+    clean_commentary = cleaner.remove_hashtags(clean_commentary)
+    manual_input = False
+    if len(clean_commentary.strip()) == 0:
+        # The commentary only contained hashtags
+        return settings.AUTOTAG_HT
+
+    # Remove URLs
+    clean_commentary = cleaner.remove_urls(clean_commentary)
+
+    # Check if there's only symbols left
+    is_emoji = emjchk.is_emoji(clean_commentary)
+    if is_emoji:
+        return settings.AUTOTAG_SY
+
+    # Remove bloat
+    clean_commentary = cleaner.remove_bloat(clean_commentary)
+    if not quiet:
+        print(f"Clean commentary = {clean_commentary}")
+
+    # If there's only bloat or bloat with emojis
+    if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary):
+        return settings.AUTOTAG_BL
+
+    # Annihilate chartags
+    clean_commentary = chartag_annihilater.chartag_annihilate(clean_commentary, chartags)
+    print(f"Clean commentary (after chartag annihilation) = {clean_commentary}")
+    if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary.strip()): # only chartags w emojis
+        return settings.AUTOTAG_CT
+
+    # Remove fullwidth characters
+    clean_commentary = cleaner.remove_fullwidth(clean_commentary)
+    if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary.strip()):
+        return settings.AUTOTAG_FW
+
+    if kkchk.is_korea(clean_commentary):
+        return settings.AUTOTAG_KK
+
+    if jpchk.is_japan(clean_commentary):
+        return settings.AUTOTAG_JP
+
+    if False: # TODO
+        return settings.AUTOTAG_NM
+
+    confidence = check_en(clean_commentary, post_id, en_log)
+    if confidence >= settings.ENGLISH_CONFIDENCE:
+        return settings.AUTOTAG_EN
+
+    return None
+
+def parse(commentary, semi_auto, en_log, quiet, post_id, chartags, dry):
+    tags = detect_tags(commentary, post_id, en_log, chartags, quiet)
+
     if dry:
-        print(f"Detected tags: {parsed_input or 'none'}")
+        print(f"Detected tags: {tags or 'none'}")
         return "", True
-    return parsed_input, manual_input
+
+    if tags is None:
+        if semi_auto:
+            return "", True
+    
+        if settings.UNRECOG_FAVGROUP == 0:
+            return parser.NONPERMANENT_SKIP, False
+        return f"favgroup:{settings.UNRECOG_FAVGROUP}", False
+
+    return tags, False
