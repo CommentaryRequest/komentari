@@ -1,12 +1,15 @@
 from booru_url import get_booru_url
+from debug import dprint
 import requests
 import urllib
 
 def get_posts(query, auth, page, headers):
     while True:
         try:
-            response = requests.get(f"{get_booru_url()}/posts.json?tags={query}&{str(auth)}&page={page}", timeout=10, headers=headers)
-            return response.json()
+            posts_url = f"{get_booru_url()}/posts.json?tags={query}&{str(auth)}&page={page}"
+            dprint(f"Execute request to {posts_url}")
+            response = requests.get(posts_url, timeout=10, headers=headers)
+            return response.json(), response.text
         except requests.exceptions.JSONDecodeError:
             print(f"Server returned non-JSON response: {response.text}")
         except (

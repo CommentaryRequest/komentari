@@ -5,5 +5,9 @@ class Auth:
         self.login = settings.TEST_LOGIN if settings.TESTMODE else settings.LOGIN
         self.key = settings.TEST_APIKEY if settings.TESTMODE else settings.APIKEY
 
+    def set_auth(self, login, key):
+        self.login = login
+        self.key = key
+
     def __str__(self):
         return f"login={self.login}&api_key={self.key}"
