@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from auth import Auth
-from booru_url import get_booru_url
+from booru_url import get_booru_url, set_override
 from commentary import get_commentary
 from favgroup import add_to_favgroup
 from posts import get_posts
@@ -22,7 +22,7 @@ import re
 import cliargs
 import automode
 
-__version__ = "1.19.4"
+__version__ = "1.20"
 
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
@@ -57,6 +57,13 @@ def main():
     quiet = args.quiet
     same_page = args.same_page
     auto_dbg = args.auto_dbg
+    override_domain = args.domain
+    override_login = args.login
+    override_apikey = args.apikey
+
+    if (override_login and not override_apikey) or (not override_login and override_apikey):
+        print("you gotta override both apikey and login")
+        sys.exit(1)
 
     if not auto or semi_auto:
         quiet = False
@@ -73,6 +80,11 @@ def main():
     print(f"Query = {args.query}")
 
     auth = Auth()
+
+    if override_login and override_apikey:
+        auth.set_auth(override_login, override_apikey)
+    if override_domain:
+        set_override(override_domain)
 
     headers = {
         "User-Agent": USERAGENT
@@ -99,7 +111,7 @@ def main():
                 print("Getting more posts...")
             else:
                 print(f"Now on page {page}")
-            posts = get_posts(args.query, auth, page, headers)
+            posts, raw_resp = get_posts(args.query, auth, page, headers)
             if posts == []:
                 print("No more posts lol")
                 skipped_posts.flush()
@@ -109,6 +121,7 @@ def main():
             for post in posts:
                 # Getting post information
                 dprint(f"Working with post = {json.dumps(post, indent=2)}")
+                dprint(f"Raw response = {raw_resp}")
                 post_id = post["id"]
                 post_tags_ini_gen = post["tag_string_general"]
                 post_tags_ini_copy = post["tag_string_copyright"]

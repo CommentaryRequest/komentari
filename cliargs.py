@@ -16,5 +16,8 @@ def parse_args():
     aparser.add_argument("--quiet", action="store_true", help="removes unnecessary input, only for auto mode")
     aparser.add_argument("--same-page", action="store_true", help="stay on the same page")
     aparser.add_argument("--auto-dbg", action="store_true", help="dry-run auto mode")
+    aparser.add_argument("--domain", type=str, help="override booru domain for this session")
+    aparser.add_argument("--login", type=str, help="override login for this session")
+    aparser.add_argument("--apikey", type=str, help="override api key for this session")
     args = aparser.parse_args()
     return args
