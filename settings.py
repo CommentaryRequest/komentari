@@ -35,15 +35,16 @@ TAGS = {
     "ty": "commentary_typo"
 }
 
-AUTOTAG_EN = "commentary english_commentary"
-AUTOTAG_HT = "hashtag-only_commentary"
-AUTOTAG_SY = "symbol-only_commentary"
-AUTOTAG_BL = "commentary"
-AUTOTAG_CT = "commentary"
-AUTOTAG_UN = "commentary"
-AUTOTAG_KK = "commentary_request korean_commentary"
-AUTOTAG_JP = "commentary_request"
-AUTOTAG_NM = "commentary"
+AUTOTAG_EN = "commentary english_commentary" # English commentary
+AUTOTAG_HT = "hashtag-only_commentary" # Hashtag-only commentary
+AUTOTAG_SY = "symbol-only_commentary" # Symbol-only commentary
+AUTOTAG_BL = "commentary" # Bloat-only commentary
+AUTOTAG_CT = "commentary" # Chartag-only commentary
+AUTOTAG_UN = "commentary" # Untitled commentary
+AUTOTAG_KK = "commentary_request korean_commentary" # Korean commentary
+AUTOTAG_JP = "commentary_request" # Japanese commentary
+AUTOTAG_NM = "commentary" # Number-only commentary
+AUTOTAG_FW = "commentary" # Fullwidth-only commentary
 
 CENTAGS = {
     "hashtag-only_commentary"

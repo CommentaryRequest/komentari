@@ -47,3 +47,6 @@ def remove_urls(text):
 def remove_bloat(text):
     pattern = re.compile(r"(?<![A-Za-z0-9])(?:" + "|".join(map(re.escape, BLOAT)) + r")(?![A-Za-z0-9])", re.IGNORECASE)
     return pattern.sub("", text)
+
+def remove_fullwidth(text):
+    return re.sub(r"[\uFF01-\uFF5E]", "", text);

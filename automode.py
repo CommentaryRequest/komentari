@@ -70,25 +70,31 @@ def parse(commentary, semi_auto, en_log, quiet, post_id, chartags, dry):
                             parsed_input = settings.AUTOTAG_CT
                             manual_input = False
                         else:
-                            is_japan = jpchk.is_japan(clean_commentary)
-                            is_korea = kkchk.is_korea(clean_commentary)
-                            is_numbers = False #numchk.is_numbers(clean_commentary)
-                            if is_korea:
-                                parsed_input = settings.AUTOTAG_KK
-                            elif is_japan:
-                                parsed_input = settings.AUTOTAG_JP
-                            elif is_numbers:
-                                parsed_input = settings.AUTOTAG_NM
+                            # Remove fullwidth characters
+                            clean_commentary = cleaner.remove_fullwidth(clean_commentary)
+                            if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary.strip()):
+                                parsed_input = settings.AUTOTAG_FW
+                                manual_input = False
                             else:
-                                confidence = check_en(clean_commentary, post_id, en_log)
-                                if confidence >= 0.8:
-                                    parsed_input = settings.AUTOTAG_EN
+                                is_japan = jpchk.is_japan(clean_commentary)
+                                is_korea = kkchk.is_korea(clean_commentary)
+                                is_numbers = False #numchk.is_numbers(clean_commentary)
+                                if is_korea:
+                                    parsed_input = settings.AUTOTAG_KK
+                                elif is_japan:
+                                    parsed_input = settings.AUTOTAG_JP
+                                elif is_numbers:
+                                    parsed_input = settings.AUTOTAG_NM
                                 else:
-                                    if settings.UNRECOG_FAVGROUP == 0:
-                                        parsed_input = parser.NONPERMANENT_SKIP
+                                    confidence = check_en(clean_commentary, post_id, en_log)
+                                    if confidence >= 0.8:
+                                        parsed_input = settings.AUTOTAG_EN
                                     else:
-                                        parsed_input = f"favgroup:{settings.UNRECOG_FAVGROUP}"
-                                    manual_input = semi_auto
+                                        if settings.UNRECOG_FAVGROUP == 0:
+                                            parsed_input = parser.NONPERMANENT_SKIP
+                                        else:
+                                            parsed_input = f"favgroup:{settings.UNRECOG_FAVGROUP}"
+                                        manual_input = semi_auto
     if dry:
         print(f"Detected tags: {parsed_input or 'none'}")
         return "", True
