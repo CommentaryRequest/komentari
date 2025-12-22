@@ -1,4 +1,5 @@
 import parser
+import zhchk
 import jpchk
 import kkchk
 import recog
@@ -7,12 +8,34 @@ import numchk
 import cleaner
 import settings
 import chartag_annihilater
+import debug
+from urllib.parse import urlparse
 
 UNTITLED_TITLES = [
     "untitled",
     "no title",
     "no_title"
 ]
+
+def is_chinese_source(url):
+    debug.dprint(f"Checking if {url} is a Chinese source")
+
+    if not url:
+        return False
+
+    try:
+        netloc = urlparse(url).netloc.lower()
+    except Exception as exc:
+        print(f"Error when parsing URL {url}: {exc}")
+        return False
+    
+    netloc = netloc.split(":")[0]
+    for domain in settings.CHINESE_SOURCES:
+        if netloc == domain or netloc.endswith("." + domain):
+            debug.dprint(f"Found matsh: {netloc} and {domain}")
+            return True
+        debug.dprint(f"Did not match {netloc} with {domain}")
+    return False
 
 def check_en(commentary, pid, en_log):
     confidence = recog.recog(commentary)
@@ -24,10 +47,9 @@ def check_en(commentary, pid, en_log):
                 write_confidence(str(threshold), pid, commentary, confidence)
     return confidence
 
-def detect_tags(commentary, post_id, en_log, chartags, quiet):
+def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
     if commentary.og_title.strip().lower() in UNTITLED_TITLES and len(commentary.og_description.strip()) == 0:
         return settings.AUTOTAG_UN
-
 
     clean_commentary = commentary.og_title + " " + commentary.og_description
 
@@ -75,10 +97,14 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet):
     if kkchk.is_korea(clean_commentary):
         return settings.AUTOTAG_KK
 
+    if is_chinese_source(source) and zhchk.zhongwen_yuyan_jiance_xitong(clean_commentary):
+        debug.dprint("china")
+        return settings.AUTOTAG_CN
+
     if jpchk.is_japan(clean_commentary):
         return settings.AUTOTAG_JP
 
-    if False: # TODO
+    if numchk.is_numbers(clean_commentary):
         return settings.AUTOTAG_NM
 
     confidence = check_en(clean_commentary, post_id, en_log)
@@ -87,8 +113,8 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet):
 
     return None
 
-def parse(commentary, semi_auto, en_log, quiet, post_id, chartags, dry):
-    tags = detect_tags(commentary, post_id, en_log, chartags, quiet)
+def parse(commentary, semi_auto, en_log, quiet, post_id, chartags, dry, source):
+    tags = detect_tags(commentary, post_id, en_log, chartags, quiet, source)
 
     if dry:
         print(f"Detected tags: {tags or 'none'}")

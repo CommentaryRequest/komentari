@@ -43,10 +43,21 @@ AUTOTAG_CT = "commentary" # Chartag-only commentary
 AUTOTAG_UN = "commentary" # Untitled commentary
 AUTOTAG_KK = "commentary_request korean_commentary" # Korean commentary
 AUTOTAG_JP = "commentary_request" # Japanese commentary
+AUTOTAG_CN = "commentary_request chinese_commentary" # Chinese commentary
 AUTOTAG_NM = "commentary" # Number-only commentary
 AUTOTAG_FW = "commentary" # Fullwidth-only commentary
 
 ENGLISH_CONFIDENCE = 0.8
+
+CHINESE_SOURCES = [
+    "weibo.com",
+    "lofter.com",
+    "xiaohongshu.com",
+    "bilibili.com",
+    "miyoushe.com",
+    "huashijie.com",
+    "mihuashi.com"
+]
 
 CENTAGS = {
     "hashtag-only_commentary"

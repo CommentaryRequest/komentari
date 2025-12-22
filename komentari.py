@@ -22,7 +22,7 @@ import re
 import cliargs
 import automode
 
-__version__ = "1.20.2"
+__version__ = "1.21"
 
 USERAGENT = f"Komentari/{__version__} by user #1054326"
 
@@ -123,6 +123,7 @@ def main():
                 dprint(f"Working with post = {json.dumps(post, indent=2)}")
                 dprint(f"Raw response = {raw_resp}")
                 post_id = post["id"]
+                source = post["source"]
                 post_tags_ini_gen = post["tag_string_general"]
                 post_tags_ini_copy = post["tag_string_copyright"]
                 post_tags_ini_char = post["tag_string_character"]
@@ -182,7 +183,7 @@ def main():
                             parsed_input = yes_no_tag
                             manual_input = False
                         elif auto:
-                            parsed_input, manual_input = automode.parse(commentary, semi_auto, en_log, quiet, post_id, post_tags_ini_char.split(), auto_dbg)
+                            parsed_input, manual_input = automode.parse(commentary, semi_auto, en_log, quiet, post_id, post_tags_ini_char.split(), auto_dbg, source)
 
                         if manual_input:
                             print("(h for help)")
