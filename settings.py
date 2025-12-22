@@ -55,7 +55,7 @@ CHINESE_SOURCES = [
     "xiaohongshu.com",
     "bilibili.com",
     "miyoushe.com",
-    "huashijie.com",
+    "huashijie.art",
     "mihuashi.com"
 ]
 
