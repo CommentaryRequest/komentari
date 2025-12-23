@@ -46,6 +46,7 @@ AUTOTAG_JP = "commentary_request" # Japanese commentary
 AUTOTAG_CN = "commentary_request chinese_commentary" # Chinese commentary
 AUTOTAG_NM = "commentary" # Number-only commentary
 AUTOTAG_FW = "commentary" # Fullwidth-only commentary
+AUTOTAG_NS = "commentary" # Numbers and symbols only
 
 ENGLISH_CONFIDENCE = 0.8
 
