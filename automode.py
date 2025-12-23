@@ -107,6 +107,9 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
     if numchk.is_numbers(clean_commentary):
         return settings.AUTOTAG_NM
 
+    if numchk.is_numbers(recog.strip_emoji(clean_commentary)):
+        return settings.AUTOTAG_NS
+
     confidence = check_en(clean_commentary, post_id, en_log)
     if confidence >= settings.ENGLISH_CONFIDENCE:
         return settings.AUTOTAG_EN
