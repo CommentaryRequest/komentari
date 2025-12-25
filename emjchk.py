@@ -11,6 +11,7 @@ def is_emoji(text):
     if not text:
         return False
 
+    # fuckig braille
     text = re.sub(r"[\u2800-\u283F\u2840-\u28FF]", "", text).strip()
     if len(text) == 0:
         return True

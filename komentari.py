@@ -22,10 +22,6 @@ import re
 import cliargs
 import automode
 
-__version__ = "1.21.3"
-
-USERAGENT = f"Komentari/{__version__} by user #1054326"
-
 def add_negative_tags():
     for tag, expand in settings.TAGS.copy().items(): # TODO might be a breaking change but rename to lowercase (not really a const...)
         expand_split = expand.split()
@@ -38,7 +34,7 @@ def write_confidence(threshold, pid, commentary, confidence):
         file.write(f"================================== post #{pid} ({confidence})\n{commentary}\n\n")
 
 def main():
-    print(f"komentari {__version__} is up")
+    print(f"komentari {settings.PROGRAM_VERSION} is up")
 
     if settings.TESTMODE:
         print("=== RUNNING IN TEST MODE ===")
@@ -87,7 +83,7 @@ def main():
         set_override(override_domain)
 
     headers = {
-        "User-Agent": USERAGENT
+        "User-Agent": settings.USERAGENT
     }
 
     skipped_posts = skipped.SkippedPosts()
