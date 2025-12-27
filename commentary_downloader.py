@@ -20,7 +20,7 @@ class PostCommentary:
             "id": self.iden,
             "post_id": self.post_id,
             "og_title": self.original_title,
-            "og_desciption": self.original_description
+            "og_description": self.original_description
         }
 
 def main():
@@ -59,6 +59,7 @@ def main():
 
             if len(commentaries) == 0:
                 print("No commentaries left.")
+                break
 
             for commentary in commentaries:
                 commentaries_total.append(PostCommentary(commentary["id"], commentary["post_id"], commentary["original_title"], commentary["original_description"]))
