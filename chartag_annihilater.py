@@ -10,6 +10,9 @@ def parse_chartag(chartag):
     return words
 
 def chartag_annihilate(commentary, chartags):
+    if chartags is None:
+        return commentary
+
     char_name_lists = [parse_chartag(chartag) for chartag in chartags]
     char_names = set()
     for char_name_list in char_name_lists:
