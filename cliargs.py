@@ -19,5 +19,7 @@ def parse_args():
     aparser.add_argument("--domain", type=str, help="override booru domain for this session")
     aparser.add_argument("--login", type=str, help="override login for this session")
     aparser.add_argument("--apikey", type=str, help="override api key for this session")
+    aparser.add_argument("--file", type=str, help="use a file with commentaries")
+    aparser.add_argument("--output", type=str, help="file to output tag script")
     args = aparser.parse_args()
     return args
