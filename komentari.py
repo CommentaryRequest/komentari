@@ -152,7 +152,7 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
                     edit_result = tag_edit_post(post_id, HEADERS, parsed_input, auth, quiet, edits)
                     if manual_input:
                         input("press enter...")
-                        return max(0, edit_result)
+                    return max(0, edit_result)
             elif yes_no_tag is not None:
                 print("Skip")
                 return 0
