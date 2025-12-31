@@ -19,7 +19,8 @@ BLOAT = [
     "baraag",
     "instagram",
     "booth",
-    "niconico"
+    "niconico",
+    "ko-fi"
 ]
 
 INVISIBLE_CHARS = [
