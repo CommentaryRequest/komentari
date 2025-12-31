@@ -21,7 +21,9 @@ BLOAT = [
     "booth",
     "niconico",
     "ko-fi",
-    "gumroad"
+    "gumroad",
+    "vgen",
+    "cm"
 ]
 
 INVISIBLE_CHARS = [

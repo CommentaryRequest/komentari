@@ -48,6 +48,10 @@ def check_en(commentary, pid, en_log):
     return confidence
 
 def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
+    # TODO
+    if len(commentary.tl_title.strip()) != 0 or len(commentary.tl_description.strip()) != 0:
+        return None
+
     if commentary.og_title.strip().lower() in UNTITLED_TITLES and len(commentary.og_description.strip()) == 0:
         return settings.AUTOTAG_UN
 
