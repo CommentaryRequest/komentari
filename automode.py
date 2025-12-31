@@ -76,8 +76,6 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
 
     # Remove bloat
     clean_commentary = cleaner.remove_bloat(clean_commentary)
-    if not quiet:
-        print(f"Clean commentary = {clean_commentary}")
 
     # If there's only bloat or bloat with emojis
     if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary):
@@ -85,7 +83,6 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
 
     # Annihilate chartags
     clean_commentary = chartag_annihilater.chartag_annihilate(clean_commentary, chartags)
-    print(f"Clean commentary (after chartag annihilation) = {clean_commentary}")
     if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary.strip()): # only chartags w emojis
         return settings.AUTOTAG_CT
 
