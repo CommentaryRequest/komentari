@@ -56,6 +56,7 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
         return settings.AUTOTAG_UN
 
     clean_commentary = commentary.og_title + " " + commentary.og_description
+    debug.dprint(f"clean commentary = {clean_commentary}")
 
     # Remove invisible chars
     clean_commentary = cleaner.remove_invisible_chars(clean_commentary)
@@ -65,6 +66,7 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
 
     # Remove hashtags
     clean_commentary = cleaner.remove_hashtags(clean_commentary)
+    debug.dprint(f"remove hashtags = {clean_commentary}")
     manual_input = False
     if len(clean_commentary.strip()) == 0:
         # The commentary only contained hashtags
@@ -72,6 +74,7 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
 
     # Remove URLs
     clean_commentary = cleaner.remove_urls(clean_commentary)
+    debug.dprint(f"remove urls = {clean_commentary}")
 
     # Check if there's only symbols left
     is_emoji = emjchk.is_emoji(clean_commentary)
@@ -80,6 +83,7 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
 
     # Remove bloat
     clean_commentary = cleaner.remove_bloat(clean_commentary)
+    debug.dprint(f"remove bloat = {clean_commentary}")
 
     # If there's only bloat or bloat with emojis
     if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary):
@@ -87,11 +91,13 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
 
     # Annihilate chartags
     clean_commentary = chartag_annihilater.chartag_annihilate(clean_commentary, chartags)
+    debug.dprint(f"remove chartags = {clean_commentary}")
     if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary.strip()): # only chartags w emojis
         return settings.AUTOTAG_CT
 
     # Remove fullwidth characters
     clean_commentary = cleaner.remove_fullwidth(clean_commentary)
+    debug.dprint(f"remove fullwidth = {clean_commentary}")
     if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary.strip()):
         return settings.AUTOTAG_FW
 
