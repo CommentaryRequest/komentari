@@ -41,7 +41,7 @@ def write_tag_script(output, tag_script):
     with open(output, "w") as output_file:
         json.dump(tag_script, output_file)
 
-def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, offline_commentary):
+def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, offline_commentary):
     print(f"Post \033]8;;{get_booru_url()}/posts/{post_id}\033\\#{post_id}\033]8;;\033\\\n")
 
     if skipped_posts.is_skipped(post_id):
@@ -158,7 +158,6 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
                 return 0
             else:
                 print("Try again.")
-                return 0
 
 def main():
     print(f"komentari {settings.PROGRAM_VERSION} is up")
@@ -246,7 +245,7 @@ def main():
     try:
         if file:
             for post_id, post in offline.items():
-                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], "", ""))
+                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], "", ""))
             print("No more posts lol")
             skipped_posts.flush()
             write_tag_script(output, tag_script)
@@ -282,7 +281,7 @@ def main():
                     post_tags_ini_copy = post["tag_string_copyright"]
                     post_tags_ini_char = post["tag_string_character"]
                     post_tags_ini_meta = post["tag_string_meta"]
-                    edits += do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, semi_auto, auto, en_log, auto_dbg, edits, None, None, None)
+                    edits += do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, None, None, None)
 
                 page += 0 if random_mode or same_page else 1
     except KeyboardInterrupt:
