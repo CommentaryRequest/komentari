@@ -31,5 +31,5 @@ def chartag_annihilate(commentary, chartags):
     debug.dprint(f"clean commentary = {clean_commentary}")
     pre_clean_commentary = clean_commentary
     for element in char_names:
-        clean_commentary = re.sub(f"\\b{element}\\b", "", clean_commentary)
+        clean_commentary = re.sub(f"\\b{re.escape(element)}\\b", "", clean_commentary)
     return clean_commentary
