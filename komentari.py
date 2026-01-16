@@ -26,13 +26,6 @@ HEADERS = {
     "User-Agent": settings.USERAGENT
 }
 
-def add_negative_tags():
-    for tag, expand in settings.TAGS.copy().items(): # TODO might be a breaking change but rename to lowercase (not really a const...)
-        expand_split = expand.split()
-        negative_expand_split = ["-" + tag for tag in expand_split]
-        negative_expand = " ".join(negative_expand_split)
-        settings.TAGS["-" + tag] = negative_expand
-
 def write_confidence(threshold, pid, commentary, confidence):
     with open(threshold + ".txt", "a", encoding="utf-8") as file:
         file.write(f"================================== post #{pid} ({confidence})\n{commentary}\n\n")
@@ -238,8 +231,6 @@ def main():
     if mode == "add" and group_id == 0:
         print(f"Group id required in add mode")
         sys.exit(1)
-
-    add_negative_tags()
 
     page = args.page
     edits = 0

@@ -12,6 +12,8 @@ def parse(user_input):
     tags = user_input.split()
     for tag in tags:
         tag_clean = tag.strip()
+        negative = tag_clean[0] == "-"
+        tag_clean = tag.lstrip("-")
         if tag_clean == "h":
             return HELP
         elif tag_clean == "sk":
@@ -28,5 +30,5 @@ def parse(user_input):
         real_tag = settings.TAGS.get(tag_clean, "!!!!!!!!")
         if real_tag == "!!!!!!!!":
             print(f"'{tag_clean}' unknown tag")
-        result += real_tag + " "
+        result += ("-" if negative else "") + real_tag + " "
     return result.strip()
