@@ -184,6 +184,7 @@ def main():
     override_apikey = args.apikey
     file = args.file
     output = args.output
+    file_resume = args.file_resume
 
     if (file and not output) or (output and not file):
         print("output and file option have to be used together always")
@@ -194,7 +195,7 @@ def main():
     
     if file:
         with open(file, "r") as commentaries_file:
-            offline = {entry["post_id"]: entry for entry in json.load(commentaries_file)}
+            offline = {entry["post_id"]: entry for entry in json.load(commentaries_file) if entry["post_id"] >= file_resume}
 
     if (override_login and not override_apikey) or (not override_login and override_apikey):
         print("you gotta override both apikey and login")
