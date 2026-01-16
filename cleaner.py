@@ -24,7 +24,8 @@ BLOAT = [
     "gumroad",
     "vgen",
     "cm",
-    "tumblr"
+    "tumblr",
+    "pawoo"
 ]
 
 INVISIBLE_CHARS = [
