@@ -14,6 +14,11 @@ def parse(user_input):
         tag_clean = tag.strip()
         negative = tag_clean[0] == "-"
         tag_clean = tag.lstrip("-")
+
+        if tag_clean[0] == "~":
+            result += ("-" if negative else "") + tag_clean[1:] + " "
+            continue
+
         if tag_clean == "h":
             return HELP
         elif tag_clean == "sk":
