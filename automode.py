@@ -135,7 +135,8 @@ def parse(commentary, semi_auto, en_log, quiet, post_id, chartags, dry, source):
             return "", True
     
         if settings.UNRECOG_FAVGROUP == 0:
-            return parser.NONPERMANENT_SKIP, False
-        return f"favgroup:{settings.UNRECOG_FAVGROUP}", False
+            return parser.NONPERMANENT_SKIP, False   
+        #return f"favgroup:{settings.UNRECOG_FAVGROUP}", False
+        return parser.SKIP, False
 
     return tags, False
