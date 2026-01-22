@@ -130,7 +130,7 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
                 manual_input = True
             if manual_input:
                 confirm = input("(y/N)$ ")
-            if confirm.lower().strip() == "y" or not manual_input:
+            if confirm.lower().strip() == "y" or not manual_input or (len(confirm.lower().strip()) == 0 and yes_no_tag is not None):
                 if quiet:
                     print(parsed_input)
                 else:
