@@ -29,6 +29,8 @@ def main():
     parser.add_argument("--exclude-tags", type=str)
     parser.add_argument("--skip-translated", action="store_true")
     parser.add_argument("--resume", type=int, default=0)
+    parser.add_argument("--login", type=str)
+    parser.add_argument("--api-key", type=str)
     args = parser.parse_args()
 
     script_filename = args.file
@@ -37,6 +39,8 @@ def main():
     resume = args.resume
 
     auth = Auth()
+    if args.login or args.api_key:
+        auth.set_auth(args.login or auth.login, args.api_key or auth.key)
 
     script = {}
     with open(script_filename, "r") as script_file:
