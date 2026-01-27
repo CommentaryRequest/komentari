@@ -15,6 +15,8 @@ def parse(user_input):
         negative = tag_clean[0] == "-"
         tag_clean = tag.lstrip("-")
 
+        if len(tag_clean) == 0:
+            continue # is empty tag
         if tag_clean[0] == "~":
             result += ("-" if negative else "") + tag_clean[1:] + " "
             continue
@@ -29,8 +31,6 @@ def parse(user_input):
             return BROWSER
         elif tag_clean == "skk":
             return NONPERMANENT_SKIP
-        if len(tag_clean) == 0:
-            continue # is empty tag
         print(f"get '{tag_clean}'")
         real_tag = settings.TAGS.get(tag_clean, "!!!!!!!!")
         if real_tag == "!!!!!!!!":
