@@ -1,6 +1,7 @@
 import parser
 import automode
 import settings
+import cleaner
 from commentary import Commentary
 
 def test_parser():
@@ -96,3 +97,10 @@ def test_automode_complex():
     # Only character tags
     # https://danbooru.donmai.us/posts/10706592
     assert automode.detect_tags(Commentary("Laevatain", None, None, None), 0, False, "laevatain_(arknights) surtr_(arknights)".split(), False, None) == settings.AUTOTAG_CT
+
+def test_cleaner():
+    assert cleaner.remove_hashtags('"#Skeb":[https://twitter.com/hashtag/Skeb] commission') == " commission"
+    assert cleaner.remove_bloat("Skebリクエストです。差分はPixivFANBOXで。") == "リクエストです。差分はで。"
+    assert cleaner.remove_urls('<https://x.com/rokugou> [b]"twitter/rokugou":[https://twitter.com/rokugou][/b] twitter/rokugou [b]"user/11974199":[https://www.pixiv.net/users/11974199] "»":[/artists?search%5Burl_matches%5D=https%3A%2F%2Fwww.pixiv.net%2Fusers%2F11974199][/b] [b]pixiv #76512810 "»":[/posts?tags=pixiv%3A76512810][/b] "@jack":[https://twitter.com/jack] https://example.com').strip() == ""
+    assert cleaner.remove_fullwidth("ｂｂｂｂｂｂfumo９") == "fumo"
+    assert cleaner.remove_invisible_chars("testoᅠtesto") == "testotesto"
