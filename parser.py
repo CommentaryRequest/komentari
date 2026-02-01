@@ -1,4 +1,5 @@
 import settings
+import debug
 
 # returned by parse for special commands
 HELP = -1
@@ -6,6 +7,15 @@ SKIP = -2
 QUIT = -3
 BROWSER = -4
 NONPERMANENT_SKIP = -5
+
+ERROR = "!!!!!!!!"
+
+def negate_tags(tags):
+    sp = tags.split()
+    result = ""
+    for tag in sp:
+        result += f"-{tag} "
+    return result.rstrip()
 
 def parse(user_input):
     result = ""
@@ -31,9 +41,9 @@ def parse(user_input):
             return BROWSER
         elif tag_clean == "skk":
             return NONPERMANENT_SKIP
-        print(f"get '{tag_clean}'")
-        real_tag = settings.TAGS.get(tag_clean, "!!!!!!!!")
-        if real_tag == "!!!!!!!!":
+        debug.dprint(f"get '{tag_clean}'")
+        real_tag = settings.TAGS.get(tag_clean, ERROR)
+        if real_tag == ERROR:
             print(f"'{tag_clean}' unknown tag")
-        result += ("-" if negative else "") + real_tag + " "
+        result += (negate_tags(real_tag) if negative else real_tag) + " "
     return result.strip()
