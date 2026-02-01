@@ -32,7 +32,7 @@ def is_chinese_source(url):
     netloc = netloc.split(":")[0]
     for domain in settings.CHINESE_SOURCES:
         if netloc == domain or netloc.endswith("." + domain):
-            debug.dprint(f"Found matsh: {netloc} and {domain}")
+            debug.dprint(f"Found match: {netloc} and {domain}")
             return True
         debug.dprint(f"Did not match {netloc} with {domain}")
     return False
@@ -51,15 +51,21 @@ def empty_or_symbols(s):
     s = s.strip()
     return len(s) == 0 or emjchk.is_emoji(s)
 
+def is_empty(s):
+    return not s or not s.strip()
+
 def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
     # TODO
-    if len(commentary.tl_title.strip()) != 0 or len(commentary.tl_description.strip()) != 0:
+    if not is_empty(commentary.tl_title) != 0 or not is_empty(commentary.tl_description) != 0:
         return None
 
-    if commentary.og_title.strip().lower() in UNTITLED_TITLES and len(commentary.og_description.strip()) == 0:
+    if is_empty(commentary.og_title) and is_empty(commentary.og_description):
+        return None
+
+    if commentary.og_title and commentary.og_title.strip().lower() in UNTITLED_TITLES and is_empty(commentary.og_description):
         return settings.AUTOTAG_UN
 
-    clean_commentary = commentary.og_title + " " + commentary.og_description
+    clean_commentary = (commentary.og_title or "") + " " + (commentary.og_description or "")
     debug.dprint(f"clean commentary = {clean_commentary}")
 
     # Remove invisible chars
@@ -79,6 +85,10 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
     # Remove URLs
     clean_commentary = cleaner.remove_urls(clean_commentary)
     debug.dprint(f"remove urls = {clean_commentary}")
+
+    # Check if there's only URLs left
+    if is_empty(clean_commentary):
+        return settings.AUTOTAG_UR
 
     # Check if there's only symbols left
     is_emoji = emjchk.is_emoji(clean_commentary)
@@ -109,7 +119,6 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
         return settings.AUTOTAG_KK
 
     if is_chinese_source(source) and zhchk.zhongwen_yuyan_jiance_xitong(clean_commentary):
-        debug.dprint("china")
         return settings.AUTOTAG_CN
 
     if jpchk.is_japan(clean_commentary):

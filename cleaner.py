@@ -32,6 +32,7 @@ INVISIBLE_CHARS = [
     chr(0x3164), # U+3164 Hangul Filler
     chr(0x115f), # U+115F Hangul Choseong Filler
     chr(0x1160), # U+1160 Hangul Jungseong Filler
+    chr(0xffa0), # U+FFA0 Halfwidth Hangul Filler
 ]
 
 def remove_invisible_chars(text):
