@@ -25,7 +25,9 @@ BLOAT = [
     "vgen",
     "cm",
     "tumblr",
-    "pawoo"
+    "pawoo",
+    "ych",
+    "fannbox"
 ]
 
 INVISIBLE_CHARS = [
