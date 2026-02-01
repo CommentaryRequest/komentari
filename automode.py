@@ -47,6 +47,10 @@ def check_en(commentary, pid, en_log):
                 write_confidence(str(threshold), pid, commentary, confidence)
     return confidence
 
+def empty_or_symbols(s):
+    s = s.strip()
+    return len(s) == 0 or emjchk.is_emoji(s)
+
 def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
     # TODO
     if len(commentary.tl_title.strip()) != 0 or len(commentary.tl_description.strip()) != 0:
@@ -86,7 +90,7 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
     debug.dprint(f"remove bloat = {clean_commentary}")
 
     # If there's only bloat or bloat with emojis
-    if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary):
+    if empty_or_symbols(clean_commentary):
         return settings.AUTOTAG_BL
 
     # Annihilate chartags
