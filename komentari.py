@@ -34,10 +34,10 @@ def write_tag_script(output, tag_script):
     with open(output, "w") as output_file:
         json.dump(tag_script, output_file)
 
-def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, offline_commentary):
+def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, offline_commentary, ignore_skip):
     print(f"Post \033]8;;{get_booru_url()}/posts/{post_id}\033\\#{post_id}\033]8;;\033\\\n")
 
-    if skipped_posts.is_skipped(post_id):
+    if skipped_posts.is_skipped(post_id) and not ignore_skip:
         print("Skipped by user")
         return 0
 
@@ -178,6 +178,7 @@ def main():
     file = args.file
     output = args.output
     file_resume = args.file_resume
+    ignore_skip = args.ignore_skip
 
     if (file and not output) or (output and not file):
         print("output and file option have to be used together always")
@@ -237,7 +238,7 @@ def main():
     try:
         if file:
             for post_id, post in offline.items():
-                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], "", ""))
+                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], "", ""), ignore_skip)
             print("No more posts lol")
             skipped_posts.flush()
             write_tag_script(output, tag_script)
@@ -273,7 +274,7 @@ def main():
                     post_tags_ini_copy = post["tag_string_copyright"]
                     post_tags_ini_char = post["tag_string_character"]
                     post_tags_ini_meta = post["tag_string_meta"]
-                    edits += do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, None, None, None)
+                    edits += do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, None, None, None, ignore_skip)
 
                 page += 0 if random_mode or same_page else 1
     except KeyboardInterrupt:
