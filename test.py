@@ -78,8 +78,12 @@ def test_automode_simple():
     # English
     assert detect_tags_simple(Commentary("Testing commentary 123", "Example text", None, None)) == settings.AUTOTAG_EN
 
+    # This is not English. This is Spanish.
+    # (warning: rating:E self boob sucking) https://danbooru.donmai.us/posts/10711153
+    assert detect_tags_simple(Commentary('El Stream se puso rico 🗿🔥 "#DigitalArtist":[https://twitter.com/hashtag/DigitalArtist] "#digitalart":[https://twitter.com/hashtag/digitalart] "#originalcharacter":[https://twitter.com/hashtag/originalcharacter] "#originalcharacterart":[https://twitter.com/hashtag/originalcharacterart] "#nsfw":[https://twitter.com/hashtag/nsfw] "#art":[https://twitter.com/hashtag/art] "#draw":[https://twitter.com/hashtag/draw] "#ArtistOnX":[https://twitter.com/hashtag/ArtistOnX] "#ArtistOnTwitter":[https://twitter.com/hashtag/ArtistOnTwitter] "#skalerart":[https://twitter.com/hashtag/skalerart]', None, None, None)) is None
+
     # Random gibberish
-    assert detect_tags_simple(Commentary("weoifjw39irijwifjweofi jw3", None, None, None)) == None
+    assert detect_tags_simple(Commentary("weoifjw39irijwifjweofi jw3", None, None, None)) is None
 
 def test_automode_complex():
     # English commentary with character tags
