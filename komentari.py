@@ -5,7 +5,7 @@ from booru_url import get_booru_url, set_override
 from commentary import get_commentary, Commentary
 from favgroup import add_to_favgroup
 from posts import get_posts
-from debug import dprint
+from debug import dprint, set_custom_creds
 from tagedit import tag_edit_post, print_tags
 import settings
 import post_check
@@ -218,6 +218,7 @@ def main():
 
     if override_login and override_apikey:
         auth.set_auth(override_login, override_apikey)
+        set_custom_creds(override_login, override_apikey)
     if override_domain:
         set_override(override_domain)
 
