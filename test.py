@@ -105,7 +105,7 @@ def test_automode_complex():
     # https://danbooru.donmai.us/posts/10706592
     assert automode.detect_tags(Commentary("Laevatain", None, None, None), 0, False, "laevatain_(arknights) surtr_(arknights)".split(), False, None) == settings.AUTOTAG_CT
 
-def test_automode_translated():
+def tst_automode_translated():
     # Full commentary, full translation
     assert automode.detect_translated(Commentary("解説", "リクエスト", "Commentary", "Request")) == settings.AUTOTAG_TF
 
