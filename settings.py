@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "1.24.19"
+PROGRAM_VERSION = "1.25"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 TESTMODE = False
@@ -51,6 +51,8 @@ AUTOTAG_NM = "commentary" # Number-only
 AUTOTAG_FW = "commentary" # Fullwidth-only
 AUTOTAG_NS = "commentary" # Numbers and symbols only
 AUTOTAG_UR = "commentary" # URLs only
+AUTOTAG_TF = "commentary" # Full translation
+AUTOTAG_TP = "partial_commentary" # Partial translation
 
 ENGLISH_CONFIDENCE = 0.8
 

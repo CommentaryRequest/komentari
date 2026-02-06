@@ -102,6 +102,26 @@ def test_automode_complex():
     # https://danbooru.donmai.us/posts/10706592
     assert automode.detect_tags(Commentary("Laevatain", None, None, None), 0, False, "laevatain_(arknights) surtr_(arknights)".split(), False, None) == settings.AUTOTAG_CT
 
+def test_automode_translated():
+    # Full commentary, full translation
+    assert automode.detect_translated(Commentary("解説", "リクエスト", "Commentary", "Request")) == settings.AUTOTAG_TF
+
+    # Only translated title
+    assert automode.detect_translated(Commentary("解説", None, "Commentary", None)) == settings.AUTOTAG_TF
+
+    # Only translated description
+    assert automode.detect_translated(Commentary(None, "リクエスト", None, "Request")) == settings.AUTOTAG_TF
+
+    # Full commentary, only title/description translated
+    assert automode.detect_translated(Commentary("解説リクエスト", "ミクミクビーム　ゆっくりしていってね", "Commentary Request", None)) == settings.AUTOTAG_TP
+    assert automode.detect_translated(Commentary("解説リクエスト", "ミクミクビーム　ゆっくりしていってね", None, "Miku Miku Beam Take it easy")) == settings.AUTOTAG_TP
+
+    # Full commentary, full title translation, partial description translation
+    assert automode.detect_translated(Commentary("解説リクエスト", "ミクミクビーム　ゆっくりしていってね", "Commentary Request", "Miku Miku Beam ゆっくりしていってね")) == None
+
+    # Abnormality
+    assert automode.detect_translated(Commentary(None, None, "Commentary", "Request")) == None
+
 def test_cleaner():
     assert cleaner.remove_hashtags('"#Skeb":[https://twitter.com/hashtag/Skeb] commission') == " commission"
     assert cleaner.remove_bloat("Skebリクエストです。差分はPixivFANBOXで。") == "リクエストです。差分はで。"

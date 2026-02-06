@@ -5,6 +5,9 @@ import debug
 JP_THRESHOLD = 0.6
 
 def detect_jp_chars(text):
+    if not text:
+        return []
+
     # Including both full-width and half-width katakana
     return re.findall(r'[\u3040-\u309F\u30A0-\u30FF\uFF00-\uFFEF\u4E00-\u9FFF\uFF61-\uFF9F]', text)
 

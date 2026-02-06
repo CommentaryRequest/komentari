@@ -54,17 +54,52 @@ def empty_or_symbols(s):
 def is_empty(s):
     return not s or not s.strip()
 
-def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
-    # TODO
-    if not is_empty(commentary.tl_title) != 0 or not is_empty(commentary.tl_description) != 0:
+def detect_translated(commentary):
+    og_title_empty = is_empty(commentary.og_title)
+    tl_title_empty = is_empty(commentary.tl_title)
+    og_desc_empty = is_empty(commentary.og_description)
+    tl_desc_empty = is_empty(commentary.tl_description)
+
+    # Handle untranslated commentaries and weird abnormalities
+    # where the commentary is translated but there's no original
+    # commentary. I swear I saw one such example of the latter but
+    # for the life of me can't find it.
+    if (tl_title_empty and tl_desc_empty) or (og_title_empty and og_desc_empty):
         return None
 
+
+    # Full translation:
+    #  * Each original field has its corresponding translation.
+    #  * For simplicity's sake, any translations with Japanese
+    #    characters are ignored. This may be due to the commentary
+    #    being bilingual or the translation being partial and
+    #    I'd just go through that stuff manually.
+    if jpchk.detect_jp_chars(commentary.tl_title) or jpchk.detect_jp_chars(commentary.tl_description):
+        return None
+    full_title_translated = (og_title_empty and tl_title_empty) or (not og_title_empty and not tl_title_empty)
+    full_description_translated = (og_desc_empty and tl_desc_empty) or (not og_desc_empty and not tl_desc_empty)
+    if full_title_translated and full_description_translated:
+        return settings.AUTOTAG_TF
+
+    if (full_title_translated and not full_description_translated) or (full_description_translated and not full_title_translated):
+        return settings.AUTOTAG_TP
+
+    return None
+
+def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
+    if not is_empty(commentary.tl_title) != 0 or not is_empty(commentary.tl_description) != 0:
+        tags = detect_translated(commentary)
+        return tags
+
+    # Empty commentary
     if is_empty(commentary.og_title) and is_empty(commentary.og_description):
         return None
 
+    # Untitled
     if commentary.og_title and commentary.og_title.strip().lower() in UNTITLED_TITLES and is_empty(commentary.og_description):
         return settings.AUTOTAG_UN
 
+    # Flatten the commentary into a single string
     clean_commentary = (commentary.og_title or "") + " " + (commentary.og_description or "")
     debug.dprint(f"clean commentary = {clean_commentary}")
 
@@ -117,16 +152,13 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
 
     if kkchk.is_korea(clean_commentary):
         return settings.AUTOTAG_KK
-
+    # TODO implement a non-Chinese source Chinese detector
     if is_chinese_source(source) and zhchk.zhongwen_yuyan_jiance_xitong(clean_commentary):
         return settings.AUTOTAG_CN
-
     if jpchk.is_japan(clean_commentary):
         return settings.AUTOTAG_JP
-
     if numchk.is_numbers(clean_commentary):
         return settings.AUTOTAG_NM
-
     if numchk.is_numbers(recog.strip_emoji(clean_commentary)):
         return settings.AUTOTAG_NS
 
@@ -149,7 +181,6 @@ def parse(commentary, semi_auto, en_log, quiet, post_id, chartags, dry, source):
     
         if settings.UNRECOG_FAVGROUP == 0:
             return parser.NONPERMANENT_SKIP, False   
-        #return f"favgroup:{settings.UNRECOG_FAVGROUP}", False
-        return parser.SKIP, False
+        return f"favgroup:{settings.UNRECOG_FAVGROUP}", False
 
     return tags, False
