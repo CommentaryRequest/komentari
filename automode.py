@@ -89,8 +89,9 @@ def detect_translated(commentary):
 
 def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
     if not is_empty(commentary.tl_title) != 0 or not is_empty(commentary.tl_description) != 0:
-        tags = detect_translated(commentary)
-        return tags
+        return None
+        #tags = detect_translated(commentary)
+        #return tags
 
     # Empty commentary
     if is_empty(commentary.og_title) and is_empty(commentary.og_description):
