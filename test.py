@@ -69,6 +69,9 @@ def test_automode_simple():
     # Simple Japanese
     assert detect_tags_simple(Commentary("重音テスト123", "テストの解説です", None, None)) == settings.AUTOTAG_JP
 
+    # Simple Thai
+    assert detect_tags_simple(Commentary("บางอย่างในภาษาไทย", None, None, None)) == settings.AUTOTAG_TH
+
     # Numbers only
     assert detect_tags_simple(Commentary("1234", "43987345987", None, None)) == settings.AUTOTAG_NM
 
