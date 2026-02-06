@@ -1,6 +1,7 @@
 import parser
 import zhchk
 import jpchk
+import thchk
 import kkchk
 import recog
 import emjchk
@@ -157,6 +158,8 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
         return settings.AUTOTAG_CN
     if jpchk.is_japan(clean_commentary):
         return settings.AUTOTAG_JP
+    if thchk.is_thai(clean_commentary):
+        return settings.AUTOTAG_TH
     if numchk.is_numbers(clean_commentary):
         return settings.AUTOTAG_NM
     if numchk.is_numbers(recog.strip_emoji(clean_commentary)):

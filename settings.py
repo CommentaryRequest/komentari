@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "1.25.1"
+PROGRAM_VERSION = "1.25.2"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 TESTMODE = False
@@ -46,6 +46,7 @@ AUTOTAG_CT = "commentary" # Chartag-only
 AUTOTAG_UN = "commentary" # Untitled
 AUTOTAG_KK = "commentary_request korean_commentary" # Korean
 AUTOTAG_JP = "commentary_request" # Japanese
+AUTOTAG_TH = "commentary_request thai_commentary" # Thai
 AUTOTAG_CN = "commentary_request chinese_commentary" # Chinese
 AUTOTAG_NM = "commentary" # Number-only
 AUTOTAG_FW = "commentary" # Fullwidth-only
