@@ -68,7 +68,7 @@ def main():
 
             print(f"Adding: {script_tags}")
 
-            edits += max(0, tag_edit_post(post_id, HEADERS, script_tags, auth, True, edits))
+            edits += max(0, tag_edit_post(post_id, HEADERS, script_tags, auth, True, edits, False))
             print("Edited.\n")
 
             if edits % 100 == 0:

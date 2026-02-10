@@ -9,5 +9,5 @@ def set_override(url):
 def resolve_url():
     return override if override else "https://danbooru.donmai.us"
 
-def get_booru_url():
-    return "https://testbooru.donmai.us" if settings.TESTMODE else resolve_url()
+def get_booru_url(test_mode):
+    return "https://testbooru.donmai.us" if test_mode else resolve_url()
