@@ -13,11 +13,11 @@ def print_tags(g, co, ch, m):
         f"m: \033[0;33m{m}\033[0m\n"
     )
 
-def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits): 
+def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits, test_mode): 
     uptodate_post = None
     while True:
         try:
-            response = requests.get(f"{get_booru_url()}/posts/{post_id}.json", headers=headers)
+            response = requests.get(f"{get_booru_url(test_mode)}/posts/{post_id}.json", headers=headers)
             uptodate_post = response.json()
             break
         except requests.exceptions.JSONDecodeError:
@@ -38,7 +38,7 @@ def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits):
     dprint(f"Request data = {json.dumps(request_data, indent=2)}")
     while True:
         try:
-            response = requests.put(f"{get_booru_url()}/posts/{post_id}.json?{str(auth)}", json=request_data, headers=headers)
+            response = requests.put(f"{get_booru_url(test_mode)}/posts/{post_id}.json?{str(auth)}", json=request_data, headers=headers)
             updated_post = response.json()
             break
         except requests.exceptions.JSONDecodeError:

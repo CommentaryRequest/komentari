@@ -23,5 +23,6 @@ def parse_args():
     aparser.add_argument("--output", type=str, help="file to output tag script")
     aparser.add_argument("--file-resume", type=int, help="resume from this post when using file mode", default=0)
     aparser.add_argument("--ignore-skip", action="store_true", help="ignore skipped posts")
+    aparser.add_argument("--test", action="store_true", help="run in test mode")
     args = aparser.parse_args()
     return args

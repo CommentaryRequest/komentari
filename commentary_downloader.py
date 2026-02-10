@@ -43,7 +43,7 @@ def main():
     try:
         while True:
             print(f"Grabbing commentaries after commentary #{last_id}")
-            url = f"{get_booru_url()}/artist_commentaries.json?commit=Search&limit={args.limit}&search%5Border%5D=id_asc&search%5Bpost_tags_match%5D={args.tags}&page=a{last_id}&{str(auth)}"
+            url = f"{get_booru_url(False)}/artist_commentaries.json?commit=Search&limit={args.limit}&search%5Border%5D=id_asc&search%5Bpost_tags_match%5D={args.tags}&page=a{last_id}&{str(auth)}"
             commentaries = []
             while True:
                 try:

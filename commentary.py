@@ -12,11 +12,11 @@ class Commentary:
     tl_title: str
     tl_description: str
 
-def get_commentary(post_id, auth, headers):
+def get_commentary(post_id, auth, headers, test_mode):
     commentary = None
     while True:
         try:
-            response = requests.get(f"{get_booru_url()}/posts/{post_id}/artist_commentary.json?{str(auth)}", headers=headers)
+            response = requests.get(f"{get_booru_url(test_mode)}/posts/{post_id}/artist_commentary.json?{str(auth)}", headers=headers)
             commentary = response.json()
             break
         except requests.exceptions.JSONDecodeError:

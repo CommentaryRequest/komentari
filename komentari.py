@@ -34,8 +34,9 @@ def write_tag_script(output, tag_script):
     with open(output, "w") as output_file:
         json.dump(tag_script, output_file)
 
-def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, offline_commentary, ignore_skip):
-    print(f"Post \033]8;;{get_booru_url()}/posts/{post_id}\033\\#{post_id}\033]8;;\033\\\n")
+# TODO what the fuck is this parameter list
+def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, offline_commentary, ignore_skip, test_mode):
+    print(f"Post \033]8;;{get_booru_url(test_mode)}/posts/{post_id}\033\\#{post_id}\033]8;;\033\\\n")
 
     if skipped_posts.is_skipped(post_id) and not ignore_skip:
         print("Skipped by user")
@@ -44,7 +45,7 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
 
     commentary = offline_commentary
     if not commentary:
-        commentary = get_commentary(post_id, auth, HEADERS)
+        commentary = get_commentary(post_id, auth, HEADERS, test_mode)
 
     is_add_mode = mode == "add" and not offline_commentary
 
@@ -52,7 +53,7 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
     if len(commentary.og_title.strip() + commentary.og_description.strip()) == 0:
         if is_add_mode:
             print("Adding to favgroup")
-            add_to_favgroup(group_id, post_id, auth)
+            add_to_favgroup(group_id, post_id, auth, test_mode)
         else:
             print("No commentary; skipping")
             return 0
@@ -113,7 +114,7 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
             print(f"gardened {edits} posts")
             sys.exit(0)
         elif parsed_input == parser.BROWSER:
-            link = f"{get_booru_url()}/posts/{post_id}"
+            link = f"{get_booru_url(test_mode)}/posts/{post_id}"
             print(f"Opening link: {link}")
             webbrowser.open(link)
         elif parsed_input == parser.NONPERMANENT_SKIP:
@@ -142,7 +143,7 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
                         input("press enter...")
                     return 1
                 else:
-                    edit_result = tag_edit_post(post_id, HEADERS, parsed_input, auth, quiet, edits)
+                    edit_result = tag_edit_post(post_id, HEADERS, parsed_input, auth, quiet, edits, test_mode)
                     if manual_input:
                         input("press enter...")
                     return max(0, edit_result)
@@ -154,9 +155,6 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
 
 def main():
     print(f"komentari {settings.PROGRAM_VERSION} is up")
-
-    if settings.TESTMODE:
-        print("=== RUNNING IN TEST MODE ===")
 
     dprint("Debug mode enabled")
 
@@ -179,6 +177,10 @@ def main():
     output = args.output
     file_resume = args.file_resume
     ignore_skip = args.ignore_skip
+    test_mode = args.test
+
+    if test_mode:
+        print("=== RUNNING IN TEST MODE ===")
 
     if (file and not output) or (output and not file):
         print("output and file option have to be used together always")
@@ -214,7 +216,7 @@ def main():
 
     auth = None
     if not file:
-        auth = Auth()
+        auth = Auth(test_mode)
 
     if override_login and override_apikey:
         auth.set_auth(override_login, override_apikey)
@@ -239,7 +241,7 @@ def main():
     try:
         if file:
             for post_id, post in offline.items():
-                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], "", ""), ignore_skip)
+                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], "", ""), ignore_skip, test_mode)
             print("No more posts lol")
             skipped_posts.flush()
             write_tag_script(output, tag_script)
@@ -249,7 +251,7 @@ def main():
                     print("Getting more posts...")
                 else:
                     print(f"Now on page {page}")
-                posts, raw_resp = get_posts(args.query, auth, page, HEADERS)
+                posts, raw_resp = get_posts(args.query, auth, page, HEADERS, test_mode)
                 if posts == []:
                     print("No more posts lol")
                     skipped_posts.flush()
@@ -275,7 +277,7 @@ def main():
                     post_tags_ini_copy = post["tag_string_copyright"]
                     post_tags_ini_char = post["tag_string_character"]
                     post_tags_ini_meta = post["tag_string_meta"]
-                    edits += do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, None, None, None, ignore_skip)
+                    edits += do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, None, None, None, ignore_skip, test_mode)
 
                 page += 0 if random_mode or same_page else 1
     except KeyboardInterrupt:
