@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "1.25.3"
+PROGRAM_VERSION = "1.25.4"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
@@ -15,7 +15,7 @@ TAGS = {
     "mll": "multilingual_commentary commentary",
     "e": "english_commentary",
     "ee": "english_commentary commentary",
-    "s": "symbol-only_commentary",
+    "s": "untranslatable_commentary",
     "ho": "hashtag-only_commentary",
     "hr": "hashtag-only_commentary commentary_request",
     "hc": "hashtag-only_commentary commentary",
@@ -39,7 +39,7 @@ TAGS = {
 
 AUTOTAG_EN = "commentary english_commentary" # English
 AUTOTAG_HT = "hashtag-only_commentary" # Hashtag-only
-AUTOTAG_SY = "symbol-only_commentary" # Symbol-only
+AUTOTAG_SY = "untranslatable_commentary" # Symbol-only
 AUTOTAG_BL = "commentary" # Bloat-only
 AUTOTAG_CT = "commentary" # Chartag-only
 AUTOTAG_UN = "commentary" # Untitled
