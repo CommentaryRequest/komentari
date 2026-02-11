@@ -68,7 +68,6 @@ def detect_translated(commentary):
     if (tl_title_empty and tl_desc_empty) or (og_title_empty and og_desc_empty):
         return None
 
-
     # Full translation:
     #  * Each original field has its corresponding translation.
     #  * For simplicity's sake, any translations with Japanese
@@ -88,10 +87,9 @@ def detect_translated(commentary):
     return None
 
 def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
-    if not is_empty(commentary.tl_title) != 0 or not is_empty(commentary.tl_description) != 0:
-        return None
-        #tags = detect_translated(commentary)
-        #return tags
+    if not is_empty(commentary.tl_title) != 0 or not is_empty(commentary.tl_description) != 0 and not settings.DISABLE_AUTO_TRANSLATED:
+        tags = detect_translated(commentary)
+        return tags
 
     # Empty commentary
     if is_empty(commentary.og_title) and is_empty(commentary.og_description):
