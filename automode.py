@@ -3,7 +3,8 @@ import zhchk
 import jpchk
 import thchk
 import kkchk
-import recog
+import enrecog
+import re
 import emjchk
 import numchk
 import cleaner
@@ -38,14 +39,17 @@ def is_chinese_source(url):
         debug.dprint(f"Did not match {netloc} with {domain}")
     return False
 
-def check_en(commentary, pid, en_log):
-    confidence = recog.recog(commentary)
+en_model = {}
+def get_model():
+    global en_model
+    if not en_model:
+        en_model = enrecog.load_model("./enmodel.json")
+    return en_model
 
-    if en_log:
-        thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-        for threshold in thresholds:
-            if confidence >= threshold:
-                write_confidence(str(threshold), pid, commentary, confidence)
+def check_en(commentary):
+    commentary = re.sub(r"\d", " ", commentary)
+    confidence = enrecog.score_text(commentary, get_model())
+    debug.dprint(f"Confidence for text = '{commentary}': {confidence}")
     return confidence
 
 def empty_or_symbols(s):
@@ -161,10 +165,10 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
         return settings.AUTOTAG_TH
     if numchk.is_numbers(clean_commentary):
         return settings.AUTOTAG_NM
-    if numchk.is_numbers(recog.strip_emoji(clean_commentary)):
+    if numchk.is_numbers(emjchk.strip_emoji(clean_commentary)):
         return settings.AUTOTAG_NS
 
-    confidence = check_en(clean_commentary, post_id, en_log)
+    confidence = check_en(clean_commentary)
     if confidence >= settings.ENGLISH_CONFIDENCE:
         return settings.AUTOTAG_EN
 

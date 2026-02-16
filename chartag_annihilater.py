@@ -1,11 +1,10 @@
 import re
 import debug
-import recog
+import emjchk
 
 def parse_chartag(chartag):
     chartag = re.sub(r"\(.*\)", "", chartag)
     words = chartag.split("_")
-    words = [w for w in words if w not in recog.fetch_words()]
     debug.dprint(f"Parsed chartag {chartag} -> {words}")
     return words
 
@@ -22,7 +21,7 @@ def chartag_annihilate(commentary, chartags):
     clean_commentary = commentary.lower()
     words = []
     for word in clean_commentary.split():
-        fixed_word = recog.strip_emoji(recog.strip_punct(word))
+        fixed_word = emjchk.strip_emoji(emjchk.strip_punct(word))
         if len(fixed_word.strip()) == 0:
             words.append(word)
         else:

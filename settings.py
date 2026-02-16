@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "1.25.7"
+PROGRAM_VERSION = "1.26"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
@@ -54,7 +54,7 @@ AUTOTAG_UR = "commentary" # URLs only
 AUTOTAG_TF = "commentary" # Full translation
 AUTOTAG_TP = "partial_commentary" # Partial translation
 
-ENGLISH_CONFIDENCE = 0.8
+ENGLISH_CONFIDENCE = -7.5
 
 CHINESE_SOURCES = [
     "weibo.com",

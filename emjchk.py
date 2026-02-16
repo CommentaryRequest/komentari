@@ -18,6 +18,12 @@ def test_category(ch):
 def is_symbol(ch):
     return ch in symbols or test_category(ch)
 
+def strip_punct(word):
+    return word.strip(string.digits + string.punctuation + "…【】”“").lower()
+
+def strip_emoji(word):
+    return "".join(ch for ch in word if not unicodedata.category(ch).startswith("So") and not ("\uFE00" <= ch <= "\uFE0F"))
+
 def is_emoji(text):
     text = text.strip().replace("\uFE0F", "") # variatoin selector
     if not text:
