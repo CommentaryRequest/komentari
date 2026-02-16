@@ -26,7 +26,7 @@ class PostCommentary:
 def main():
     print(f"komentari {settings.PROGRAM_VERSION}/downloader is up")
 
-    auth = Auth()
+    auth = Auth(False)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--tags", type=str)
