@@ -38,7 +38,7 @@ def main():
     skip_translated = args.skip_translated
     resume = args.resume
 
-    auth = Auth()
+    auth = Auth(False)
     if args.login or args.api_key:
         auth.set_auth(args.login or auth.login, args.api_key or auth.key)
 
