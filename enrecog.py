@@ -17,7 +17,7 @@ def score_text(text, model):
     score = 0
     for tg in trigrams:
         trigram_score = model.get(tg, unseen_logprob)
-        print(f"{tg} = {trigram_score}")
+        debug.dprint(f"{tg} = {trigram_score}")
         score += trigram_score
 
     return score / len(trigrams)
