@@ -48,6 +48,7 @@ def get_model():
 
 def check_en(commentary):
     commentary = re.sub(r"\d", " ", commentary)
+    commentary = "".join([ch if not emjchk.is_symbol(ch) and not emjchk.test_category(ch) else " " for ch in commentary])
     confidence = enrecog.score_text(commentary, get_model())
     debug.dprint(f"Confidence for text = '{commentary}': {confidence}")
     return confidence
