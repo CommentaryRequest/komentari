@@ -9,18 +9,22 @@ import json
 from booru_url import get_booru_url
 
 class PostCommentary:
-    def __init__(self, iden, post_id, original_title, original_description):
+    def __init__(self, iden, post_id, original_title, original_description, translated_title, translated_description):
         self.iden = iden
         self.post_id = post_id
         self.original_title = original_title
         self.original_description = original_description
+        self.translated_title = translated_title
+        self.translated_description = translated_description
 
     def as_dict(self):
         return {
             "id": self.iden,
             "post_id": self.post_id,
             "og_title": self.original_title,
-            "og_description": self.original_description
+            "og_description": self.original_description,
+            "tl_title": self.translated_title,
+            "tl_description": self.translated_description
         }
 
 def main():
@@ -62,7 +66,7 @@ def main():
                 break
 
             for commentary in commentaries:
-                commentaries_total.append(PostCommentary(commentary["id"], commentary["post_id"], commentary["original_title"], commentary["original_description"]))
+                commentaries_total.append(PostCommentary(commentary["id"], commentary["post_id"], commentary["original_title"], commentary["original_description"], commentary["translated_title"], commentary["translated_description"]))
             last_id = commentaries[0]["id"]
     except KeyboardInterrupt:
         print("Stopped by user")

@@ -18,7 +18,7 @@ def check_post(post_id, exclude_tags, skip_translated, auth):
     if skip_translated:
         query += f" commentary:untranslated"
 
-    posts, _ = get_posts(query, auth, 1, HEADERS)
+    posts, _ = get_posts(query, auth, 1, HEADERS, False)
     return len(posts) != 0
 
 def main():
