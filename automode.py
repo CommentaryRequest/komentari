@@ -170,7 +170,7 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
         return settings.AUTOTAG_NS
 
     confidence = check_en(clean_commentary)
-    if confidence >= settings.ENGLISH_CONFIDENCE:
+    if not jpchk.detect_jp_chars(clean_commentary) and not kkchk.detect_kr_chars(clean_commentary) and confidence >= settings.ENGLISH_CONFIDENCE:
         return settings.AUTOTAG_EN
 
     return None

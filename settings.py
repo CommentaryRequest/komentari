@@ -54,7 +54,7 @@ AUTOTAG_UR = "commentary" # URLs only
 AUTOTAG_TF = "commentary" # Full translation
 AUTOTAG_TP = "partial_commentary" # Partial translation
 
-ENGLISH_CONFIDENCE = -8
+ENGLISH_CONFIDENCE = -7.5
 
 CHINESE_SOURCES = [
     "weibo.com",
