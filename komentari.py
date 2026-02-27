@@ -241,7 +241,7 @@ def main():
     try:
         if file:
             for post_id, post in offline.items():
-                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], "", ""), ignore_skip, test_mode)
+                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], post["tl_title"], post["tl_description"]), ignore_skip, test_mode)
             print("No more posts lol")
             skipped_posts.flush()
             write_tag_script(output, tag_script)
