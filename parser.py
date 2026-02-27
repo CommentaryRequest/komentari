@@ -8,6 +8,14 @@ QUIT = -3
 BROWSER = -4
 NONPERMANENT_SKIP = -5
 
+SPECIAL_TAGS = {
+    "h": HELP,
+    "sk": SKIP,
+    "q": QUIT,
+    "b": BROWSER,
+    "skk": NONPERMANENT_SKIP
+}
+
 ERROR = "!!!!!!!!"
 
 def negate_tags(tags):
@@ -31,16 +39,8 @@ def parse(user_input):
             result += ("-" if negative else "") + tag_clean[1:] + " "
             continue
 
-        if tag_clean == "h":
-            return HELP
-        elif tag_clean == "sk":
-            return SKIP
-        elif tag_clean == "q":
-            return QUIT
-        elif tag_clean == "b":
-            return BROWSER
-        elif tag_clean == "skk":
-            return NONPERMANENT_SKIP
+        if tag in SPECIAL_TAGS:
+            return SPECIAL_TAGS[tag]
         debug.dprint(f"get '{tag_clean}'")
         real_tag = settings.TAGS.get(tag_clean, ERROR)
         if real_tag == ERROR:
