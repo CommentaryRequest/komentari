@@ -87,7 +87,8 @@ def detect_translated(commentary):
         return settings.AUTOTAG_TF
 
     if (full_title_translated and not full_description_translated) or (full_description_translated and not full_title_translated):
-        return settings.AUTOTAG_TP
+        return None
+        #return settings.AUTOTAG_TP
 
     return None
 
