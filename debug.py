@@ -11,7 +11,7 @@ def redact_auth_info(text):
         text = text.replace(f"login={custom_login}", "login=[custom login]")
     if custom_apikey:
         text = text.replace(custom_apikey, "[custom apikey]")
-    return (text
+    return (str(text)
         .replace(f"login={settings.TEST_LOGIN}", "login=[test login]")
         .replace(settings.TEST_APIKEY, "[test apikey]")
         .replace(f"login={settings.LOGIN}", "login=[login]")

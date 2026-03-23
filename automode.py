@@ -10,6 +10,8 @@ import numchk
 import cleaner
 import settings
 import chartag_annihilater
+import hashtag_extractor
+import json
 import debug
 from urllib.parse import urlparse
 
@@ -53,12 +55,37 @@ def check_en(commentary):
     debug.dprint(f"Confidence for text = '{commentary}': {confidence}")
     return confidence
 
+othernames = []
+def get_othernames():
+    global othernames
+    if not othernames:
+        with open("othernames.json", "r") as othernames_file:
+            othernames = json.load(othernames_file)
+    return othernames
+
+def othername_match(h):
+    return h in get_othernames()
+
 def empty_or_symbols(s):
     s = s.strip()
     return len(s) == 0 or emjchk.is_emoji(s)
 
 def is_empty(s):
     return not s or not s.strip()
+
+def is_latin_hashtag(h):
+    return not jpchk.detect_jp_chars(h) and not kkchk.detect_kr_chars(h) and not thchk.detect_th_chars(h)
+
+def detect_hashtag_only(s):
+    hashtags = hashtag_extractor.extract_hashtags(s)
+    debug.dprint(hashtags)
+    if all(is_latin_hashtag(h) for h in hashtags):
+        return settings.AUTOTAG_HC
+
+    if all(othername_match(h) or is_latin_hashtag(h) for h in hashtags):
+        return settings.AUTOTAG_HU
+
+    return settings.AUTOTAG_HR
 
 def detect_translated(commentary):
     og_title_empty = is_empty(commentary.og_title)
@@ -116,12 +143,12 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
         return parser.NONPERMANENT_SKIP
 
     # Remove hashtags
+    hashtags_commentary = clean_commentary
     clean_commentary = cleaner.remove_hashtags(clean_commentary)
     debug.dprint(f"remove hashtags = {clean_commentary}")
     manual_input = False
     if len(clean_commentary.strip()) == 0:
-        # The commentary only contained hashtags
-        return settings.AUTOTAG_HT
+        return detect_hashtag_only(hashtags_commentary)
 
     # Remove URLs
     clean_commentary = cleaner.remove_urls(clean_commentary)

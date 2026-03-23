@@ -2,6 +2,7 @@ import parser
 import automode
 import settings
 import cleaner
+import hashtag_extractor
 from commentary import Commentary
 
 def test_parser():
@@ -31,6 +32,10 @@ def test_parser():
     assert parser.parse("b") == parser.BROWSER
     assert parser.parse("skk") == parser.NONPERMANENT_SKIP
 
+def test_hashtag_extractor():
+    # https://danbooru.donmai.us/posts/10922444
+    assert hashtag_extractor.extract_hashtags('"#ミクの日":[https://x.com/hashtag/ミクの日] "#ミクの日2026":[https://x.com/hashtag/ミクの日2026]') == ["ミクの日", "ミクの日2026"]
+
 def detect_tags_simple(commentary):
     return automode.detect_tags(commentary, 0, False, [], False, "https://example.com")
 
@@ -42,8 +47,17 @@ def test_automode_simple():
     for title in automode.UNTITLED_TITLES:
         assert detect_tags_simple(Commentary(title, None, None, None)) == settings.AUTOTAG_UN
 
-    # Hashtag-only
-    assert detect_tags_simple(Commentary(None, "\"#ALNST\":[https://twitter.com/hashtag/ALNST] \"#에이스테\":[https://twitter.com/hashtag/에이스테] \"#SUA\":[https://twitter.com/hashtag/SUA]", None, None)) == settings.AUTOTAG_HT
+    # Hashtag-only commentary
+    # https://danbooru.donmai.us/posts/10841093
+    assert detect_tags_simple(Commentary('"#GenshinImpact":[https://x.com/hashtag/GenshinImpact] "#Columbina":[https://x.com/hashtag/Columbina]', None, None, None)) == settings.AUTOTAG_HC
+
+    # Hashtag-only untranslatable
+    # https://danbooru.donmai.us/posts/11004370
+    assert detect_tags_simple(Commentary('"#トリッカル":[https://x.com/hashtag/トリッカル]', None, None, None)) == settings.AUTOTAG_HU
+
+    # Hashtag-only request
+    # https://danbooru.donmai.us/posts/10870472
+    assert detect_tags_simple(Commentary('"#みんなの正面顔が見たい":[https://misskey.design/tags/%E3%81%BF%E3%82%93%E3%81%AA%E3%81%AE%E6%AD%A3%E9%9D%A2%E9%A1%94%E3%81%8C%E8%A6%8B%E3%81%9F%E3%81%84]', None, None, None)) == settings.AUTOTAG_HR
 
     # Invisible only
     assert detect_tags_simple(Commentary("\u3164\u1160\uffa0\u115f", None, None, None)) == parser.NONPERMANENT_SKIP
@@ -130,4 +144,4 @@ def test_cleaner():
     assert cleaner.remove_bloat("Skebリクエストです。差分はPixivFANBOXで。") == "リクエストです。差分はで。"
     assert cleaner.remove_urls('<https://x.com/rokugou> [b]"twitter/rokugou":[https://twitter.com/rokugou][/b] twitter/rokugou [b]"user/11974199":[https://www.pixiv.net/users/11974199] "»":[/artists?search%5Burl_matches%5D=https%3A%2F%2Fwww.pixiv.net%2Fusers%2F11974199][/b] [b]pixiv #76512810 "»":[/posts?tags=pixiv%3A76512810][/b] "@jack":[https://twitter.com/jack] https://example.com').strip() == ""
     assert cleaner.remove_fullwidth("ｂｂｂｂｂｂfumo９") == "fumo"
-    assert cleaner.remove_invisible_chars("testoᅠtesto") == "testotesto"
+    assert cleaner.remove_invisible_chars("testoᅠtesto") =="testotesto"
