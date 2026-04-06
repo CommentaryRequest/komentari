@@ -21,7 +21,7 @@ def check_post(post):
     if unwanted_tag is not None:
         return POST_CHECK_CENTAG, unwanted_tag
 
-    if post["is_banned"] == True:
+    if post["is_banned"] == True and settings.SKIP_BANNED_POSTS:
         return POST_CHECK_IS_BANNED, None
 
     return POST_CHECK_OK, None
