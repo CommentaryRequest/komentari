@@ -35,7 +35,7 @@ def write_tag_script(output, tag_script):
         json.dump(tag_script, output_file)
 
 # TODO what the fuck is this parameter list
-def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, offline_commentary, ignore_skip, test_mode):
+def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, offline_commentary, ignore_skip, test_mode, ncpc):
     print(f"Post \033]8;;{get_booru_url(test_mode)}/posts/{post_id}\033\\#{post_id}\033]8;;\033\\\n")
 
     if skipped_posts.is_skipped(post_id) and not ignore_skip:
@@ -54,7 +54,7 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
         if is_add_mode:
             print("Adding to favgroup")
             add_to_favgroup(group_id, post_id, auth, test_mode)
-        else:
+        elif not ncpc:
             print("No commentary; skipping")
             return 0
 
@@ -178,6 +178,7 @@ def main():
     file_resume = args.file_resume
     ignore_skip = args.ignore_skip
     test_mode = args.test
+    ncpc = args.ncpc
 
     if test_mode:
         print("=== RUNNING IN TEST MODE ===")
@@ -241,7 +242,7 @@ def main():
     try:
         if file:
             for post_id, post in offline.items():
-                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], post["tl_title"], post["tl_description"]), ignore_skip, test_mode)
+                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], post["tl_title"], post["tl_description"]), ignore_skip, test_mode, ncpc)
             print("No more posts lol")
             skipped_posts.flush()
             write_tag_script(output, tag_script)
@@ -277,7 +278,7 @@ def main():
                     post_tags_ini_copy = post["tag_string_copyright"]
                     post_tags_ini_char = post["tag_string_character"]
                     post_tags_ini_meta = post["tag_string_meta"]
-                    edits += do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, None, None, None, ignore_skip, test_mode)
+                    edits += do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, None, None, None, ignore_skip, test_mode, ncpc)
 
                 page += 0 if random_mode or same_page else 1
     except KeyboardInterrupt:
