@@ -21,6 +21,7 @@ import webbrowser
 import re
 import cliargs
 import automode
+import debug
 
 HEADERS = {
     "User-Agent": settings.USERAGENT
@@ -258,6 +259,8 @@ def main():
                     skipped_posts.flush()
                     print(f"gardened {edits} posts")
                     break
+
+                debug.dprint(f"post response: {posts}")
 
                 for post in posts:
                     # checking posts for unwanted tags
