@@ -1,4 +1,5 @@
 import settings
+import debug
 
 POST_CHECK_OK = 0
 POST_CHECK_CENTAG = 1
@@ -11,6 +12,7 @@ def centags_check(tags):
     return None
 
 def check_post(post):
+    debug.dprint(f"check post: {post}")
     gentags = post["tag_string_general"]
     metatags = post["tag_string_meta"]
 
