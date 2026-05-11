@@ -7,7 +7,7 @@ def set_override(url):
     override = url
 
 def resolve_url():
-    return override if override else "https://danbooru.donmai.us"
+    return override if override else settings.BOORU_URL
 
 def get_booru_url(test_mode):
-    return "https://testbooru.donmai.us" if test_mode else resolve_url()
+    return settings.TESTBOORU_URL if test_mode else resolve_url()
