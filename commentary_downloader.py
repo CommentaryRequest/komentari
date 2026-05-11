@@ -51,7 +51,7 @@ def main():
             commentaries = []
             while True:
                 try:
-                    commentaries = requests.get(url).json()
+                    commentaries = requests.get(url, headers=headers).json()
                     if "success" in commentaries and not commentaries["success"]:
                         print(f"Unsuccessful response: {commentaries}")
                     else:
