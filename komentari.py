@@ -36,7 +36,7 @@ def write_tag_script(output, tag_script):
         json.dump(tag_script, output_file)
 
 # TODO what the fuck is this parameter list
-def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, offline_commentary, ignore_skip, test_mode, ncpc):
+def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, offline_commentary, ignore_skip, test_mode, ncpc, offline_count, offline_i):
     print(f"Post \033]8;;{get_booru_url(test_mode)}/posts/{post_id}\033\\#{post_id}\033]8;;\033\\\n")
 
     if skipped_posts.is_skipped(post_id) and not ignore_skip:
@@ -122,6 +122,11 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
             if not quiet:
                 print("User requested non-permanent skip.")
             return 0
+        elif parsed_input == parser.PROGRESS_CHECK:
+            if not offline_commentary:
+                print("Only works in offline mode.")
+            else:
+                print(f"Progress: {offline_i}/{offline_count} ({offline_count - offline_i} left)")
         elif "!!!!!!!!" in parsed_input:
             print("Unknown tag. Try again.")
         else:
@@ -242,8 +247,8 @@ def main():
     edits = 0
     try:
         if file:
-            for post_id, post in offline.items():
-                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], post["tl_title"], post["tl_description"]), ignore_skip, test_mode, ncpc)
+            for i, (post_id, post) in enumerate(offline.items()):
+                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], post["tl_title"], post["tl_description"]), ignore_skip, test_mode, ncpc, len(offline), i)
             print("No more posts lol")
             skipped_posts.flush()
             write_tag_script(output, tag_script)
@@ -281,7 +286,7 @@ def main():
                     post_tags_ini_copy = post["tag_string_copyright"]
                     post_tags_ini_char = post["tag_string_character"]
                     post_tags_ini_meta = post["tag_string_meta"]
-                    edits += do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, None, None, None, ignore_skip, test_mode, ncpc)
+                    edits += do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, None, None, None, ignore_skip, test_mode, ncpc, 0, 0)
 
                 page += 0 if random_mode or same_page else 1
     except KeyboardInterrupt:

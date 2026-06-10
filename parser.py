@@ -7,13 +7,15 @@ SKIP = -2
 QUIT = -3
 BROWSER = -4
 NONPERMANENT_SKIP = -5
+PROGRESS_CHECK = -6
 
 SPECIAL_TAGS = {
     "h": HELP,
     "sk": SKIP,
     "q": QUIT,
     "b": BROWSER,
-    "skk": NONPERMANENT_SKIP
+    "skk": NONPERMANENT_SKIP,
+    "?": PROGRESS_CHECK
 }
 
 ERROR = "!!!!!!!!"
