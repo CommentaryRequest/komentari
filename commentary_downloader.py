@@ -26,6 +26,9 @@ class PostCommentary:
             "tl_title": self.translated_title,
             "tl_description": self.translated_description
         }
+        #return {
+        #    "text": self.original_title + " " + self.original_description
+        #}
 
 def main():
     print(f"komentari {settings.PROGRAM_VERSION}/downloader is up")
@@ -67,6 +70,8 @@ def main():
 
             for commentary in commentaries:
                 commentaries_total.append(PostCommentary(commentary["id"], commentary["post_id"], commentary["original_title"], commentary["original_description"], commentary["translated_title"], commentary["translated_description"]))
+            #if len(commentaries_total) > 30000:
+            #    break
             last_id = commentaries[0]["id"]
     except KeyboardInterrupt:
         print("Stopped by user")
