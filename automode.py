@@ -119,7 +119,7 @@ def detect_translated(commentary):
 
     return None
 
-def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
+def detect_tags(commentary, post_id, chartags, quiet, source):
     if not is_empty(commentary.tl_title) != 0 or not is_empty(commentary.tl_description) != 0 and not settings.DISABLE_AUTO_TRANSLATED:
         tags = detect_translated(commentary)
         return tags
@@ -203,8 +203,8 @@ def detect_tags(commentary, post_id, en_log, chartags, quiet, source):
 
     return None
 
-def parse(commentary, semi_auto, en_log, quiet, post_id, chartags, dry, source):
-    tags = detect_tags(commentary, post_id, en_log, chartags, quiet, source)
+def parse(commentary, semi_auto, quiet, post_id, chartags, dry, source):
+    tags = detect_tags(commentary, post_id, chartags, quiet, source)
 
     if dry:
         print(f"Detected tags: {tags or 'none'}")
