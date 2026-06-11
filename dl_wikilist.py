@@ -29,7 +29,7 @@ def main():
             wikis = []
             while True:
                 try:
-                    wikis = requests.get(url).json()
+                    wikis = requests.get(url, headers=headers).json()
                     if "success" in wikis and not wikis["success"]:
                         print(f"Unsuccessful response: {wikis}")
                     else:
