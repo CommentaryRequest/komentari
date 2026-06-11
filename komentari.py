@@ -27,16 +27,12 @@ HEADERS = {
     "User-Agent": settings.USERAGENT
 }
 
-def write_confidence(threshold, pid, commentary, confidence):
-    with open(threshold + ".txt", "a", encoding="utf-8") as file:
-        file.write(f"================================== post #{pid} ({confidence})\n{commentary}\n\n")
-
 def write_tag_script(output, tag_script):
     with open(output, "w") as output_file:
         json.dump(tag_script, output_file)
 
 # TODO what the fuck is this parameter list
-def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, offline_commentary, ignore_skip, test_mode, ncpc, offline_count, offline_i):
+def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, auto_dbg, edits, tag_script, output, offline_commentary, ignore_skip, test_mode, ncpc, offline_count, offline_i):
     print(f"Post \033]8;;{get_booru_url(test_mode)}/posts/{post_id}\033\\#{post_id}\033]8;;\033\\\n")
 
     if skipped_posts.is_skipped(post_id) and not ignore_skip:
@@ -89,7 +85,7 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
                 manual_input = False
             elif auto:
                 ini_char_split = None if post_tags_ini_char is None else post_tags_ini_char.split()
-                parsed_input, manual_input = automode.parse(commentary, semi_auto, en_log, quiet, post_id, ini_char_split, auto_dbg, source)
+                parsed_input, manual_input = automode.parse(commentary, semi_auto, quiet, post_id, ini_char_split, auto_dbg, source)
 
             if manual_input:
                 print("(h for help)")
@@ -172,7 +168,6 @@ def main():
     yes_no_tag_force = args.ynty
     auto = args.auto
     semi_auto = args.semi_auto
-    en_log = args.en_log
     quiet = args.quiet
     same_page = args.same_page
     auto_dbg = args.auto_dbg
@@ -248,7 +243,7 @@ def main():
     try:
         if file:
             for i, (post_id, post) in enumerate(offline.items()):
-                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], post["tl_title"], post["tl_description"]), ignore_skip, test_mode, ncpc, len(offline), i)
+                edits += do_post(post_id, None, None, None, None, None, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, auto_dbg, edits, tag_script, output, Commentary(post["og_title"], post["og_description"], post["tl_title"], post["tl_description"]), ignore_skip, test_mode, ncpc, len(offline), i)
             print("No more posts lol")
             skipped_posts.flush()
             write_tag_script(output, tag_script)
@@ -286,7 +281,7 @@ def main():
                     post_tags_ini_copy = post["tag_string_copyright"]
                     post_tags_ini_char = post["tag_string_character"]
                     post_tags_ini_meta = post["tag_string_meta"]
-                    edits += do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, en_log, auto_dbg, edits, None, None, None, ignore_skip, test_mode, ncpc, 0, 0)
+                    edits += do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_ini_char, post_tags_ini_meta, skipped_posts, mode, auth, group_id, quiet, yes_no_tag, yes_no_tag_force, semi_auto, auto, auto_dbg, edits, None, None, None, ignore_skip, test_mode, ncpc, 0, 0)
 
                 page += 0 if random_mode or same_page else 1
     except KeyboardInterrupt:

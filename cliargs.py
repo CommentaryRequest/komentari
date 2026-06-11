@@ -12,7 +12,6 @@ def parse_args():
     aparser.add_argument("--ynty", action="store_true", help="automatically add the chosen tag when using yes/no tag. (warning: dangerous. only use if you know what you're doing.)")
     aparser.add_argument("--auto", action="store_true", help="automatically detect language and add tag. if language not detected, skip post")
     aparser.add_argument("--semi-auto", action="store_true", help="auto mode but don't skip post, ask user instead")
-    aparser.add_argument("--en-log", action="store_true", help="logs enlgish commentaries into files, for analysis")
     aparser.add_argument("--quiet", action="store_true", help="removes unnecessary input, only for auto mode")
     aparser.add_argument("--same-page", action="store_true", help="stay on the same page")
     aparser.add_argument("--auto-dbg", action="store_true", help="dry-run auto mode")
