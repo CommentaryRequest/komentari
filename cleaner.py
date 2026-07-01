@@ -1,5 +1,6 @@
 import re
 
+# Ignore words from this list
 BLOAT = [
     "pixiv",
     "fanbox",
@@ -27,7 +28,8 @@ BLOAT = [
     "tumblr",
     "pawoo",
     "ych",
-    "fannbox"
+    "fannbox",
+    "cms"
 ]
 
 INVISIBLE_CHARS = [
