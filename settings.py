@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "1.31.1"
+PROGRAM_VERSION = "1.31.2"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
@@ -25,10 +25,14 @@ TAGS = {
     "k": "korean_commentary",
     "kk": "korean_commentary commentary_request",
     "sp": "spanish_commentary",
+    "ss": "spanish_commentary commentary_request",
     "ro": "romaji_commentary",
+    "ror": "romaji_commentary commentary_request",
     "ru": "russian_commentary",
+    "rr": "russian_commentary commentary_request",
     "er": "engrish_commentary",
     "t": "thai_commentary",
+    "tt": "thai_commentary commentary_request",
     "f": "french_commentary",
     "v": "vietnamese_commentary",
     "vv": "vietnamese_commentary commentary_request",
@@ -37,6 +41,7 @@ TAGS = {
     "ty": "commentary_typo"
 }
 
+# Auto mode tag definitions
 AUTOTAG_EN = "commentary english_commentary" # English
 AUTOTAG_HU = "untranslatable_commentary" # Hashtag-only untranslatable
 AUTOTAG_HR = "commentary_request" # Hashtag-only translatable
