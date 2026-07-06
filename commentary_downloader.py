@@ -62,7 +62,7 @@ def main():
                 except Exception as exc:
                     print(f"Error fetching commentaries: {exc}")
 
-            print(commentaries)
+            #print(commentaries)
 
             if len(commentaries) == 0:
                 print("No commentaries left.")
