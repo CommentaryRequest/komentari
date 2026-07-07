@@ -10,12 +10,12 @@ NONPERMANENT_SKIP = -5
 PROGRESS_CHECK = -6
 
 SPECIAL_TAGS = {
-    "h": HELP,
-    "sk": SKIP,
-    "q": QUIT,
-    "b": BROWSER,
-    "skk": NONPERMANENT_SKIP,
-    "?": PROGRESS_CHECK
+    "h": (HELP, "Show this help"),
+    "sk": (SKIP, "Skip this post"),
+    "q": (QUIT, "Quit"),
+    "b": (BROWSER, "Open post in the browser"),
+    "skk": (NONPERMANENT_SKIP, "Skip this post once"),
+    "?": (PROGRESS_CHECK, "Check progress (offline only)")
 }
 
 ERROR = "!!!!!!!!"
@@ -42,7 +42,7 @@ def parse(user_input):
             continue
 
         if tag in SPECIAL_TAGS:
-            return SPECIAL_TAGS[tag]
+            return SPECIAL_TAGS[tag][0]
         debug.dprint(f"get '{tag_clean}'")
         real_tag = settings.TAGS.get(tag_clean, ERROR)
         if real_tag == ERROR:
