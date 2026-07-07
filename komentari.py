@@ -99,7 +99,9 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
             for short, tag in settings.TAGS.items():
                 if not short.startswith("-"):
                     print(f" - {short} = {tag}")
-            print("Type h for help, b to open in browser, q to quit.")
+            print("Special commands:")
+            for short, tag in parser.SPECIAL_TAGS.items():
+                print(f" - {short} = {tag[1]}")
         elif parsed_input == parser.SKIP:
             print("User requested skip.")
             skipped_posts.add(post_id)
