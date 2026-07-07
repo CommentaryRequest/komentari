@@ -44,15 +44,15 @@ echo " *** Starting commentary tagging session for user: $user_name"
 if [ "$auto" == "1" ]; then
     echo " *** Running automatic first pass"
     ./commentary_downloader.py --tags "$query" ./user_backtag/$user_name.json || exit 1
-    ./komentari.py --quiet --auto --file ./user_backtag/$user_name.json --output ./user_backtag/$user_name_s_auto.json || exit 1
-    ./script_executer.py ./user_backtag/$user_name_s_auto.json || exit 1
+    ./komentari.py --quiet --auto --file ./user_backtag/$user_name.json --output ./user_backtag/${user_name}_s_auto.json || exit 1
+    ./script_executer.py ./user_backtag/${user_name}_s_auto.json || exit 1
 fi
 
 if [ "$manual" == "1" ]; then
     echo " *** Running manual mode"
     ./commentary_downloader.py --tags "$query" ./user_backtag/$user_name.json || exit 1
-    ./komentari.py --file ./user_backtag/$user_name.json --output ./user_backtag/$user_name_s.json || exit 1
-    ./script_executer.py ./user_backtag/$user_name_s.json || exit 1
+    ./komentari.py --file ./user_backtag/$user_name.json --output ./user_backtag/${user_name}_s.json || exit 1
+    ./script_executer.py ./user_backtag/${user_name}_s.json || exit 1
 fi
 
 echo " *** Finished"
