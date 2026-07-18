@@ -13,6 +13,7 @@ import chartag_annihilater
 import hashtag_extractor
 import json
 import debug
+import os
 from urllib.parse import urlparse
 
 UNTITLED_TITLES = [
@@ -59,6 +60,8 @@ othernames = []
 def get_othernames():
     global othernames
     if not othernames:
+        if not os.path.exists("othernames.json"):
+            return []
         with open("othernames.json", "r") as othernames_file:
             othernames = json.load(othernames_file)
     return othernames
