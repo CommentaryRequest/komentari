@@ -14,6 +14,11 @@ Run `dl_wikilist.py` to create a list of copyright and character names for untra
 
 `komentari.py` is the main entry point of the program. Use the `--help` option to see the list of available command-line options.
 
+### Convenience scripts
+
+* `do_user.sh`: quickly semi-automatically tag a specific user's posts. Run with no arguments to see usage.
+* `runbot.sh`: run a simple bot instance. Any arguments passed to this script are forwarded to `komentari.py`.
+
 ### Offline mode
 
 Komentari can run in offline mode to prepare tag edits locally and apply them all at once.
