@@ -30,8 +30,8 @@ def get_user_input(args, commentary, post):
     parsed_input = ""
     while True:
         manual_input = True
-        if args.yes_no_tag is not None:
-            parsed_input = args.yes_no_tag
+        if args.preset_tag is not None:
+            parsed_input = args.preset_tag
             manual_input = False
         elif args.auto:
             parsed_input, manual_input = automode.parse(commentary, args.semi_auto, args.quiet, post.id, post.chartags, args.auto_debug, post.source)
@@ -108,11 +108,11 @@ def process_user_input(parsed_input, manual_input, args, post, ctx, offline, net
     if not args.quiet:
         print(f"The following tags will be added. Ok?\n{parsed_input}")
     confirm = ""
-    if args.yes_no_tag is not None and not args.yes_no_tag_force:
+    if args.preset_tag is not None and not args.preset_tag_force:
         manual_input = True
     if manual_input:
         confirm = input("(y/N)$ ")
-    if confirm.lower().strip() == "y" or not manual_input or (len(confirm.lower().strip()) == 0 and args.yes_no_tag is not None):
+    if confirm.lower().strip() == "y" or not manual_input or (len(confirm.lower().strip()) == 0 and args.preset_tag is not None):
         if args.quiet:
             print(parsed_input)
         else:
@@ -128,7 +128,7 @@ def process_user_input(parsed_input, manual_input, args, post, ctx, offline, net
             if manual_input:
                 input("press enter...")
             return InputProcessResult(edit_result, True)
-    elif args.yes_no_tag is not None:
+    elif args.preset_tag is not None:
         print("Skip")
         return InputProcessResult(False, True)
     else:

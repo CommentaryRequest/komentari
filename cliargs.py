@@ -7,8 +7,8 @@ class CLIArgs:
     query: str
     random: bool
     limit: int
-    yes_no_tag: str
-    yes_no_tag_force: bool
+    preset_tag: str
+    preset_tag_force: bool
     auto: bool
     semi_auto: bool
     quiet: bool
@@ -30,8 +30,8 @@ def parse_args():
     aparser.add_argument("--query", type=str, default="-commentary+-commentary_request")
     aparser.add_argument("--random", action="store_true", help="select posts at random")
     aparser.add_argument("--limit", type=int, default=None, help="change the post limit")
-    aparser.add_argument("--ynt", type=str, default=None, help="yes/no tag: press enter to apply tag for each post found, any key + enter to skip")
-    aparser.add_argument("--ynty", action="store_true", help="automatically add yes/no tag without confirmation")
+    aparser.add_argument("--preset-tag", "--pt", type=str, default=None, help="apply this tag on every post with confirmation")
+    aparser.add_argument("--preset-tag-force", "--ptf", action="store_true", help="automatically add preset tag without confirmation")
     aparser.add_argument("--auto", action="store_true", help="automatically detect language and add tag. if language not detected, skip post")
     aparser.add_argument("--semi-auto", action="store_true", help="auto mode but don't skip post, ask user instead")
     aparser.add_argument("--quiet", action="store_true", help="removes unnecessary input, only for auto mode")
@@ -61,8 +61,8 @@ def parse_args():
         args.query,
         args.random,
         args.limit,
-        args.ynt,
-        args.ynty,
+        args.preset_tag,
+        args.preset_tag_force,
         auto,
         semi_auto,
         quiet,
