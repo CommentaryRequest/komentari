@@ -72,13 +72,6 @@ def main():
         set_override(args.override_domain)
 
     skipped_posts = skipped.SkippedPosts()
-    if args.mode != "garden" and args.mode != "add":
-        print(f"Unknown operation mode: '{args.mode}'")
-        sys.exit(1)
-
-    if args.mode == "add" and args.add_favgroup_id == 0:
-        print(f"Group id required in add mode")
-        sys.exit(1)
 
     page = args.initial_page
     exec_context = ExecutionContext(skipped_posts, 0)

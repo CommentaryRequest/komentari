@@ -5,7 +5,6 @@ from dataclasses import dataclass
 class CLIArgs:
     initial_page: int
     query: str
-    add_favgroup_id: int
     random: bool
     limit: int
     yes_no_tag: str
@@ -29,7 +28,6 @@ def parse_args():
     aparser = argparse.ArgumentParser()
     aparser.add_argument("--page", type=int, default=1)
     aparser.add_argument("--query", type=str, default="-commentary+-commentary_request")
-    aparser.add_argument("--group", type=int, default=0, help="posts with no commentary will be added to this fav group (necessary if mode is add)")
     aparser.add_argument("--random", action="store_true", help="select posts at random")
     aparser.add_argument("--limit", type=int, default=None, help="change the post limit")
     aparser.add_argument("--ynt", type=str, default=None, help="yes/no tag: press enter to apply tag for each post found, any key + enter to skip")
@@ -61,7 +59,6 @@ def parse_args():
     return CLIArgs(
         args.page,
         args.query,
-        args.group,
         args.random,
         args.limit,
         args.ynt,
