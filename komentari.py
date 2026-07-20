@@ -50,7 +50,7 @@ def do_post(post_id, source, post_tags_ini_gen, post_tags_ini_copy, post_tags_in
     if len(commentary.og_title.strip() + commentary.og_description.strip()) == 0:
         if is_add_mode:
             print("Adding to favgroup")
-            add_to_favgroup(group_id, post_id, auth, test_mode)
+            add_to_favgroup(group_id, post_id, auth, HEADERS, test_mode)
         elif not ncpc:
             print("No commentary; skipping")
             return 0
@@ -271,7 +271,11 @@ def main():
                         print(f"Contains unwanted tag: {bad_tag}")
                         continue
                     elif check_result == post_check.POST_CHECK_IS_BANNED:
-                        print("Is banned; skipping")
+                        if settings.BANNED_FAVGROUP:
+                            print(f"Is banned; adding to favgroup #{settings.BANNED_FAVGROUP}")
+                            add_to_favgroup(settings.BANNED_FAVGROUP, post["id"], auth, HEADERS, test_mode)
+                        else:
+                            print("Is banned; skipping")
                         continue
 
                     # Getting post information

@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "1.31.6"
+PROGRAM_VERSION = "1.32"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
@@ -80,6 +80,7 @@ CENTAGS = {
 UNRECOG_FAVGROUP = 0
 DISABLE_AUTO_TRANSLATED = True
 SKIP_BANNED_POSTS = False
+BANNED_FAVGROUP = 0
 
 BOORU_URL = "https://danbooru.donmai.us"
 TESTBOORU_URL = "https://testbooru.donmai.us"
