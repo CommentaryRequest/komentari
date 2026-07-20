@@ -12,6 +12,9 @@ class Commentary:
     tl_title: str
     tl_description: str
 
+    def is_empty(self):
+        return len(self.og_title.strip() + self.og_description.strip()) == 0
+
 def get_commentary(post_id, auth, headers, test_mode):
     commentary = None
     while True:

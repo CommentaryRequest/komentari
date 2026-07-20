@@ -57,17 +57,14 @@ def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits, test_mode)
 
         elif response.status_code == 403:
             print("Post forbidden to edit. Skip.")
-            return 0
+            return False
 
         else:
             if not quiet:
                 print("Edited successfully.")
 
-            edits += 1
-            return 1
+            return True
 
     except KeyError as exc:
         print(f"Could not edit: {exc}")
-        return 0
-
-    return -1
+        return False
