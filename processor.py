@@ -10,7 +10,7 @@ import settings
 import webbrowser
 
 def print_post_link(args, post_id):
-    print(f"Post \033]8;;{get_booru_url(args.test_mode)}/posts/{post_id}\033\\#{post_id}\033]8;;\033\\\n")
+    print(f"\nPost \033]8;;{get_booru_url(args.test_mode)}/posts/{post_id}\033\\#{post_id}\033]8;;\033\\\n")
 
 def print_commentary(commentary):
     print(
@@ -48,74 +48,92 @@ class InputProcessResult(NamedTuple):
     edited: bool
     next_post: bool
 
+def command_help(_ctx, _post, _args, _offline):
+    print("Configured tags:")
+    for short, tag in settings.TAGS.items():
+        if not short.startswith("-"):
+            print(f" - {short} = {tag}")
+    print("Special commands:")
+    for short, tag in parser.SPECIAL_TAGS.items():
+        print(f" - {short} = {tag[1]}")
+    return InputProcessResult(False, False)
+
+def command_skip(ctx, post, _args, _offline):
+    print("User requested skip.")
+    ctx.skipped_posts.add(post.id)
+    return InputProcessResult(False, True)
+
+def command_quit(ctx, _post, args, offline):
+    ctx.skipped_posts.flush()
+    if offline:
+        write_tag_script(args.offline_output, offline.tag_script)
+    print(f"gardened {ctx.edit_count} posts")
+    sys.exit(0)
+
+def command_browser(_ctx, post, args, _offline):
+    link = f"{get_booru_url(args.test_mode)}/posts/{post.id}"
+    print(f"Opening link: {link}")
+    webbrowser.open(link)
+    return InputProcessResult(False, False)
+
+def command_npskip(_ctx, _post, args, _offline):
+    if not args.quiet:
+        print("User requested non-permanent skip.")
+    return InputProcessResult(False, True)
+
+def command_progress_check(_ctx, _post, _args, offline):
+    if not offline:
+        print("Only works in offline mode.")
+    else:
+        print(f"Progress: {offline.index}/{offline.post_count} ({offline.post_count - offline.index} left)")
+    return InputProcessResult(False, False)
+
+COMMANDS = {
+    parser.HELP: command_help,
+    parser.SKIP: command_skip,
+    parser.QUIT: command_quit,
+    parser.BROWSER: command_browser,
+    parser.NONPERMANENT_SKIP: command_npskip,
+    parser.PROGRESS_CHECK: command_progress_check
+}
+
 def process_user_input(parsed_input, manual_input, args, post, ctx, offline, headers):
-    if parsed_input == parser.HELP:
-        print("Configured tags:")
-        for short, tag in settings.TAGS.items():
-            if not short.startswith("-"):
-                print(f" - {short} = {tag}")
-        print("Special commands:")
-        for short, tag in parser.SPECIAL_TAGS.items():
-            print(f" - {short} = {tag[1]}")
-        return InputProcessResult(False, False)
-    elif parsed_input == parser.SKIP:
-        print("User requested skip.")
-        ctx.skipped_posts.add(post.id)
-        return InputProcessResult(False, True)
-    elif parsed_input == parser.QUIT:
-        ctx.skipped_posts.flush()
-        if offline:
-            write_tag_script(args.offline_output, offline.tag_script)
-        print(f"gardened {ctx.edit_count} posts")
-        sys.exit(0)
-    elif parsed_input == parser.BROWSER:
-        link = f"{get_booru_url(args.test_mode)}/posts/{post.id}"
-        print(f"Opening link: {link}")
-        webbrowser.open(link)
-        return InputProcessResult(False, False)
-    elif parsed_input == parser.NONPERMANENT_SKIP:
-        if not args.quiet:
-            print("User requested non-permanent skip.")
-        return InputProcessResult(False, True)
-    elif parsed_input == parser.PROGRESS_CHECK:
-        if not offline:
-            print("Only works in offline mode.")
-        else:
-            print(f"Progress: {offline.index}/{offline.post_count} ({offline.post_count - offline.index} left)")
-        return InputProcessResult(False, False)
-    elif "!!!!!!!!" in parsed_input:
+    if parsed_input in COMMANDS:
+        return COMMANDS[parsed_input](ctx, post, args, offline)
+
+    if parsed_input == parser.UNKNOWN_TAG:
         print("Unknown tag. Try again.")
         return InputProcessResult(False, False)
-    else:
-        if not args.quiet:
-            print(f"The following tags will be added. Ok?\n{parsed_input}")
-        confirm = ""
-        if args.yes_no_tag is not None and not args.yes_no_tag_force:
-            manual_input = True
-        if manual_input:
-            confirm = input("(y/N)$ ")
-        if confirm.lower().strip() == "y" or not manual_input or (len(confirm.lower().strip()) == 0 and args.yes_no_tag is not None):
-            if args.quiet:
-                print(parsed_input)
-            else:
-                print("Sending out change!")
 
-            if offline:
-                offline.tag_script[post.id] = parsed_input
-                if manual_input:
-                    input("press enter...")
-                return InputProcessResult(True, True)
-            else:
-                edit_result = tag_edit_post(post.id, headers, parsed_input, ctx.auth, args.quiet, ctx.edit_count, args.test_mode)
-                if manual_input:
-                    input("press enter...")
-                return InputProcessResult(edit_result, True)
-        elif args.yes_no_tag is not None:
-            print("Skip")
-            return InputProcessResult(False, True)
+    if not args.quiet:
+        print(f"The following tags will be added. Ok?\n{parsed_input}")
+    confirm = ""
+    if args.yes_no_tag is not None and not args.yes_no_tag_force:
+        manual_input = True
+    if manual_input:
+        confirm = input("(y/N)$ ")
+    if confirm.lower().strip() == "y" or not manual_input or (len(confirm.lower().strip()) == 0 and args.yes_no_tag is not None):
+        if args.quiet:
+            print(parsed_input)
         else:
-            print("Try again.")
-            return InputProcessResult(False, False)
+            print("Sending out change!")
+
+        if offline:
+            offline.tag_script[post.id] = parsed_input
+            if manual_input:
+                input("press enter...")
+            return InputProcessResult(True, True)
+        else:
+            edit_result = tag_edit_post(post.id, headers, parsed_input, ctx.auth, args.quiet, ctx.edit_count, args.test_mode)
+            if manual_input:
+                input("press enter...")
+            return InputProcessResult(edit_result, True)
+    elif args.yes_no_tag is not None:
+        print("Skip")
+        return InputProcessResult(False, True)
+    else:
+        print("Try again.")
+        return InputProcessResult(False, False)
 
 def process_post(args, post, exec_ctx, offline_ctx, headers, commentary):
     print_post_link(args, post.id)
@@ -129,6 +147,9 @@ def process_post(args, post, exec_ctx, offline_ctx, headers, commentary):
         return 0
 
     while True:
+        if not offline_ctx:
+            print_tags(post)
+
         if not args.quiet:
             print_commentary(commentary)
 
