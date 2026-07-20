@@ -5,7 +5,7 @@ from booru_url import get_booru_url, set_override
 from commentary import Commentary
 from posts import get_posts
 from debug import dprint, set_custom_creds
-from context import PostInfo, OfflineContext, ExecutionContext
+from context import PostInfo, OfflineContext, ExecutionContext, NetworkContext
 from tag_script import write_tag_script
 import settings
 import post_check
@@ -81,7 +81,8 @@ def main():
         sys.exit(1)
 
     page = args.initial_page
-    exec_context = ExecutionContext(skipped_posts, auth, 0)
+    exec_context = ExecutionContext(skipped_posts, 0)
+    net_context = NetworkContext(auth, HEADERS, args.test_mode)
 
     try:
         if args.offline_file:
@@ -98,7 +99,7 @@ def main():
                     print("Getting more posts...")
                 else:
                     print(f"Now on page {page}")
-                posts, raw_resp = get_posts(args.query, auth, page, HEADERS, args.test_mode)
+                posts, raw_resp = get_posts(args.query, page, net_context)
                 if posts == []:
                     print("No more posts.")
                     skipped_posts.flush()
@@ -116,7 +117,7 @@ def main():
                     elif check_result == post_check.POST_CHECK_IS_BANNED:
                         if settings.BANNED_FAVGROUP:
                             print(f"Is banned; adding to favgroup #{settings.BANNED_FAVGROUP}")
-                            add_to_favgroup(settings.BANNED_FAVGROUP, post["id"], auth, HEADERS, args.test_mode)
+                            add_to_favgroup(settings.BANNED_FAVGROUP, post["id"], net_context)
                         else:
                             print("Is banned; skipping")
                         continue
@@ -125,7 +126,7 @@ def main():
                     dprint(f"Working with post = {json.dumps(post, indent=2)}")
                     dprint(f"Raw response = {raw_resp}")
                     post_info = PostInfo.from_json(post)
-                    exec_context.edit_count += processor.process_online(args, post_info, exec_context, HEADERS)
+                    exec_context.edit_count += processor.process_online(args, post_info, exec_context, net_context)
                 page += 0 if args.random or args.same_page else 1
     except KeyboardInterrupt:
         skipped_posts.flush()

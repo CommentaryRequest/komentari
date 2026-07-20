@@ -33,5 +33,10 @@ class OfflineContext:
 @dataclass
 class ExecutionContext:
     skipped_posts: SkippedPosts
-    auth: Auth
     edit_count: int
+
+@dataclass
+class NetworkContext:
+    auth: Auth
+    headers: dict[str, str]
+    test_mode: bool

@@ -97,7 +97,7 @@ COMMANDS = {
     parser.PROGRESS_CHECK: command_progress_check
 }
 
-def process_user_input(parsed_input, manual_input, args, post, ctx, offline, headers):
+def process_user_input(parsed_input, manual_input, args, post, ctx, offline, net_ctx):
     if parsed_input in COMMANDS:
         return COMMANDS[parsed_input](ctx, post, args, offline)
 
@@ -124,7 +124,7 @@ def process_user_input(parsed_input, manual_input, args, post, ctx, offline, hea
                 input("press enter...")
             return InputProcessResult(True, True)
         else:
-            edit_result = tag_edit_post(post.id, headers, parsed_input, ctx.auth, args.quiet, ctx.edit_count, args.test_mode)
+            edit_result = tag_edit_post(post.id, parsed_input, args.quiet, ctx.edit_count, net_ctx)
             if manual_input:
                 input("press enter...")
             return InputProcessResult(edit_result, True)
@@ -135,7 +135,7 @@ def process_user_input(parsed_input, manual_input, args, post, ctx, offline, hea
         print("Try again.")
         return InputProcessResult(False, False)
 
-def process_post(args, post, exec_ctx, offline_ctx, headers, commentary):
+def process_post(args, post, exec_ctx, offline_ctx, net_ctx, commentary):
     print_post_link(args, post.id)
 
     if post_is_skipped(args, exec_ctx, post.id):
@@ -154,7 +154,7 @@ def process_post(args, post, exec_ctx, offline_ctx, headers, commentary):
             print_commentary(commentary)
 
         parsed_input, manual_input = get_user_input(args, commentary, post)
-        result = process_user_input(parsed_input, manual_input, args, post, exec_ctx, offline_ctx, headers)
+        result = process_user_input(parsed_input, manual_input, args, post, exec_ctx, offline_ctx, net_ctx)
         if result.next_post:
             return 1 if result.edited else 0
 
@@ -162,7 +162,6 @@ def process_offline(args, post, exec_ctx, offline_ctx):
     commentary = offline_ctx.commentary
     return process_post(args, post, exec_ctx, offline_ctx, None, commentary)
 
-def process_online(args, post, ctx, headers):
-    # TODO create a NetworkContext type class that has auth + headers + test mode
-    commentary = get_commentary(post.id, ctx.auth, headers, args.test_mode)
-    return process_post(args, post, ctx, None, headers, commentary)
+def process_online(args, post, exec_ctx, net_ctx):
+    commentary = get_commentary(post.id, net_ctx)
+    return process_post(args, post, exec_ctx, None, net_ctx, commentary)

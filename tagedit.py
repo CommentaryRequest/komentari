@@ -1,6 +1,6 @@
 from debug import dprint, safedumps
 from booru_url import get_booru_url
-from context import PostInfo
+from context import PostInfo, NetworkContext
 import requests
 import json
 import urllib.error
@@ -14,7 +14,7 @@ def print_tags(post):
         f"m: \033[0;33m{' '.join(post.metatags)}\033[0m\n"
     )
 
-def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits, test_mode):
+def tag_edit_post(post_id, parsed_input, quiet, edits, net_ctx):
     request_data = {
         "post": {
             "old_tag_string": "",
@@ -27,9 +27,9 @@ def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits, test_mode)
     while True:
         try:
             response = requests.put(
-                f"{get_booru_url(test_mode)}/posts/{post_id}.json?{str(auth)}",
+                f"{get_booru_url(net_ctx.test_mode)}/posts/{post_id}.json?{str(net_ctx.auth)}",
                 json=request_data,
-                headers=headers
+                headers=net_ctx.headers
             )
             updated_post = response.json()
             break
@@ -54,15 +54,10 @@ def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits, test_mode)
 
         if response.status_code not in (200, 204):
             print(f"Error {response.status_code}")
-
-        elif response.status_code == 403:
-            print("Post forbidden to edit. Skip.")
             return False
-
         else:
             if not quiet:
                 print("Edited successfully.")
-
             return True
 
     except KeyError as exc:

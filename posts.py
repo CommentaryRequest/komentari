@@ -1,14 +1,15 @@
 from booru_url import get_booru_url
 from debug import dprint
+from context import NetworkContext
 import requests
 import urllib
 
-def get_posts(query, auth, page, headers, test_mode):
+def get_posts(query, page, net_ctx):
     while True:
         try:
-            posts_url = f"{get_booru_url(test_mode)}/posts.json?tags={query}&{str(auth)}&page={page}"
+            posts_url = f"{get_booru_url(net_ctx.test_mode)}/posts.json?tags={query}&{str(net_ctx.auth)}&page={page}"
             dprint(f"Execute request to {posts_url}")
-            response = requests.get(posts_url, timeout=10, headers=headers)
+            response = requests.get(posts_url, timeout=10, headers=net_ctx.headers)
             if "success" in response.json() and not response.json()["success"]:
                 print(f"Unsuccessful response: {response.json()}")
             else:
