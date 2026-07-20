@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "1.33"
+PROGRAM_VERSION = "2.0"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
