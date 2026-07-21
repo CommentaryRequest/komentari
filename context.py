@@ -41,5 +41,5 @@ class NetworkContext:
         self.auth = auth
         self.test_mode = test_mode
         self.headers = {
-            "User-Agent": settings.HEADERS
+            "User-Agent": settings.USERAGENT
         }

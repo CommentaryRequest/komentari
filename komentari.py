@@ -28,8 +28,6 @@ def run_offline(offline_posts, tag_script, args, exec_ctx):
         post_info = PostInfo(post_id, None, None, None, None, None)
         exec_ctx.edit_count += processor.process_offline(args, post_info, exec_ctx, ctx)
     print("No more posts.")
-    exec_ctx.skipped_posts.flush()
-    write_tag_script(args.offline_output, tag_script)
 
 def run_online(args, exec_ctx, net_ctx):
     page = args.initial_page
@@ -41,8 +39,6 @@ def run_online(args, exec_ctx, net_ctx):
         posts, raw_resp = get_posts(args.query, page, net_ctx)
         if posts == []:
             print("No more posts.")
-            skipped_posts.flush()
-            print(f"gardened {exec_ctx.edit_count} posts")
             break
 
         debug.dprint(f"post response: {posts}")
@@ -119,17 +115,12 @@ def main():
         else:
             run_online(args, exec_context, net_context)
     except KeyboardInterrupt:
+        print("Interrupted by user")
+    finally:
         skipped_posts.flush()
         if args.offline_file:
             write_tag_script(args.offline_output, tag_script)
         print(f"gardened {exec_context.edit_count} posts")
-        sys.exit(0)
-    except Exception as exc:
-        skipped_posts.flush()
-        if args.offline_file:
-            write_tag_script(args.offline_output, tag_script)
-        print(f"gardened {exec_context.edit_count} posts")
-        raise
 
 if __name__ == "__main__":
     main()

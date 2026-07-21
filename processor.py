@@ -64,10 +64,6 @@ def command_skip(ctx, post, _args, _offline):
     return InputProcessResult(False, True)
 
 def command_quit(ctx, _post, args, offline):
-    ctx.skipped_posts.flush()
-    if offline:
-        write_tag_script(args.offline_output, offline.tag_script)
-    print(f"gardened {ctx.edit_count} posts")
     sys.exit(0)
 
 def command_browser(_ctx, post, args, _offline):
