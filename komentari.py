@@ -22,10 +22,6 @@ import automode
 import debug
 import processor
 
-HEADERS = {
-    "User-Agent": settings.USERAGENT
-}
-
 def run_offline(offline_posts, tag_script, args, exec_ctx):
     for i, (post_id, post) in enumerate(offline_posts.items()):
         ctx = OfflineContext(tag_script, args.offline_output, Commentary(post["og_title"], post["og_description"], post["tl_title"], post["tl_description"]), len(offline_posts), i)
@@ -115,7 +111,7 @@ def main():
 
     skipped_posts = skipped.SkippedPosts()
     exec_context = ExecutionContext(skipped_posts, 0)
-    net_context = NetworkContext(auth, HEADERS, args.test_mode)
+    net_context = NetworkContext(auth, args.test_mode)
 
     try:
         if args.offline_file:

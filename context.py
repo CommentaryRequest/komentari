@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from skipped import SkippedPosts
 from auth import Auth
 from commentary import Commentary
+import settings
 
 @dataclass
 class PostInfo:
@@ -35,8 +36,10 @@ class ExecutionContext:
     skipped_posts: SkippedPosts
     edit_count: int
 
-@dataclass
 class NetworkContext:
-    auth: Auth
-    headers: dict[str, str]
-    test_mode: bool
+    def __init__(self, auth, test_mode):
+        self.auth = auth
+        self.test_mode = test_mode
+        self.headers = {
+            "User-Agent": settings.HEADERS
+        }
