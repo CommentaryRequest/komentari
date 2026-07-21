@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
 from auth import Auth
-from booru_url import get_booru_url, set_override
 from commentary import Commentary
 from posts import get_posts
 from debug import dprint, set_custom_creds
 from context import PostInfo, OfflineContext, ExecutionContext, NetworkContext
 from tag_script import write_tag_script
+import booru_url
 import settings
 import post_check
 import requests
@@ -72,6 +72,27 @@ def run_online(args, exec_ctx, net_ctx):
             exec_ctx.edit_count += processor.process_online(args, post_info, exec_ctx, net_ctx)
         page += 0 if args.random or args.same_page else 1
 
+def init_auth(args):
+    auth = None
+    if not args.offline_file:
+        auth = Auth(args.test_mode)
+
+    if args.override_login and args.override_apikey:
+        auth.set_auth(args.override_login, args.override_apikey)
+        set_custom_creds(args.override_login, args.override_apikey)
+    if args.override_domain:
+        booru_url.set_override(args.override_domain)
+
+    return auth
+
+def init_offline(args):
+    offline_posts = {}
+    if args.offline_file:
+        # TODO handle resumes better as the IDs might be out of order
+        with open(args.offline_file, "r") as commentaries_file:
+            offline_posts = {entry["post_id"]: entry for entry in json.load(commentaries_file) if entry["post_id"] >= args.file_resume}
+    return offline_posts
+
 def main():
     print(f"komentari {settings.PROGRAM_VERSION} is up")
 
@@ -88,31 +109,17 @@ def main():
         print(f"Query = {args.query}")
 
     tag_script = {}
-    offline = {}
+    offline_posts = init_offline(args)
 
-    if args.offline_file:
-        # TODO handle resumes better as the IDs might be out of order
-        with open(args.offline_file, "r") as commentaries_file:
-            offline = {entry["post_id"]: entry for entry in json.load(commentaries_file) if entry["post_id"] >= args.file_resume}
-
-    auth = None
-    if not args.offline_file:
-        auth = Auth(args.test_mode)
-
-    if args.override_login and args.override_apikey:
-        auth.set_auth(args.override_login, args.override_apikey)
-        set_custom_creds(args.override_login, args.override_apikey)
-    if args.override_domain:
-        set_override(args.override_domain)
+    auth = init_auth(args)
 
     skipped_posts = skipped.SkippedPosts()
-
     exec_context = ExecutionContext(skipped_posts, 0)
     net_context = NetworkContext(auth, HEADERS, args.test_mode)
 
     try:
         if args.offline_file:
-            run_offline(offline, tag_script, args, exec_context)
+            run_offline(offline_posts, tag_script, args, exec_context)
         else:
             run_online(args, exec_context, net_context)
     except KeyboardInterrupt:
