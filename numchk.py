@@ -1,4 +1,3 @@
-import re
 import emjchk
 
 def is_numbers(text):

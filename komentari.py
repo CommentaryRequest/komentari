@@ -9,16 +9,9 @@ from tag_script import write_tag_script
 import booru_url
 import settings
 import post_check
-import requests
-import urllib.error
-import urllib
-import parser
 import skipped
 import json
-import sys
-import argparse
 import cliargs
-import automode
 import debug
 import processor
 

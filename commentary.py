@@ -1,7 +1,5 @@
 import requests
-import settings
 import urllib
-from auth import Auth
 from booru_url import get_booru_url
 from dataclasses import dataclass
 

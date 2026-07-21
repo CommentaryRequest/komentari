@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from skipped import SkippedPosts
-from auth import Auth
 from commentary import Commentary
 import settings
 

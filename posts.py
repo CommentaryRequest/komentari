@@ -1,6 +1,5 @@
 from booru_url import get_booru_url
 from debug import dprint
-from context import NetworkContext
 import requests
 import urllib
 

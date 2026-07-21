@@ -1,6 +1,6 @@
 from debug import dprint, safedumps
 from booru_url import get_booru_url
-from context import PostInfo, NetworkContext
+from context import PostInfo
 import requests
 import json
 import urllib.error
