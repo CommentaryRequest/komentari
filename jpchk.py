@@ -1,5 +1,4 @@
 import re
-import unicodedata
 import debug
 
 JP_THRESHOLD = 0.6

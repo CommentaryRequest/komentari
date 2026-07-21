@@ -1,5 +1,4 @@
 import re
-import unicodedata
 import debug
 
 # TODO make a generic module for writing system detectors

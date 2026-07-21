@@ -6,9 +6,9 @@ import json
 from auth import Auth
 from posts import get_posts
 from tagedit import tag_edit_post
-from komentari import HEADERS
+from context import NetworkContext
 
-def check_post(post_id, exclude_tags, skip_translated, auth):
+def check_post(post_id, exclude_tags, skip_translated, net_ctx):
     if not exclude_tags and not skip_translated:
         return True # nothing to check
 
@@ -18,7 +18,7 @@ def check_post(post_id, exclude_tags, skip_translated, auth):
     if skip_translated:
         query += f" commentary:untranslated"
 
-    posts, _ = get_posts(query, auth, 1, HEADERS, False)
+    posts, _ = get_posts(query, 1, net_ctx)
     return len(posts) != 0
 
 def main():
@@ -42,6 +42,8 @@ def main():
     if args.login or args.api_key:
         auth.set_auth(args.login or auth.login, args.api_key or auth.key)
 
+    net_ctx = NetworkContext(auth, False)
+
     script = {}
     with open(script_filename, "r") as script_file:
         script = json.load(script_file)
@@ -62,13 +64,13 @@ def main():
 
             print(f"Post #{post_id}")
 
-            if not check_post(post_id, exclude_tags, skip_translated, auth):
+            if not check_post(post_id, exclude_tags, skip_translated, net_ctx):
                 print("Post unsuited. Skip.")
                 continue
 
             print(f"Adding: {script_tags}")
 
-            edits += max(0, tag_edit_post(post_id, HEADERS, script_tags, auth, True, edits, False))
+            edits += max(0, tag_edit_post(post_id, script_tags, True, edits, net_ctx))
             print("Edited.\n")
 
             if edits % 100 == 0:

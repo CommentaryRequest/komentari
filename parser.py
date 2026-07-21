@@ -8,6 +8,7 @@ QUIT = -3
 BROWSER = -4
 NONPERMANENT_SKIP = -5
 PROGRESS_CHECK = -6
+UNKNOWN_TAG = -99
 
 SPECIAL_TAGS = {
     "h": (HELP, "Show this help"),
@@ -17,8 +18,6 @@ SPECIAL_TAGS = {
     "skk": (NONPERMANENT_SKIP, "Skip this post once"),
     "?": (PROGRESS_CHECK, "Check progress (offline only)")
 }
-
-ERROR = "!!!!!!!!"
 
 def negate_tags(tags):
     sp = tags.split()
@@ -44,8 +43,9 @@ def parse(user_input):
         if tag in SPECIAL_TAGS:
             return SPECIAL_TAGS[tag][0]
         debug.dprint(f"get '{tag_clean}'")
-        real_tag = settings.TAGS.get(tag_clean, ERROR)
-        if real_tag == ERROR:
+        if tag_clean not in settings.TAGS:
             print(f"'{tag_clean}' unknown tag")
+            return UNKNOWN_TAG
+        real_tag = settings.TAGS[tag_clean]
         result += (negate_tags(real_tag) if negative else real_tag) + " "
     return result.strip()

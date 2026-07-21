@@ -4,7 +4,6 @@ from auth import Auth
 import settings
 import requests
 import argparse
-import komentari
 import json
 from booru_url import get_booru_url
 

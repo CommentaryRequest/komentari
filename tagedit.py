@@ -1,19 +1,20 @@
 from debug import dprint, safedumps
 from booru_url import get_booru_url
+from context import PostInfo
 import requests
 import json
 import urllib.error
 
 # TODO idk if this is the best place to put but also doesn't feel like i should make a new file just for this
-def print_tags(g, co, ch, m):
+def print_tags(post):
     print(
-        f"g: \033[0;34m{g}\033[0m\n"
-        f"co: \033[0;35m{co}\033[0m\n"
-        f"ch: \033[0;32m{ch}\033[0m\n"
-        f"m: \033[0;33m{m}\033[0m\n"
+        f"g: \033[0;34m{' '.join(post.gentags)}\033[0m\n"
+        f"co: \033[0;35m{' '.join(post.copytags)}\033[0m\n"
+        f"ch: \033[0;32m{' '.join(post.chartags)}\033[0m\n"
+        f"m: \033[0;33m{' '.join(post.metatags)}\033[0m\n"
     )
 
-def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits, test_mode):
+def tag_edit_post(post_id, parsed_input, quiet, edits, net_ctx):
     request_data = {
         "post": {
             "old_tag_string": "",
@@ -26,9 +27,9 @@ def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits, test_mode)
     while True:
         try:
             response = requests.put(
-                f"{get_booru_url(test_mode)}/posts/{post_id}.json?{str(auth)}",
+                f"{get_booru_url(net_ctx.test_mode)}/posts/{post_id}.json?{str(net_ctx.auth)}",
                 json=request_data,
-                headers=headers
+                headers=net_ctx.headers
             )
             updated_post = response.json()
             break
@@ -45,36 +46,20 @@ def tag_edit_post(post_id, headers, parsed_input, auth, quiet, edits, test_mode)
     dprint(f"Server said this: {safedumps(response)}")
 
     try:
-        new_tags_gen = updated_post["tag_string_general"]
-        new_tags_copy = updated_post["tag_string_copyright"]
-        new_tags_char = updated_post["tag_string_character"]
-        new_tags_meta = updated_post["tag_string_meta"]
+        updated_post = PostInfo.from_json(updated_post)
 
         if not quiet:
             print("\nTags now:\n")
-            print_tags(
-                new_tags_gen,
-                new_tags_copy,
-                new_tags_char,
-                new_tags_meta
-            )
+            print_tags(updated_post)
 
         if response.status_code not in (200, 204):
             print(f"Error {response.status_code}")
-
-        elif response.status_code == 403:
-            print("Post forbidden to edit. Skip.")
-            return 0
-
+            return False
         else:
             if not quiet:
                 print("Edited successfully.")
-
-            edits += 1
-            return 1
+            return True
 
     except KeyError as exc:
         print(f"Could not edit: {exc}")
-        return 0
-
-    return -1
+        return False
