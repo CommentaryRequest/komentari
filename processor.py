@@ -142,10 +142,10 @@ def process_post(args, post, exec_ctx, offline_ctx, net_ctx, commentary):
         return 0
 
     while True:
-        if not offline_ctx:
-            print_tags(post)
-
         if not args.quiet:
+            if not offline_ctx:
+                print_tags(post)
+
             print_commentary(commentary)
 
         parsed_input, manual_input = get_user_input(args, commentary, post)
