@@ -6,6 +6,7 @@ from posts import get_posts
 from debug import dprint, set_custom_creds
 from context import PostInfo, OfflineContext, ExecutionContext, NetworkContext
 from tag_script import write_tag_script
+from favgroup import add_to_favgroup
 import booru_url
 import settings
 import post_check
