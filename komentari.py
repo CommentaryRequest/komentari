@@ -77,35 +77,23 @@ def main():
 
     dprint("Debug mode enabled")
 
-    args = cliargs.parse_args()
+    args = cliargs.load_args()
 
     if args.test_mode:
         print("=== RUNNING IN TEST MODE ===")
-
-    if (args.offline_file and not args.offline_output) or (args.offline_output and not args.offline_file):
-        print("output and file option have to be used together always")
-        sys.exit(1)
-
-    tag_script = {}
-    offline = {}
-
-    if args.offline_file:
-        with open(args.offline_file, "r") as commentaries_file:
-            offline = {entry["post_id"]: entry for entry in json.load(commentaries_file) if entry["post_id"] >= args.file_resume}
-
-    if (args.override_login and not args.override_apikey) or (not args.override_login and args.override_apikey):
-        print("you gotta override both apikey and login")
-        sys.exit(1)
-
-    if args.random:
-        args.query += "+random:20"
-    if args.limit:
-        args.query += f"+limit:{args.limit}"
 
     if args.offline_file:
         print(f"File = {args.offline_file}")
     else:
         print(f"Query = {args.query}")
+
+    tag_script = {}
+    offline = {}
+
+    if args.offline_file:
+        # TODO handle resumes better as the IDs might be out of order
+        with open(args.offline_file, "r") as commentaries_file:
+            offline = {entry["post_id"]: entry for entry in json.load(commentaries_file) if entry["post_id"] >= args.file_resume}
 
     auth = None
     if not args.offline_file:

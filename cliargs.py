@@ -1,4 +1,5 @@
 import argparse
+import sys
 from dataclasses import dataclass
 
 @dataclass
@@ -48,14 +49,6 @@ def parse_args():
     aparser.add_argument("--ncpc", action="store_true", help="no commentary presence check")
     args = aparser.parse_args()
 
-    auto = args.auto
-    semi_auto = args.semi_auto
-    quiet = args.quiet
-    if not auto or args.semi_auto:
-        quiet = False
-    if semi_auto and not auto:
-        auto = True
-
     return CLIArgs(
         args.page,
         args.query,
@@ -78,3 +71,28 @@ def parse_args():
         args.test,
         args.ncpc
     )
+
+def load_args():
+    args = parse_args()
+
+    if not args.auto or args.semi_auto:
+        args.quiet = False
+
+    if args.semi_auto and not args.auto:
+        args.auto = True
+
+    if (args.offline_file and not args.offline_output) or (args.offline_output and not args.offline_file):
+        print("Output and file option have to be used together always.")
+        sys.exit(1)
+
+    if (args.override_login and not args.override_apikey) or (not args.override_login and args.override_apikey):
+        print("Both login and api key override are required")
+        sys.exit(1)
+
+    if args.random:
+        args.query += "+random:20"
+    
+    if args.limit:
+        args.query += f"+limit:{args.limit}"
+
+    return args
