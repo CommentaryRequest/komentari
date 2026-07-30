@@ -25,7 +25,7 @@ def main():
     try:
         while True:
             print(f"Grabbing wikis after wiki #{last_id}")
-            url = f"{get_booru_url(False)}/wiki_pages.json?search[other_name_count]=1..&search[tag][category]=3,4&search[order]=created_at&page=a{last_id}&{str(auth)}"
+            url = f"{get_booru_url(False)}/wiki_pages.json?search[other_name_count]=1..&search[tag][category]=3,4&search[order]=created_at&limit=1000&page=a{last_id}&{str(auth)}"
             wikis = []
             while True:
                 try:
@@ -36,8 +36,6 @@ def main():
                         break
                 except Exception as exc:
                     print(f"Error fetching wikis: {exc}")
-
-            print(wikis)
 
             if len(wikis) == 0:
                 print("No wikis left.")
