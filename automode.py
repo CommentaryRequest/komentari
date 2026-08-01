@@ -90,7 +90,17 @@ def detect_hashtag_only(s):
 
     return settings.AUTOTAG_HR
 
+def has_foreign_chars(text):
+    if is_empty(text):
+        return False
+    text = cleaner.remove_hashtags(text)
+    text = cleaner.remove_fullwidth(text)
+    text = cleaner.remove_invisible_chars(text)
+    return jpchk.detect_jp_chars(text) or kkchk.detect_kr_chars(text) or thchk.detect_th_chars(text)
+
 def detect_translated(commentary):
+    # TODO https://danbooru.donmai.us/posts/11880266
+
     og_title_empty = is_empty(commentary.og_title)
     tl_title_empty = is_empty(commentary.tl_title)
     og_desc_empty = is_empty(commentary.og_description)
@@ -98,27 +108,30 @@ def detect_translated(commentary):
 
     # Handle untranslated commentaries and weird abnormalities
     # where the commentary is translated but there's no original
-    # commentary. I swear I saw one such example of the latter but
-    # for the life of me can't find it.
+    # commentary.
     if (tl_title_empty and tl_desc_empty) or (og_title_empty and og_desc_empty):
         return None
 
     # Full translation:
     #  * Each original field has its corresponding translation.
-    #  * For simplicity's sake, any translations with Japanese
+    #  * For simplicity's sake, any translations with non-english
     #    characters are ignored. This may be due to the commentary
     #    being bilingual or the translation being partial and
     #    I'd just go through that stuff manually.
-    if jpchk.detect_jp_chars(commentary.tl_title) or jpchk.detect_jp_chars(commentary.tl_description):
+    if has_foreign_chars(commentary.tl_title) or has_foreign_chars(commentary.tl_description):
         return None
-    full_title_translated = (og_title_empty and tl_title_empty) or (not og_title_empty and not tl_title_empty)
-    full_description_translated = (og_desc_empty and tl_desc_empty) or (not og_desc_empty and not tl_desc_empty)
+
+    og_title_foreign = has_foreign_chars(commentary.og_title)
+    og_desc_foreign = has_foreign_chars(commentary.og_description)
+
+    full_title_translated = ((og_title_empty or not og_title_foreign) and tl_title_empty) or (not og_title_empty and not tl_title_empty)
+    full_description_translated = ((og_desc_empty or not og_desc_foreign) and tl_desc_empty) or (not og_desc_empty and not tl_desc_empty)
+    debug.dprint(f"ote={og_title_empty} tte={tl_title_empty} ode={og_desc_empty} tde={tl_desc_empty} otf={og_title_foreign} odf={og_desc_foreign}\nftt={full_title_translated} fdt={full_description_translated}")
     if full_title_translated and full_description_translated:
         return settings.AUTOTAG_TF
 
     if (full_title_translated and not full_description_translated) or (full_description_translated and not full_title_translated):
-        return None
-        #return settings.AUTOTAG_TP
+        return settings.AUTOTAG_TP
 
     return None
 
