@@ -13,10 +13,10 @@ def test_parser():
     assert parser.parse(" r ee   c") == "commentary_request english_commentary commentary commentary"
 
     # Invalid
-    assert parser.parse("asdf") == parser.ERROR
+    assert parser.parse("asdf") == parser.UNKNOWN_TAG
 
     # Invalid and valid
-    assert parser.parse("r asdf") == f"commentary_request {parser.ERROR}"
+    assert parser.parse("r asdf") == parser.UNKNOWN_TAG
 
     # Literal tags
     assert parser.parse("~1girl") == "1girl"
@@ -37,7 +37,7 @@ def test_hashtag_extractor():
     assert hashtag_extractor.extract_hashtags('"#ミクの日":[https://x.com/hashtag/ミクの日] "#ミクの日2026":[https://x.com/hashtag/ミクの日2026]') == ["ミクの日", "ミクの日2026"]
 
 def detect_tags_simple(commentary):
-    return automode.detect_tags(commentary, 0, False, [], False, "https://example.com")
+    return automode.detect_tags(commentary, 0, [], False, "https://example.com")
 
 def test_automode_simple():
     # No commentary
@@ -52,6 +52,7 @@ def test_automode_simple():
     assert detect_tags_simple(Commentary('"#GenshinImpact":[https://x.com/hashtag/GenshinImpact] "#Columbina":[https://x.com/hashtag/Columbina]', None, None, None)) == settings.AUTOTAG_HC
 
     # Hashtag-only untranslatable
+    # othernames file must be present for this test to pass
     # https://danbooru.donmai.us/posts/11004370
     assert detect_tags_simple(Commentary('"#トリッカル":[https://x.com/hashtag/トリッカル]', None, None, None)) == settings.AUTOTAG_HU
 
@@ -104,22 +105,22 @@ def test_automode_simple():
 
 def test_automode_complex():
     # English commentary with character tags
-    # https://danbooru.donmai.us/posts/10707268
-    assert automode.detect_tags(Commentary(None, "Mega Gardevoir, Midnight Lycanroc and Froslass Fusion 🤍🌙 (Commission)", None, None), 0, False, "froslass gardevoir lycanroc lycanroc_(midnight) mega_gardevoir".split(), False, None) == settings.AUTOTAG_EN
+    # (futa) https://danbooru.donmai.us/posts/11900986
+    assert automode.detect_tags(Commentary(None, "Yoshizawa Kasumi and Sakura Futaba from Persona 5 (futa)", None, None), 0, "necronomicon_(persona_5) oracle_(persona_5) sakura_futaba violet_(persona_5) yoshizawa_kasumi".split(), False, None) == settings.AUTOTAG_EN
 
     # Chinese
     # https://danbooru.donmai.us/posts/10706960
-    assert automode.detect_tags(Commentary("惬意之~🏍️✨琳奈美成啥了", '"#鸣潮":[https://www.xiaohongshu.com/search_result?keyword=鸣潮] "#鸣潮创作激励":[https://www.xiaohongshu.com/search_result?keyword=鸣潮创作激励] "#鸣潮琳奈":[https://www.xiaohongshu.com/search_result?keyword=鸣潮琳奈] "#鸣潮我们生而眺望":[https://www.xiaohongshu.com/search_result?keyword=鸣潮我们生而眺望]', None, None), 0, False, [], False, "https://www.xiaohongshu.com/explore/69523346000000002200b44e?xsec_token=ABvfE_KuJoV2hFNhq7kubXglVejGewcScYEnZ8inmQ_CA=") == settings.AUTOTAG_CN
+    assert automode.detect_tags(Commentary("惬意之~🏍️✨琳奈美成啥了", '"#鸣潮":[https://www.xiaohongshu.com/search_result?keyword=鸣潮] "#鸣潮创作激励":[https://www.xiaohongshu.com/search_result?keyword=鸣潮创作激励] "#鸣潮琳奈":[https://www.xiaohongshu.com/search_result?keyword=鸣潮琳奈] "#鸣潮我们生而眺望":[https://www.xiaohongshu.com/search_result?keyword=鸣潮我们生而眺望]', None, None), 0, [], False, "https://www.xiaohongshu.com/explore/69523346000000002200b44e?xsec_token=ABvfE_KuJoV2hFNhq7kubXglVejGewcScYEnZ8inmQ_CA=") == settings.AUTOTAG_CN
 
     # Japanese commentary from Chinese source
     # https://danbooru.donmai.us/posts/10688561
-    assert automode.detect_tags(Commentary(None, '#さいはて駅#":[https://s.weibo.com/weibo?q=%23さいはて駅%23]"#终焉车站#":[https://s.weibo.com/weibo?q=%23终焉车站%23] 先輩のこと 苦しめた人たちを消せば 良いんだって………")', None, None), 0, False, [], False, 'https://www.weibo.com/6482130941/5082512617115157') == settings.AUTOTAG_JP
+    assert automode.detect_tags(Commentary(None, '#さいはて駅#":[https://s.weibo.com/weibo?q=%23さいはて駅%23]"#终焉车站#":[https://s.weibo.com/weibo?q=%23终焉车站%23] 先輩のこと 苦しめた人たちを消せば 良いんだって………")', None, None), 0, [], False, 'https://www.weibo.com/6482130941/5082512617115157') == settings.AUTOTAG_JP
 
     # Only character tags
     # https://danbooru.donmai.us/posts/10706592
-    assert automode.detect_tags(Commentary("Laevatain", None, None, None), 0, False, "laevatain_(arknights) surtr_(arknights)".split(), False, None) == settings.AUTOTAG_CT
+    assert automode.detect_tags(Commentary("Laevatain", None, None, None), 0, "laevatain_(arknights) surtr_(arknights)".split(), False, None) == settings.AUTOTAG_CT
 
-def tst_automode_translated():
+def test_automode_translated():
     # Full commentary, full translation
     assert automode.detect_translated(Commentary("解説", "リクエスト", "Commentary", "Request")) == settings.AUTOTAG_TF
 
