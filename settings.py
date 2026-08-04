@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "2.1.1"
+PROGRAM_VERSION = "2.1.2"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
@@ -38,7 +38,8 @@ TAGS = {
     "vv": "vietnamese_commentary commentary_request",
     "p": "partial_commentary",
     "at": "alt_text",
-    "ty": "commentary_typo"
+    "ty": "commentary_typo",
+    "ms": "multi-source_commentary"
 }
 
 # Auto mode tag definitions
