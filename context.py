@@ -34,11 +34,3 @@ class OfflineContext:
 class ExecutionContext:
     skipped_posts: SkippedPosts
     edit_count: int
-
-class NetworkContext:
-    def __init__(self, auth, test_mode):
-        self.auth = auth
-        self.test_mode = test_mode
-        self.headers = {
-            "User-Agent": settings.USERAGENT
-        }

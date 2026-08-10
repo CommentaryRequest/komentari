@@ -14,7 +14,7 @@ def print_tags(post):
         f"m: \033[0;33m{' '.join(post.metatags)}\033[0m\n"
     )
 
-def tag_edit_post(post_id, parsed_input, quiet, edits, net_ctx):
+def tag_edit_post(post_id, parsed_input, quiet, edits, client):
     request_data = {
         "post": {
             "old_tag_string": "",
@@ -24,26 +24,7 @@ def tag_edit_post(post_id, parsed_input, quiet, edits, net_ctx):
 
     dprint(f"Request data = {json.dumps(request_data, indent=2)}")
 
-    while True:
-        try:
-            response = requests.put(
-                f"{get_booru_url(net_ctx.test_mode)}/posts/{post_id}.json?{str(net_ctx.auth)}",
-                json=request_data,
-                headers=net_ctx.headers
-            )
-            updated_post = response.json()
-            break
-
-        except requests.exceptions.JSONDecodeError:
-            print(f"Server returned non-JSON response: {response.text}")
-
-        except (
-            urllib.error.URLError,
-            requests.exceptions.RequestException
-        ) as exc:
-            print(f"Failed to edit post because of {exc}")
-
-    dprint(f"Server said this: {safedumps(response)}")
+    updated_post, response = client.put(f"posts/{post_id}.json", request_data)
 
     try:
         updated_post = PostInfo.from_json(updated_post)

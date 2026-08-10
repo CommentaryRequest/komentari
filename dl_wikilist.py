@@ -4,38 +4,23 @@ import requests
 import argparse
 import settings
 import json
-from auth import Auth
-from booru_url import get_booru_url
+from netclient import NetworkClient
 
 def main():
     print("komentari {settings.PROGRAM_VERSION}/wikilist downloader is up")
-
-    auth = Auth(False)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("output", type=str)
     args = parser.parse_args()
 
-    headers = {
-        "User-Agent": settings.USERAGENT
-    }
+    net_client = NetworkClient(False)
 
     last_id = 0
     othernames = set()
     try:
         while True:
             print(f"Grabbing wikis after wiki #{last_id}")
-            url = f"{get_booru_url(False)}/wiki_pages.json?search[other_name_count]=1..&search[tag][category]=3,4&search[order]=created_at&limit=1000&page=a{last_id}&{str(auth)}"
-            wikis = []
-            while True:
-                try:
-                    wikis = requests.get(url, headers=headers).json()
-                    if "success" in wikis and not wikis["success"]:
-                        print(f"Unsuccessful response: {wikis}")
-                    else:
-                        break
-                except Exception as exc:
-                    print(f"Error fetching wikis: {exc}")
+            wikis, _ = net_client.get(f"wiki_pages.json?search[other_name_count]=1..&search[tag][category]=3,4&search[order]=created_at&limit=1000&page=a{last_id}")
 
             if len(wikis) == 0:
                 print("No wikis left.")

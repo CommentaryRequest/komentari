@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 
-from auth import Auth
 import settings
 import requests
 import argparse
 import json
-from booru_url import get_booru_url
+from netclient import NetworkClient
 
 class PostCommentary:
     def __init__(self, iden, post_id, original_title, original_description, translated_title, translated_description):
@@ -29,34 +28,20 @@ class PostCommentary:
 def main():
     print(f"komentari {settings.PROGRAM_VERSION}/downloader is up")
 
-    auth = Auth(False)
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--tags", type=str)
     parser.add_argument("--limit", type=int, default=1000)
     parser.add_argument("output", type=str)
     args = parser.parse_args()
 
-    headers = {
-        "User-Agent": settings.USERAGENT
-    }
+    net_client = NetworkClient(False)
 
     last_id = 0
     commentaries_total = []
     try:
         while True:
             print(f"Grabbing commentaries after commentary #{last_id}")
-            url = f"{get_booru_url(False)}/artist_commentaries.json?commit=Search&limit={args.limit}&search%5Border%5D=id_asc&search%5Bpost_tags_match%5D={args.tags}&page=a{last_id}&{str(auth)}"
-            commentaries = []
-            while True:
-                try:
-                    commentaries = requests.get(url, headers=headers).json()
-                    if "success" in commentaries and not commentaries["success"]:
-                        print(f"Unsuccessful response: {commentaries}")
-                    else:
-                        break
-                except Exception as exc:
-                    print(f"Error fetching commentaries: {exc}")
+            commentaries, _ = net_client.get(f"artist_commentaries.json?commit=Search&limit={args.limit}&search%5Border%5D=id_asc&search%5Bpost_tags_match%5D={args.tags}&page=a{last_id}")
 
             if len(commentaries) == 0:
                 print("No commentaries left.")

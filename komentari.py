@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 
-from auth import Auth
 from commentary import Commentary
 from posts import get_posts
 from debug import dprint, set_custom_creds
-from context import PostInfo, OfflineContext, ExecutionContext, NetworkContext
+from context import PostInfo, OfflineContext, ExecutionContext
 from tag_script import write_tag_script
 from favgroup import add_to_favgroup
-import booru_url
+from netclient import NetworkClient
 import settings
 import post_check
 import skipped
@@ -23,14 +22,14 @@ def run_offline(offline_posts, tag_script, args, exec_ctx):
         exec_ctx.edit_count += processor.process_offline(args, post_info, exec_ctx, ctx)
     print("No more posts.")
 
-def run_online(args, exec_ctx, net_ctx):
+def run_online(args, exec_ctx, client):
     page = args.initial_page
     while True:
         if args.random or args.same_page:
             print("Getting more posts...")
         else:
             print(f"Now on page {page}")
-        posts, raw_resp = get_posts(args.query, page, net_ctx)
+        posts = get_posts(args.query, page, client)
         if posts == []:
             print("No more posts.")
             break
@@ -46,30 +45,30 @@ def run_online(args, exec_ctx, net_ctx):
             elif check_result == post_check.POST_CHECK_IS_BANNED:
                 if settings.BANNED_FAVGROUP:
                     print(f"Is banned; adding to favgroup #{settings.BANNED_FAVGROUP}")
-                    add_to_favgroup(settings.BANNED_FAVGROUP, post["id"], net_ctx)
+                    add_to_favgroup(settings.BANNED_FAVGROUP, post["id"], client)
                 else:
                     print("Is banned; skipping")
                 continue
 
             # Getting post information
             dprint(f"Working with post = {json.dumps(post, indent=2)}")
-            dprint(f"Raw response = {raw_resp}")
             post_info = PostInfo.from_json(post)
-            exec_ctx.edit_count += processor.process_online(args, post_info, exec_ctx, net_ctx)
+            exec_ctx.edit_count += processor.process_online(args, post_info, exec_ctx, client)
         page += 0 if args.random or args.same_page else 1
 
-def init_auth(args):
-    auth = None
-    if not args.offline_file:
-        auth = Auth(args.test_mode)
+def init_net_client(args):
+    if args.offline_file:
+        return None
+
+    client = NetworkClient(args.test_mode)
 
     if args.override_login and args.override_apikey:
-        auth.set_auth(args.override_login, args.override_apikey)
+        client.set_auth(args.override_login, args.override_apikey)
         set_custom_creds(args.override_login, args.override_apikey)
     if args.override_domain:
         booru_url.set_override(args.override_domain)
 
-    return auth
+    return client
 
 def init_offline(args):
     offline_posts = {}
@@ -97,17 +96,15 @@ def main():
     tag_script = {}
     offline_posts = init_offline(args)
 
-    auth = init_auth(args)
-
     skipped_posts = skipped.SkippedPosts()
     exec_context = ExecutionContext(skipped_posts, 0)
-    net_context = NetworkContext(auth, args.test_mode)
+    net_client = init_net_client(args)
 
     try:
         if args.offline_file:
             run_offline(offline_posts, tag_script, args, exec_context)
         else:
-            run_online(args, exec_context, net_context)
+            run_online(args, exec_context, net_client)
     except KeyboardInterrupt:
         print("Interrupted by user")
     finally:
