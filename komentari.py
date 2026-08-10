@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from commentary import Commentary
+from commentary import Commentary, get_commentary_list
 from posts import get_posts
 from debug import dprint, set_custom_creds
 from context import PostInfo, OfflineContext, ExecutionContext
@@ -35,6 +35,8 @@ def run_online(args, exec_ctx, client):
             break
 
         debug.dprint(f"post response: {posts}")
+        
+        commentaries = get_commentary_list([post["id"] for post in posts], client)
 
         for post in posts:
             # checking posts for unwanted tags
@@ -53,7 +55,7 @@ def run_online(args, exec_ctx, client):
             # Getting post information
             dprint(f"Working with post = {json.dumps(post, indent=2)}")
             post_info = PostInfo.from_json(post)
-            exec_ctx.edit_count += processor.process_online(args, post_info, exec_ctx, client)
+            exec_ctx.edit_count += processor.process_online(args, post_info, commentaries.get(post_info.id, Commentary()), exec_ctx, client)
         page += 0 if args.random or args.same_page else 1
 
 def init_net_client(args):

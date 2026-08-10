@@ -157,6 +157,5 @@ def process_offline(args, post, exec_ctx, offline_ctx):
     commentary = offline_ctx.commentary
     return process_post(args, post, exec_ctx, offline_ctx, None, commentary)
 
-def process_online(args, post, exec_ctx, client):
-    commentary = get_commentary(post.id, client)
+def process_online(args, post, commentary, exec_ctx, client):
     return process_post(args, post, exec_ctx, None, client, commentary)
