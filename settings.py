@@ -5,6 +5,7 @@ USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
 
+# Add custom tags by defining CUSTOMTAGS in usersettings.py
 TAGS = {
     "r": "commentary_request",
     "c": "commentary",
@@ -64,6 +65,7 @@ AUTOTAG_TP = "partial_commentary" # Partial translation
 
 ENGLISH_CONFIDENCE = -7.5
 
+# Sources to which chinese_commentary can apply
 CHINESE_SOURCES = [
     "weibo.com",
     "lofter.com",
@@ -74,12 +76,17 @@ CHINESE_SOURCES = [
     "mihuashi.com"
 ]
 
+# "Censored tags", posts with these tags are always skipped
 CENTAGS = {
     "hashtag-only_commentary"
 }
 
+# Favgroup to add posts unrecognized in automode to
 UNRECOG_FAVGROUP = 0
+
 SKIP_BANNED_POSTS = False
+
+# Favgroup to add banned posts to if SKIP_BANNED_POSTS is enabled
 BANNED_FAVGROUP = 0
 
 BOORU_URL = "https://danbooru.donmai.us"
