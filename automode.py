@@ -96,7 +96,7 @@ def has_foreign_chars(text):
     text = cleaner.remove_hashtags(text)
     text = cleaner.remove_fullwidth(text)
     text = cleaner.remove_invisible_chars(text)
-    return jpchk.detect_jp_chars(text) or kkchk.detect_kr_chars(text) or thchk.detect_th_chars(text)
+    return jpchk.detect_jp_chars(text) or kkchk.detect_kr_chars(text) or thchk.detect_th_chars(text) or "ó" in text
 
 def detect_translated(commentary):
     # TODO https://danbooru.donmai.us/posts/11880266
@@ -214,7 +214,7 @@ def detect_tags(commentary, post_id, chartags, quiet, source):
         return settings.AUTOTAG_NS
 
     confidence = check_en(clean_commentary)
-    if not jpchk.detect_jp_chars(clean_commentary) and not kkchk.detect_kr_chars(clean_commentary) and confidence >= settings.ENGLISH_CONFIDENCE:
+    if not has_foreign_chars(clean_commentary) and confidence >= settings.ENGLISH_CONFIDENCE:
         return settings.AUTOTAG_EN
 
     return None
