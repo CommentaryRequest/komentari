@@ -1,6 +1,6 @@
 import re
 import debug
-import emjchk
+import symchk
 
 def parse_chartag(chartag):
     chartag = re.sub(r"\(.*\)", "", chartag)
@@ -21,7 +21,7 @@ def chartag_annihilate(commentary, chartags):
     clean_commentary = commentary.lower()
     words = []
     for word in clean_commentary.split():
-        fixed_word = emjchk.strip_emoji(emjchk.strip_punct(word))
+        fixed_word = symchk.strip_symbols(symchk.strip_punct(word))
         if len(fixed_word.strip()) == 0:
             words.append(word)
         else:

@@ -1,4 +1,4 @@
-import emjchk
+import symchk
 
 def is_numbers(text):
-    return all(char.isdigit() or char in emjchk.symbols_punct + [" "] for char in text)
+    return all(char.isdigit() or char.isspace() or symchk.test_category(char) for char in text)

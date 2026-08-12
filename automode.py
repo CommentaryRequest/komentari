@@ -5,7 +5,7 @@ import thchk
 import kkchk
 import enrecog
 import re
-import emjchk
+import symchk
 import numchk
 import cleaner
 import settings
@@ -51,7 +51,7 @@ def get_model():
 
 def check_en(commentary):
     commentary = re.sub(r"\d", " ", commentary)
-    commentary = "".join([ch if not emjchk.is_symbol(ch) and not emjchk.test_category(ch) else " " for ch in commentary])
+    commentary = "".join([ch if not symchk.test_category(ch) else " " for ch in commentary])
     confidence = enrecog.score_text(commentary, get_model())
     debug.dprint(f"Confidence for text = '{commentary}': {confidence}")
     return confidence
@@ -71,7 +71,7 @@ def othername_match(h):
 
 def empty_or_symbols(s):
     s = s.strip()
-    return len(s) == 0 or emjchk.is_emoji(s)
+    return len(s) == 0 or symchk.is_symbol_only(s)
 
 def is_empty(s):
     return not s or not s.strip()
@@ -175,8 +175,8 @@ def detect_tags(commentary, post_id, chartags, quiet, source):
         return settings.AUTOTAG_UR
 
     # Check if there's only symbols left
-    is_emoji = emjchk.is_emoji(clean_commentary)
-    if is_emoji:
+    is_symbol_only = symchk.is_symbol_only(clean_commentary)
+    if is_symbol_only:
         return settings.AUTOTAG_SY
 
     # Remove bloat
@@ -190,13 +190,13 @@ def detect_tags(commentary, post_id, chartags, quiet, source):
     # Annihilate chartags
     clean_commentary = chartag_annihilater.chartag_annihilate(clean_commentary, chartags)
     debug.dprint(f"remove chartags = {clean_commentary}")
-    if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary.strip()): # only chartags w emojis
+    if len(clean_commentary.strip()) == 0 or symchk.is_symbol_only(clean_commentary.strip()): # only chartags w symbols
         return settings.AUTOTAG_CT
 
     # Remove fullwidth characters
     clean_commentary = cleaner.remove_fullwidth(clean_commentary)
     debug.dprint(f"remove fullwidth = {clean_commentary}")
-    if len(clean_commentary.strip()) == 0 or emjchk.is_emoji(clean_commentary.strip()):
+    if len(clean_commentary.strip()) == 0 or symchk.is_symbol_only(clean_commentary.strip()):
         return settings.AUTOTAG_FW
 
     if kkchk.is_korea(clean_commentary):
@@ -210,7 +210,7 @@ def detect_tags(commentary, post_id, chartags, quiet, source):
         return settings.AUTOTAG_TH
     if numchk.is_numbers(clean_commentary):
         return settings.AUTOTAG_NM
-    if numchk.is_numbers(emjchk.strip_emoji(clean_commentary)):
+    if numchk.is_numbers(symchk.strip_symbols(clean_commentary)):
         return settings.AUTOTAG_NS
 
     confidence = check_en(clean_commentary)
