@@ -24,6 +24,9 @@ class NetworkClient:
         while True:
             try:
                 response = self.session.get(f"{self.base_url}/{url}", timeout=10, **kwargs)
+                time.sleep(0.5)
+                if response.status_code in (201, 204):
+                    return {}, response
                 return response.json(), response
             except requests.exceptions.JSONDecodeError:
                 print(f"Server returned non-JSON response ({url}): {response.text}")
@@ -36,6 +39,8 @@ class NetworkClient:
         while True:
             try:
                 response = self.session.put(f"{self.base_url}/{url}", timeout=10, json=data, **kwargs)
+                if response.status_code in (201, 204):
+                    return {}, response
                 return response.json(), response
             except requests.exceptions.JSONDecodeError:
                 print(f"Server returned non-JSON response ({url}): {response.text}")
