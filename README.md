@@ -16,7 +16,7 @@ Run `dl_wikilist.py` to create a list of copyright and character names for untra
 
 ### Convenience scripts
 
-Located in `scripts` directory.
+Located in `scripts` directory, execute from the root directory of Komentari.
 
 * `do_user.sh`: quickly semi-automatically tag a specific user's posts. Run with no arguments to see usage.
 * `runbot.sh`: run a simple bot instance. Any arguments passed to this script are forwarded to `komentari.py`.
