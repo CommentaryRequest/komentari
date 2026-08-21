@@ -21,7 +21,7 @@ def check_post(post_id, exclude_tags, skip_translated, net_client):
     return len(posts) != 0
 
 def main():
-    print(f"komentari {settings.PROGRAM_VERSION}/script executer is up")
+    print(f"komentari {settings.PROGRAM_VERSION}/script executor is up")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("file", type=str)
