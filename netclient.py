@@ -24,6 +24,7 @@ class NetworkClient:
         while True:
             try:
                 response = self.session.get(f"{self.base_url}/{url}", timeout=10, **kwargs)
+                time.sleep(settings.REQUEST_DELAY)
                 if response.status_code in (201, 204):
                     return {}, response
                 json_resp = response.json()
@@ -42,6 +43,7 @@ class NetworkClient:
         while True:
             try:
                 response = self.session.put(f"{self.base_url}/{url}", timeout=10, json=data, **kwargs)
+                time.sleep(settings.REQUEST_DELAY)
                 if response.status_code in (201, 204):
                     return {}, response
                 json_resp = response.json()

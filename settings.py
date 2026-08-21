@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "2.1.9.1"
+PROGRAM_VERSION = "2.1.10"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
@@ -88,6 +88,9 @@ SKIP_BANNED_POSTS = False
 
 # Favgroup to add banned posts to if SKIP_BANNED_POSTS is enabled
 BANNED_FAVGROUP = 0
+
+# Delay between network requests (in seconds)
+REQUEST_DELAY = 0
 
 BOORU_URL = "https://danbooru.donmai.us"
 TESTBOORU_URL = "https://testbooru.donmai.us"
