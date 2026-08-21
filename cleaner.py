@@ -29,7 +29,8 @@ BLOAT = [
     "pawoo",
     "ych",
     "fannbox",
-    "cms"
+    "cms",
+    "fa"
 ]
 
 INVISIBLE_CHARS = [
