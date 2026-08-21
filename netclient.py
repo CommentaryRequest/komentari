@@ -30,7 +30,7 @@ class NetworkClient:
                 if "success" in json_resp and not json_resp["success"]:
                     print(f"Unsuccessful response ({url}): {response.text}")
                     continue
-                return response.json(), response
+                return json_resp, response
             except requests.exceptions.JSONDecodeError:
                 print(f"Server returned non-JSON response ({url}): {response.text}")
                 time.sleep(0.5)
@@ -44,10 +44,11 @@ class NetworkClient:
                 response = self.session.put(f"{self.base_url}/{url}", timeout=10, json=data, **kwargs)
                 if response.status_code in (201, 204):
                     return {}, response
+                json_resp = response.json()
                 if "success" in json_resp and not json_resp["success"]:
                     print(f"Unsuccessful response ({url}): {response.text}")
                     continue
-                return response.json(), response
+                return json_resp, response
             except requests.exceptions.JSONDecodeError:
                 print(f"Server returned non-JSON response ({url}): {response.text}")
                 time.sleep(0.5)
