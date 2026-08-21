@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "2.1.11"
+PROGRAM_VERSION = "2.1.12"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
@@ -31,7 +31,6 @@ TAGS = {
     "ror": "romaji_commentary commentary_request",
     "ru": "russian_commentary",
     "rr": "russian_commentary commentary_request",
-    "er": "engrish_commentary",
     "t": "thai_commentary",
     "tt": "thai_commentary commentary_request",
     "f": "french_commentary",
