@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "2.1.12"
+PROGRAM_VERSION = "2.2"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
@@ -90,6 +90,10 @@ BANNED_FAVGROUP = 0
 
 # Delay between network requests (in seconds)
 REQUEST_DELAY = 0
+
+# Use same-page mode by default
+# --same-page will instead enable pagination if this is enabled.
+SAME_PAGE_DEFAULT = False
 
 BOORU_URL = "https://danbooru.donmai.us"
 TESTBOORU_URL = "https://testbooru.donmai.us"

@@ -1,5 +1,6 @@
 import argparse
 import sys
+import settings
 from dataclasses import dataclass
 
 @dataclass
@@ -94,5 +95,8 @@ def load_args():
     
     if args.limit:
         args.query += f"+limit:{args.limit}"
+
+    if settings.SAME_PAGE_DEFAULT:
+        args.same_page = not args.same_page
 
     return args
