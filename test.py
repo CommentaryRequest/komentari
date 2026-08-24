@@ -144,6 +144,9 @@ def test_automode_translated():
     # Abnormality
     assert automode.detect_translated(Commentary(None, None, "Commentary", "Request")) == None
 
+    # https://danbooru.donmai.us/posts/12029039
+    assert automode.detect_translated(Commentary("尾刃カンナ", "For HD version on patreon/fanbox :\n・<https://www.patreon.com/R0_Ref>\n・<https://ref.fanbox.cc>\nFollow me to on Twitter and Bluesky :\n・<https://x.com/r0_Ref>\n・<https://bsky.app/profile/r0ref.bsky.social>\nCommission :\n・<https://vgen.co/Ref>", "Ogata Kanna", "")) == settings.AUTOTAG_TF
+
 def test_cleaner():
     assert cleaner.remove_hashtags('"#Skeb":[https://twitter.com/hashtag/Skeb] commission') == " commission"
     assert cleaner.remove_bloat("Skebリクエストです。差分はPixivFANBOXで。") == "リクエストです。差分はで。"

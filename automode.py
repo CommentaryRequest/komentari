@@ -96,6 +96,7 @@ def has_foreign_chars(text):
     text = cleaner.remove_hashtags(text)
     text = cleaner.remove_fullwidth(text)
     text = cleaner.remove_invisible_chars(text)
+    text = symchk.strip_symbols(text)
     return jpchk.detect_jp_chars(text) or kkchk.detect_kr_chars(text) or thchk.detect_th_chars(text) or "ó" in text
 
 def detect_translated(commentary):
