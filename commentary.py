@@ -10,7 +10,7 @@ class Commentary:
     tl_description: str = ""
 
     def is_empty(self):
-        return len(self.og_title.strip() + self.og_description.strip() + self.tl_title.strip() + self.tl_description().strip()) == 0
+        return len(self.og_title.strip() + self.og_description.strip() + self.tl_title.strip() + self.tl_description.strip()) == 0
 
 def get_commentary(post_id, client):
     commentary, _ = client.get(f"posts/{post_id}/artist_commentary.json")
