@@ -18,7 +18,7 @@ def get_commentary(post_id, client):
 
 def get_commentary_list(post_ids, client):
     query = "id:" + ",".join([str(i) for i in post_ids])
-    commentaries_json, _ = client.get(f"artist_commentaries.json?commit=Search&search[post_tags_match]={query}")
+    commentaries_json, _ = client.get(f"artist_commentaries.json?commit=Search&search[post_tags_match]={query}&limit=200")
     commentaries = {}
     for commentary in commentaries_json:
         commentaries[commentary["post_id"]] = Commentary(commentary["original_title"], commentary["original_description"], commentary["translated_title"], commentary["translated_description"])
