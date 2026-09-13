@@ -100,12 +100,11 @@ def has_foreign_chars(text):
     return jpchk.detect_jp_chars(text) or kkchk.detect_kr_chars(text) or thchk.detect_th_chars(text) or "ó" in text
 
 def detect_translated(commentary):
-    # TODO https://danbooru.donmai.us/posts/11880266
-
+    # If original and TL title are the same, assume TL is empty.
     og_title_empty = is_empty(commentary.og_title)
-    tl_title_empty = is_empty(commentary.tl_title)
+    tl_title_empty = is_empty(commentary.tl_title) or commentary.og_title == commentary.tl_title
     og_desc_empty = is_empty(commentary.og_description)
-    tl_desc_empty = is_empty(commentary.tl_description)
+    tl_desc_empty = is_empty(commentary.tl_description) or commentary.og_description == commentary.tl_description
 
     # Handle untranslated commentaries and weird abnormalities
     # where the commentary is translated but there's no original
@@ -119,7 +118,7 @@ def detect_translated(commentary):
     #    characters are ignored. This may be due to the commentary
     #    being bilingual or the translation being partial and
     #    I'd just go through that stuff manually.
-    if has_foreign_chars(commentary.tl_title) or has_foreign_chars(commentary.tl_description):
+    if (has_foreign_chars(commentary.tl_title) and not tl_title_empty) or (has_foreign_chars(commentary.tl_description) and not tl_desc_empty):
         return None
 
     og_title_foreign = has_foreign_chars(commentary.og_title)
