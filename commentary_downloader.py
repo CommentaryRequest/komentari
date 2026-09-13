@@ -31,10 +31,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tags", type=str)
     parser.add_argument("--limit", type=int, default=1000)
+    parser.add_argument("--test", action="store_true")
     parser.add_argument("output", type=str)
     args = parser.parse_args()
 
-    net_client = NetworkClient(False)
+    net_client = NetworkClient(args.test)
 
     last_id = 0
     commentaries_total = []

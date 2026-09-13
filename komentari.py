@@ -15,8 +15,10 @@ import cliargs
 import debug
 import processor
 
-def run_offline(offline_posts, tag_script, args, exec_ctx):
+def run_offline(offline_posts, initial_index, tag_script, args, exec_ctx):
     for i, (post_id, post) in enumerate(offline_posts.items()):
+        if i < initial_index: # not sure why start=initial_index isnt working maybe im stupid
+            continue
         ctx = OfflineContext(tag_script, args.offline_output, Commentary(post["og_title"], post["og_description"], post["tl_title"], post["tl_description"]), len(offline_posts), i)
         post_info = PostInfo(post_id, None, None, None, None, None)
         exec_ctx.edit_count += processor.process_offline(args, post_info, exec_ctx, ctx)
@@ -74,11 +76,12 @@ def init_net_client(args):
 
 def init_offline(args):
     offline_posts = {}
+    initial_index = 0
     if args.offline_file:
-        # TODO handle resumes better as the IDs might be out of order
         with open(args.offline_file, "r") as commentaries_file:
-            offline_posts = {entry["post_id"]: entry for entry in json.load(commentaries_file) if entry["post_id"] >= args.file_resume}
-    return offline_posts
+            offline_posts = {entry["post_id"]: entry for entry in json.load(commentaries_file)}
+        initial_index = 0 if not args.file_resume else list(offline_posts.keys()).index(args.file_resume)
+    return offline_posts, initial_index
 
 def main():
     print(f"komentari {settings.PROGRAM_VERSION} is up")
@@ -96,7 +99,7 @@ def main():
         print(f"Query = {args.query}")
 
     tag_script = {}
-    offline_posts = init_offline(args)
+    offline_posts, offline_initial_index = init_offline(args)
 
     skipped_posts = skipped.SkippedPosts()
     exec_context = ExecutionContext(skipped_posts, 0)
@@ -104,7 +107,7 @@ def main():
 
     try:
         if args.offline_file:
-            run_offline(offline_posts, tag_script, args, exec_context)
+            run_offline(offline_posts, offline_initial_index, tag_script, args, exec_context)
         else:
             run_online(args, exec_context, net_client)
     except KeyboardInterrupt:

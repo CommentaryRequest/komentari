@@ -28,8 +28,8 @@ class CLIArgs:
 
 def parse_args():
     aparser = argparse.ArgumentParser()
-    aparser.add_argument("--page", "-p", type=int, default=1)
-    aparser.add_argument("--query", "-q", type=str, default="-commentary+-commentary_request")
+    aparser.add_argument("--page", "-p", type=int, default=1, help="start on this page of results")
+    aparser.add_argument("--query", "-q", type=str, default="-commentary+-commentary_request", help="tag query to search")
     aparser.add_argument("--random", "-r", action="store_true", help="select posts at random")
     aparser.add_argument("--limit", "-l", type=int, default=None, help="change the post limit")
     aparser.add_argument("--preset-tag", "--pt", type=str, default=None, help="apply this tag on every post with confirmation")
@@ -46,8 +46,8 @@ def parse_args():
     aparser.add_argument("--output", "-o", type=str, help="file to output tag script")
     aparser.add_argument("--file-resume", type=int, help="resume from this post when using file mode", default=0)
     aparser.add_argument("--ignore-skip", action="store_true", help="ignore skipped posts")
-    aparser.add_argument("--test", action="store_true", help="run in test mode")
-    aparser.add_argument("--ncpc", action="store_true", help="no commentary presence check")
+    aparser.add_argument("--test", "-t", action="store_true", help="run in test mode")
+    aparser.add_argument("--ncpc", "-n", action="store_true", help="no commentary presence check")
     args = aparser.parse_args()
 
     return CLIArgs(
