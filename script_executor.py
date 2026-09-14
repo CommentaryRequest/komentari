@@ -30,6 +30,7 @@ def main():
     parser.add_argument("--resume", type=int, default=0)
     parser.add_argument("--login", type=str)
     parser.add_argument("--api-key", type=str)
+    parser.add_argument("--test", action="store_true")
     args = parser.parse_args()
 
     script_filename = args.file
@@ -37,7 +38,7 @@ def main():
     skip_translated = args.skip_translated
     resume = args.resume
 
-    net_client = NetworkClient(False)
+    net_client = NetworkClient(args.test)
     if args.login and args.api_key:
         net_client.set_auth(args.login, args.api_key)
 

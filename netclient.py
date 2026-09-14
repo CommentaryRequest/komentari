@@ -3,6 +3,14 @@ import requests
 import time
 from booru_url import get_booru_url
 
+# See https://github.com/danbooru/danbooru/blob/master/app/controllers/application_controller.rb#L117
+# Most other status codes are a user error and should be handled by the netclient callers.
+RETRY_STATUS_CODES = [
+    429, # Rate limit (RateLimiter::RateLimitError)
+    500, # Server error or timeout (ActiveRecord::QueryCanceled / Rack::Timeout::RequestTimeoutException / misc errors)
+    503, # Downbooru (ActiveRecord::ConnectionNotEstablished / PG::ConnectionBad)
+]
+
 class NetworkClient:
     def __init__(self, test_mode):
         self.session = requests.Session()
@@ -50,8 +58,9 @@ class NetworkClient:
                     return {}, response
                 json_resp = response.json()
                 if "success" in json_resp and not json_resp["success"]:
-                    print(f"Unsuccessful response ({url}): {response.text}")
-                    continue
+                    print(f"Unsuccessful response (code {response.status_code} on {url}): {response.text}")
+                    if response.status_code in RETRY_STATUS_CODES:
+                        continue
                 return json_resp, response
             except requests.exceptions.JSONDecodeError:
                 print(f"Server returned non-JSON response ({url}): {response.text}")
