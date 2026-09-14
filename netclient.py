@@ -34,6 +34,8 @@ class NetworkClient:
                 return json_resp, response
             except requests.exceptions.JSONDecodeError:
                 print(f"Server returned non-JSON response ({url}): {response.text}")
+                if "CF-Ray" in response.headers:
+                    print(f"Cloudflare Ray ID: {response.headers["CF-Ray"]}")
                 time.sleep(0.5)
             except Exception as exc:
                 print(f"Failed to fetch {url}: {exc}")
@@ -53,6 +55,8 @@ class NetworkClient:
                 return json_resp, response
             except requests.exceptions.JSONDecodeError:
                 print(f"Server returned non-JSON response ({url}): {response.text}")
+                if "CF-Ray" in response.headers:
+                    print(f"Cloudflare Ray ID: {response.headers["CF-Ray"]}")
                 time.sleep(0.5)
             except Exception as exc:
                 print(f"Failed to fetch {url}: {exc}")
