@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "2.2.8"
+PROGRAM_VERSION = "2.2.9"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
@@ -73,7 +73,10 @@ CHINESE_SOURCES = [
     "bilibili.com",
     "miyoushe.com",
     "huashijie.art",
-    "mihuashi.com"
+    "mihuashi.com",
+    "b23.tv",
+    "xhslink.cn",
+    "xhslink.com"
 ]
 
 # "Censored tags", posts with these tags are always skipped
