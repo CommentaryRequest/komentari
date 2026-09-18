@@ -3,10 +3,11 @@
 manual=1
 auto=1
 user_name=""
+query_append=""
 
 usage()
 {
-    echo "Usage: $0 <user name> [-a|--noauto] [-m|--nomanual]"
+    echo "Usage: $0 <user name> [-a|--noauto] [-m|--nomanual] [-q|--queryappend QUERYAPPEND]"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -17,6 +18,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         -m|--nomanual)
             manual=0
+            shift
+            ;;
+        -q|--queryappend)
+            query_append="$2"
+            shift
             shift
             ;;
         *)
@@ -38,7 +44,7 @@ fi
 
 mkdir -p ./user_backtag
 
-query="user:$user_name -/c -/cr has:commentary"
+query="user:$user_name -/c -/cr has:commentary $query_append"
 echo " *** Starting commentary tagging session for user: $user_name"
 
 if [ "$auto" == "1" ]; then
