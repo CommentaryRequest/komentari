@@ -80,6 +80,8 @@ CHINESE_SOURCES = [
 ]
 
 # "Censored tags", posts with these tags are always skipped
+# Mainly a workaround for member-level users to filter out
+# more than 2 tags by auto-skipping these.
 CENTAGS = {
     "hashtag-only_commentary"
 }
