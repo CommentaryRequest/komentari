@@ -30,9 +30,9 @@ def main():
                 commentary_id = commentary["id"]
                 tags = script_data[post_id]
 
-                post_link = f"https://danbooru.donmai.us/{post_id}"
+                post_link = f"https://danbooru.donmai.us/posts/{post_id}"
 
-                file.write(f"post #{post_id} ({post_link})\ncommentary #{commentary_id}\n")
+                file.write(f"post #{post_id} ( {post_link} )\ncommentary #{commentary_id}\n")
                 if original_title:
                     file.write(f"Original title: {original_title}\n")
                 if original_desc:
