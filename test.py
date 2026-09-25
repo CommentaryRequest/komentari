@@ -37,7 +37,7 @@ def test_hashtag_extractor():
     assert hashtag_extractor.extract_hashtags('"#ミクの日":[https://x.com/hashtag/ミクの日] "#ミクの日2026":[https://x.com/hashtag/ミクの日2026]') == ["ミクの日", "ミクの日2026"]
 
 def detect_tags_simple(commentary):
-    return automode.detect_tags(commentary, 0, [], False, "https://example.com")
+    return automode.detect_tags_all(commentary, 0, [], False, "https://example.com")
 
 def test_automode_simple():
     # No commentary
@@ -106,23 +106,36 @@ def test_automode_simple():
 def test_automode_complex():
     # English commentary with character tags
     # (futa) https://danbooru.donmai.us/posts/11900986
-    assert automode.detect_tags(Commentary(None, "Yoshizawa Kasumi and Sakura Futaba from Persona 5 (futa)", None, None), 0, "necronomicon_(persona_5) oracle_(persona_5) sakura_futaba violet_(persona_5) yoshizawa_kasumi".split(), False, None) == settings.AUTOTAG_EN
+    assert automode.detect_tags_all(Commentary(None, "Yoshizawa Kasumi and Sakura Futaba from Persona 5 (futa)", None, None), 0, "necronomicon_(persona_5) oracle_(persona_5) sakura_futaba violet_(persona_5) yoshizawa_kasumi".split(), False, None) == settings.AUTOTAG_EN
 
     # Non-English commentary with character tags
     # (nsfw) https://danbooru.donmai.us/posts/11969656
-    assert automode.detect_tags(Commentary(None, "Kanna e tal part 1 (Comisión)", None, None), 0, ["kanna_kamui"], False, None) is None
+    assert automode.detect_tags_all(Commentary(None, "Kanna e tal part 1 (Comisión)", None, None), 0, ["kanna_kamui"], False, None) is None
 
     # Chinese
     # https://danbooru.donmai.us/posts/10706960
-    assert automode.detect_tags(Commentary("惬意之~🏍️✨琳奈美成啥了", '"#鸣潮":[https://www.xiaohongshu.com/search_result?keyword=鸣潮] "#鸣潮创作激励":[https://www.xiaohongshu.com/search_result?keyword=鸣潮创作激励] "#鸣潮琳奈":[https://www.xiaohongshu.com/search_result?keyword=鸣潮琳奈] "#鸣潮我们生而眺望":[https://www.xiaohongshu.com/search_result?keyword=鸣潮我们生而眺望]', None, None), 0, [], False, "https://www.xiaohongshu.com/explore/69523346000000002200b44e?xsec_token=ABvfE_KuJoV2hFNhq7kubXglVejGewcScYEnZ8inmQ_CA=") == settings.AUTOTAG_CN
+    assert automode.detect_tags_all(Commentary("惬意之~🏍️✨琳奈美成啥了", '"#鸣潮":[https://www.xiaohongshu.com/search_result?keyword=鸣潮] "#鸣潮创作激励":[https://www.xiaohongshu.com/search_result?keyword=鸣潮创作激励] "#鸣潮琳奈":[https://www.xiaohongshu.com/search_result?keyword=鸣潮琳奈] "#鸣潮我们生而眺望":[https://www.xiaohongshu.com/search_result?keyword=鸣潮我们生而眺望]', None, None), 0, [], False, "https://www.xiaohongshu.com/explore/69523346000000002200b44e?xsec_token=ABvfE_KuJoV2hFNhq7kubXglVejGewcScYEnZ8inmQ_CA=") == settings.AUTOTAG_CN
 
     # Japanese commentary from Chinese source
     # https://danbooru.donmai.us/posts/10688561
-    assert automode.detect_tags(Commentary(None, '#さいはて駅#":[https://s.weibo.com/weibo?q=%23さいはて駅%23]"#终焉车站#":[https://s.weibo.com/weibo?q=%23终焉车站%23] 先輩のこと 苦しめた人たちを消せば 良いんだって………")', None, None), 0, [], False, 'https://www.weibo.com/6482130941/5082512617115157') == settings.AUTOTAG_JP
+    assert automode.detect_tags_all(Commentary(None, '#さいはて駅#":[https://s.weibo.com/weibo?q=%23さいはて駅%23]"#终焉车站#":[https://s.weibo.com/weibo?q=%23终焉车站%23] 先輩のこと 苦しめた人たちを消せば 良いんだって………")', None, None), 0, [], False, 'https://www.weibo.com/6482130941/5082512617115157') == settings.AUTOTAG_JP
 
     # Only character tags
     # https://danbooru.donmai.us/posts/10706592
-    assert automode.detect_tags(Commentary("Laevatain", None, None, None), 0, "laevatain_(arknights) surtr_(arknights)".split(), False, None) == settings.AUTOTAG_CT
+    assert automode.detect_tags_all(Commentary("Laevatain", None, None, None), 0, "laevatain_(arknights) surtr_(arknights)".split(), False, None) == settings.AUTOTAG_CT
+
+def alt_text_commentary(description, alt_text):
+    return Commentary(None, f"{description}\n\n[quote]\nh6. Image Description\n\n{alt_text}\n[/quote]", None, None)
+
+def test_automode_additional():
+    # English with alt text
+    # https://danbooru.donmai.us/posts/12251811
+    assert detect_tags_simple(alt_text_commentary("mornings", "A digital painting of eevee\n\nIn a bedroom in the morning, sunlight streams through the window. A man getting ready for work is using a lint roller to remove fur from his dress shirt. A toy brought by the eevee is sitting on top of his work bag. He tries to check the time, but the eevee's tail, playfully swishing over his shoulder, is blocking his view. He's about to be late for work")) == settings.AUTOTAG_EN + " " + settings.AUTOTAG_AT
+
+    # Japanese with alt text
+    # Deliberate fake example that has more EN than JP characters, in the form of the Image Description heading.
+    # It should be ignored by the detector.
+    assert detect_tags_simple(alt_text_commentary("あ", "ﾃｽﾃｽ")) == settings.AUTOTAG_JP + " " + settings.AUTOTAG_AT
 
 def test_automode_translated():
     # Full commentary, full translation

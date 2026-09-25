@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "2.2.9"
+PROGRAM_VERSION = "2.3"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
@@ -44,6 +44,8 @@ TAGS = {
 }
 
 # Auto mode tag definitions
+
+# Main tags
 AUTOTAG_EN = "commentary english_commentary" # English
 AUTOTAG_HU = "untranslatable_commentary" # Hashtag-only untranslatable
 AUTOTAG_HR = "commentary_request" # Hashtag-only translatable
@@ -62,6 +64,9 @@ AUTOTAG_NS = "commentary" # Numbers and symbols only
 AUTOTAG_UR = "commentary" # URLs only
 AUTOTAG_TF = "commentary" # Full translation
 AUTOTAG_TP = "partial_commentary" # Partial translation
+
+# Additional tags
+AUTOTAG_AT = "alt_text"
 
 ENGLISH_CONFIDENCE = -7.5
 

@@ -135,7 +135,13 @@ def detect_translated(commentary):
 
     return None
 
-def detect_tags(commentary, post_id, chartags, quiet, source):
+def detect_tags_additional(commentary):
+    flat = commentary.flatten_original()
+    if cleaner.remove_alt_text(flat) != flat:
+        return settings.AUTOTAG_AT
+    return None
+
+def detect_tags_main(commentary, post_id, chartags, quiet, source):
     if not is_empty(commentary.tl_title) != 0 or not is_empty(commentary.tl_description) != 0:
         tags = detect_translated(commentary)
         return tags
@@ -149,8 +155,11 @@ def detect_tags(commentary, post_id, chartags, quiet, source):
         return settings.AUTOTAG_UN
 
     # Flatten the commentary into a single string
-    clean_commentary = (commentary.og_title or "") + " " + (commentary.og_description or "")
+    clean_commentary = commentary.flatten_original()
     debug.dprint(f"clean commentary = {clean_commentary}")
+
+    # Remove alt text formatting
+    clean_commentary = cleaner.remove_alt_text(clean_commentary)
 
     # Remove invisible chars
     clean_commentary = cleaner.remove_invisible_chars(clean_commentary)
@@ -219,8 +228,16 @@ def detect_tags(commentary, post_id, chartags, quiet, source):
 
     return None
 
+def detect_tags_all(commentary, post_id, chartags, quiet, source):
+    main_tags = detect_tags_main(commentary, post_id, chartags, quiet, source)
+    additional_tags = detect_tags_additional(commentary)
+
+    if additional_tags and main_tags:
+        return main_tags + " " + additional_tags
+    return additional_tags or main_tags
+
 def parse(commentary, semi_auto, quiet, post_id, chartags, dry, source):
-    tags = detect_tags(commentary, post_id, chartags, quiet, source)
+    tags = detect_tags_all(commentary, post_id, chartags, quiet, source)
 
     if dry:
         print(f"Detected tags: {tags or 'none'}")

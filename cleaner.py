@@ -64,3 +64,6 @@ def remove_bloat(text):
 
 def remove_fullwidth(text):
     return re.sub(r"[\uFF01-\uFF5E]", "", text);
+
+def remove_alt_text(text):
+    return re.sub(r"\[quote\](?:\r?\n)*h6\. Image Description(?:\r?\n)+(.*?)(?:\r?\n)*\[/quote\]", r"\1", text, flags=re.DOTALL)
