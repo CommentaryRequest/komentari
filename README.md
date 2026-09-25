@@ -30,4 +30,6 @@ First, download commentaries using the `commentary_downloader.py` script.
 
 Run `komentari.py` with the `--file` option, set to the file containing commentaries. Specify file to output tag edits to with the `--output` option. `--auto` and `--semi-auto` options can be used in offline mode too.
 
+If you wish to preview the script's changes before applying it, run `script_preview.py`. This will produce a text file with commentaries and the commentary tags to be added.
+
 Once finished, apply tag edits using `script_executor.py`.
