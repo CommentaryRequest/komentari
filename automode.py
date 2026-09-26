@@ -27,7 +27,7 @@ UNTITLED_TITLES = [
 # Unseparated dates; matches year=2000-2099 to avoid false positives.
 DATE_REGEX_UNSEPARATED = r"(?<![0-9])20[0-9]{2}(((0?[1-9]|[1-2][0-9]|3[0-1])(0?[1-9]|1[0-2]))|((0[1-9]|1[0-2])(0?[1-9]|[1-2][0-9]|3[0-1])))(?![0-9])"
 
-# Dates separated with '.', '-' or '/'. Matches year=1000-2999.
+# Dates separated with '.', '-' or '/'. Matches year=1000-2999. Day optional.
 DATE_REGEX_SEPARATED = r"(?<![0-9])[1-2][0-9]{3}(\.|-|\/)(((((0?[1-9]|[1-2][0-9]|3[0-1]))\1((0?[1-9]|1[0-2])))|(((0?[1-9]|1[0-2]))\1((0?[1-9]|[1-2][0-9]|3[0-1]))))|(0?[1-9]|1[0-2]))(?![0-9])"
 
 # Japanese dates.
