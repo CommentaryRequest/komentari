@@ -9,8 +9,6 @@ class Commentary:
     tl_title: str = ""
     tl_description: str = ""
 
-    # TODO use in places other than detect_tags_additional
-    # i'd have to check where this kind of thing is done manually
     def flatten_original(self):
         return (self.og_title or "") + (self.og_description or "")
 
