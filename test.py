@@ -137,6 +137,55 @@ def test_automode_additional():
     # It should be ignored by the detector.
     assert detect_tags_simple(alt_text_commentary("あ", "ﾃｽﾃｽ")) == settings.AUTOTAG_JP + " " + settings.AUTOTAG_AT
 
+    # Date matching test
+    DATES = [
+        "2026-09-09",
+        "2026-9-9",
+        "2026-9-09",
+        "2010/04/13",
+        "1984-07-11",
+        "20260909",
+        "2026年10月10日",
+        "2026年9月9日",
+        "2014.11",
+        "2026.09",
+        "2025.6"
+    ]
+    for date in DATES:
+        assert settings.AUTOTAG_DT in detect_tags_simple(Commentary(date, None, None, None))
+
+    # These aren't dates, it should not match them.
+    NOT_DATES = [
+        "3.14.15",
+        "1920-1080-144",
+        "1-2-3",
+        "100/200/300",
+        "12.34.56",
+        "200-02/22",
+        "2026-67-67", # six sevennn
+        "01010101",
+        "12121212",
+        "2026年10日10月", # In before I find this in an actual post
+        "226年00月00日",
+        "2026年11月99日",
+        "2014.00",
+        "2014-13"
+    ]
+    for not_date in NOT_DATES:
+        assert settings.AUTOTAG_DT not in detect_tags_simple(Commentary(not_date, None, None, None))
+
+    # https://danbooru.donmai.us/posts/12262727
+    assert detect_tags_simple(Commentary(None, 'コラボキャンペーン開催決定！\r\n\r\nTVアニメ「らんま1/2」× ラウンドワン\r\n\r\n【開催期間】\r\n2026年10月10日(土)～2027年1月11日(月・祝)\r\n\r\n<https://animetoyinfo.com/2026/09/26/ranma-roksaof/>\r\n\r\n"#らんまアニメ":[https://x.com/hashtag/らんまアニメ]', None, None)) == settings.AUTOTAG_JP + " " + settings.AUTOTAG_DT
+
+    # https://danbooru.donmai.us/posts/12253287
+    assert detect_tags_simple(Commentary("20140610", "私はもう満足だ！！！私はとても幸せです！！！！", None, None)) == settings.AUTOTAG_JP + " " + settings.AUTOTAG_DT
+
+    # https://danbooru.donmai.us/posts/12248626
+    assert detect_tags_simple(Commentary("2023.10.31", "吸血鬼被抓到啦", None, None)) == settings.AUTOTAG_JP + " " + settings.AUTOTAG_DT
+
+    # https://danbooru.donmai.us/posts/12255367
+    assert detect_tags_simple(Commentary("願望", "2014.11", None, None)) == settings.AUTOTAG_JP + " " + settings.AUTOTAG_DT
+
 def test_automode_translated():
     # Full commentary, full translation
     assert automode.detect_translated(Commentary("解説", "リクエスト", "Commentary", "Request")) == settings.AUTOTAG_TF

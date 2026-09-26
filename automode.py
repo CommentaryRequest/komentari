@@ -22,6 +22,23 @@ UNTITLED_TITLES = [
     "no_title"
 ]
 
+# Date regexes match when one day/month component is 01-12, the other 01-31. Leading zero optional.
+
+# Unseparated dates; matches year=2000-2099 to avoid false positives.
+DATE_REGEX_UNSEPARATED = r"(?<![0-9])20[0-9]{2}(((0?[1-9]|[1-2][0-9]|3[0-1])(0?[1-9]|1[0-2]))|((0[1-9]|1[0-2])(0?[1-9]|[1-2][0-9]|3[0-1])))(?![0-9])"
+
+# Dates separated with '.', '-' or '/'. Matches year=1000-2999. Day optional.
+DATE_REGEX_SEPARATED = r"(?<![0-9])[1-2][0-9]{3}(\.|-|\/)(((((0?[1-9]|[1-2][0-9]|3[0-1]))\1((0?[1-9]|1[0-2])))|(((0?[1-9]|1[0-2]))\1((0?[1-9]|[1-2][0-9]|3[0-1]))))|(0?[1-9]|1[0-2]))(?![0-9])"
+
+# Japanese dates.
+DATE_REGEX_JAPANESE = r"(?<![0-9])[1-2][0-9]{3}年((0?[1-9]|[1-2][0-9]|3[0-1]))月((0?[1-9]|1[0-2]))日(?![0-9])"
+
+DATE_REGEXES = [
+    DATE_REGEX_UNSEPARATED,
+    DATE_REGEX_SEPARATED,
+    DATE_REGEX_JAPANESE
+]
+
 def is_chinese_source(url):
     debug.dprint(f"Checking if {url} is a Chinese source")
 
@@ -136,10 +153,14 @@ def detect_translated(commentary):
     return None
 
 def detect_tags_additional(commentary):
+    tags = []
+
     flat = commentary.flatten_original()
     if cleaner.remove_alt_text(flat) != flat:
-        return settings.AUTOTAG_AT
-    return None
+        tags.append(settings.AUTOTAG_AT)
+    if any(re.search(regex, flat) for regex in DATE_REGEXES):
+        tags.append(settings.AUTOTAG_DT)
+    return None if not tags else " ".join(tags)
 
 def detect_tags_main(commentary, post_id, chartags, quiet, source):
     if not is_empty(commentary.tl_title) != 0 or not is_empty(commentary.tl_description) != 0:
