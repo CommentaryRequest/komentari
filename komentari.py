@@ -17,7 +17,7 @@ import processor
 
 def run_offline(offline_posts, initial_index, tag_script, args, exec_ctx):
     for i, (post_id, post) in enumerate(offline_posts.items()):
-        if i < initial_index: # not sure why start=initial_index isnt working maybe im stupid
+        if i < initial_index:
             continue
         ctx = OfflineContext(tag_script, args.offline_output, Commentary(post["og_title"], post["og_description"], post["tl_title"], post["tl_description"]), len(offline_posts), i)
         post_info = PostInfo(post_id, None, None, None, None, None)
