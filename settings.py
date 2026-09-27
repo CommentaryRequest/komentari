@@ -1,6 +1,6 @@
 from authsettings import *
 
-PROGRAM_VERSION = "2.3"
+PROGRAM_VERSION = "2.4"
 USERAGENT = f"Komentari/{PROGRAM_VERSION} by user #1054326"
 
 DEBUGMODE = False
@@ -67,6 +67,7 @@ AUTOTAG_TP = "partial_commentary" # Partial translation
 
 # Additional tags
 AUTOTAG_AT = "alt_text"
+AUTOTAG_DT = "dated_commentary"
 
 ENGLISH_CONFIDENCE = -7.5
 
