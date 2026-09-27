@@ -155,7 +155,7 @@ def detect_translated(commentary):
 def detect_tags_additional(commentary):
     tags = []
 
-    flat = commentary.flatten_original()
+    flat = cleaner.remove_urls(commentary.flatten_original())
     if cleaner.remove_alt_text(flat) != flat:
         tags.append(settings.AUTOTAG_AT)
     if any(re.search(regex, flat) for regex in DATE_REGEXES):
