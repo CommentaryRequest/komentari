@@ -10,7 +10,7 @@ import symchk
 import numchk
 import cleaner
 import settings
-import chartag_annihilater
+import chartag_annihilator
 import hashtag_extractor
 import json
 import debug
@@ -219,7 +219,7 @@ def detect_tags_main(commentary, post_id, chartags, quiet, source):
         return settings.AUTOTAG_BL
 
     # Annihilate chartags
-    clean_commentary = chartag_annihilater.chartag_annihilate(clean_commentary, chartags)
+    clean_commentary = chartag_annihilator.chartag_annihilate(clean_commentary, chartags)
     debug.dprint(f"remove chartags = {clean_commentary}")
     if len(clean_commentary.strip()) == 0 or symchk.is_symbol_only(clean_commentary.strip()): # only chartags w symbols
         return settings.AUTOTAG_CT
