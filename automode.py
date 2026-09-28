@@ -5,6 +5,7 @@ import thchk
 import kkchk
 import enrecog
 import re
+import unicodedata
 import symchk
 import numchk
 import cleaner
@@ -155,7 +156,7 @@ def detect_translated(commentary):
 def detect_tags_additional(commentary):
     tags = []
 
-    flat = cleaner.remove_urls(commentary.flatten_original())
+    flat = unicodedata.normalize("NFKC", cleaner.remove_urls(commentary.flatten_original()))
     if cleaner.remove_alt_text(flat) != flat:
         tags.append(settings.AUTOTAG_AT)
     if any(re.search(regex, flat) for regex in DATE_REGEXES):

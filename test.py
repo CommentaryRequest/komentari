@@ -150,7 +150,8 @@ def test_automode_additional():
         "2014.11",
         "2026.09",
         "2025.6",
-        "2017.7/17"
+        "2017.7/17",
+        "２００１．６"
     ]
     for date in DATES:
         assert settings.AUTOTAG_DT in detect_tags_simple(Commentary(date, None, None, None))
