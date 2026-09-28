@@ -1,6 +1,6 @@
 import re
 import debug
-import symchk
+from . import symchk
 
 def parse_chartag(chartag):
     chartag = re.sub(r"\(.*\)", "", chartag)

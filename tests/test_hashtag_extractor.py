@@ -1,4 +1,4 @@
-import hashtag_extractor
+from text import hashtag_extractor
 
 def test_hashtag_extractor():
     # https://danbooru.donmai.us/posts/10922444

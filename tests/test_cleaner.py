@@ -1,4 +1,4 @@
-import cleaner
+from text import cleaner
 
 def test_cleaner():
     assert cleaner.remove_hashtags('"#Skeb":[https://twitter.com/hashtag/Skeb] commission') == " commission"

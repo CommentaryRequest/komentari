@@ -1,17 +1,8 @@
+from text import zhchk, jpchk, kkchk, thchk, symchk, numchk, enrecog, chartag_annihilator, hashtag_extractor, cleaner
 import parser
-import zhchk
-import jpchk
-import thchk
-import kkchk
-import enrecog
 import re
 import unicodedata
-import symchk
-import numchk
-import cleaner
 import settings
-import chartag_annihilator
-import hashtag_extractor
 import json
 import debug
 import os
