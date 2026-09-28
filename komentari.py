@@ -8,7 +8,6 @@ from tag_script import write_tag_script
 from favgroup import add_to_favgroup
 from netclient import NetworkClient
 import settings
-import post_check
 import skipped
 import json
 import cliargs
@@ -41,17 +40,18 @@ def run_online(args, exec_ctx, client):
         commentaries = get_commentary_list([post["id"] for post in posts], client)
 
         for post in posts:
-            # checking posts for unwanted tags
-            check_result, bad_tag = post_check.check_post(post)
-            if check_result == post_check.POST_CHECK_CENTAG:
-                print(f"Contains unwanted tag: {bad_tag}")
-                continue
-            elif check_result == post_check.POST_CHECK_IS_BANNED:
+            # Banned post check
+            if post["is_banned"] and settings.SKIP_BANNED_POSTS:
                 if settings.BANNED_FAVGROUP:
                     print(f"Is banned; adding to favgroup #{settings.BANNED_FAVGROUP}")
                     add_to_favgroup(settings.BANNED_FAVGROUP, post["id"], client)
                 else:
                     print("Is banned; skipping")
+                continue
+
+            # Check if it contains unwanted tags
+            if any((unwanted_tag := tag) in post["tag_string_general"].split() + post["tag_string_meta"].split() for tag in settings.CENTAGS):
+                print(f"Post contains unwanted tag: {unwanted_tag}")
                 continue
 
             # Getting post information
