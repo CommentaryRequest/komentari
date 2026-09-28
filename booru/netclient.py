@@ -1,7 +1,7 @@
 import settings
 import requests
 import time
-from booru_url import get_booru_url
+from .booru_url import get_booru_url
 
 # See https://github.com/danbooru/danbooru/blob/master/app/controllers/application_controller.rb#L117
 # Most other status codes are a user error and should be handled by the netclient callers.

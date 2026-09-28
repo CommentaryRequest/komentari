@@ -1,5 +1,5 @@
 import automode
-from commentary import Commentary
+from booru.commentary import Commentary
 
 def detect_tags_simple(commentary):
     return automode.detect_tags_all(commentary, 0, [], False, "https://example.com")

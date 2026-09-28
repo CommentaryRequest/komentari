@@ -1,6 +1,6 @@
-from booru_url import get_booru_url
-from commentary import get_commentary
-from tagedit import print_tags, tag_edit_post
+from booru.booru_url import get_booru_url
+from booru.commentary import get_commentary
+from booru.tagedit import print_tags, tag_edit_post
 from typing import NamedTuple
 import sys
 import automode

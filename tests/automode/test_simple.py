@@ -1,5 +1,5 @@
 from tests.automode.util import detect_tags_simple
-from commentary import Commentary
+from booru.commentary import Commentary
 import automode
 import parser
 import settings

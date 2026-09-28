@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
-from commentary import Commentary, get_commentary_list
-from posts import get_posts
+from booru.commentary import Commentary, get_commentary_list
+from booru.posts import get_posts
 from debug import dprint, set_custom_creds
 from context import PostInfo, OfflineContext, ExecutionContext
 from tag_script import write_tag_script
-from favgroup import add_to_favgroup
-from netclient import NetworkClient
+from booru.favgroup import add_to_favgroup
+from booru.netclient import NetworkClient
 import settings
 import skipped
 import json

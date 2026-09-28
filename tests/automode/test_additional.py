@@ -1,5 +1,5 @@
 from tests.automode.util import detect_tags_simple, alt_text_commentary
-from commentary import Commentary
+from booru.commentary import Commentary
 import settings
 
 def test_automode_additional():

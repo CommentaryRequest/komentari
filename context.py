@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from skipped import SkippedPosts
-from commentary import Commentary
+from booru.commentary import Commentary
 import settings
 
 @dataclass

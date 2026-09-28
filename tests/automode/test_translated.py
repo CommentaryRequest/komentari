@@ -1,6 +1,6 @@
 import automode
 import settings
-from commentary import Commentary
+from booru.commentary import Commentary
 
 def test_automode_translated():
     # Full commentary, full translation
