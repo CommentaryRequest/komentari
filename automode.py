@@ -11,7 +11,8 @@ from urllib.parse import urlparse
 UNTITLED_TITLES = [
     "untitled",
     "no title",
-    "no_title"
+    "no_title",
+    "notitle"
 ]
 
 # Date regexes match when one day/month component is 01-12, the other 01-31. Leading zero optional.
