@@ -8,7 +8,7 @@ A program for manual and automatic tagging of Danbooru commentaries. This is the
 
 Authentication info is stored in `authsettings.py`. Set `LOGIN`, `APIKEY`, `TEST_LOGIN` and `TEST_APIKEY` variables. (test authentication variables can be left empty if you're not going to use a test instance)
 
-Run `scripts/dl_wikilist.py` to create a list of copyright and character names for untranslatable commentary tagging (output in `othernames.json`).
+Run `dl_wikilist.py` to create a list of copyright and character names for untranslatable commentary tagging (output in `othernames.json`).
 
 ## Usage
 
@@ -16,7 +16,7 @@ Run `scripts/dl_wikilist.py` to create a list of copyright and character names f
 
 ### Convenience scripts
 
-Located in `scripts` directory are some shell scripts to automate some common tasks. Execute from the root directory of Komentari.
+Located in `scripts` directory, execute from the root directory of Komentari.
 
 * `do_user.sh`: quickly semi-automatically tag a specific user's posts. Run with no arguments to see usage.
 * `runbot.sh`: run a simple bot instance. Any arguments passed to this script are forwarded to `komentari.py`.
@@ -26,10 +26,10 @@ Located in `scripts` directory are some shell scripts to automate some common ta
 
 Komentari can run in offline mode to prepare tag edits locally and apply them all at once.
 
-First, download commentaries using the `scripts/commentary_downloader.py` script.
+First, download commentaries using the `commentary_downloader.py` script.
 
 Run `komentari.py` with the `--file` option, set to the file containing commentaries. Specify file to output tag edits to with the `--output` option. `--auto` and `--semi-auto` options can be used in offline mode too.
 
-If you wish to preview the script's changes before applying it, run `scripts/script_preview.py`. This will produce a text file with commentaries and the commentary tags to be added.
+If you wish to preview the script's changes before applying it, run `script_preview.py`. This will produce a text file with commentaries and the commentary tags to be added.
 
-Once finished, apply tag edits using `scripts/script_executor.py`.
+Once finished, apply tag edits using `script_executor.py`.
