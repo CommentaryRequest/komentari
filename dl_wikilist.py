@@ -4,7 +4,7 @@ import requests
 import argparse
 import settings
 import json
-from netclient import NetworkClient
+from booru.netclient import NetworkClient
 
 def main():
     print("komentari {settings.PROGRAM_VERSION}/wikilist downloader is up")

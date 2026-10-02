@@ -3,9 +3,9 @@
 import argparse
 import settings
 import json
-from posts import get_posts
-from tagedit import tag_edit_post
-from netclient import NetworkClient
+from booru.posts import get_posts
+from booru.tagedit import tag_edit_post
+from booru.netclient import NetworkClient
 
 def check_post(post_id, exclude_tags, skip_translated, net_client):
     if not exclude_tags and not skip_translated:

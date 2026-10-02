@@ -4,7 +4,7 @@ import settings
 import requests
 import argparse
 import json
-from netclient import NetworkClient
+from booru.netclient import NetworkClient
 
 class PostCommentary:
     def __init__(self, iden, post_id, original_title, original_description, translated_title, translated_description):
