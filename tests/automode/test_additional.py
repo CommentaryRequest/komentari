@@ -26,6 +26,7 @@ def test_automode_additional():
         "2026.09",
         "2025.6",
         "2017.7/17",
+        "2026 02 14",
         "２００１．６"
     ]
     for date in DATES:

@@ -20,8 +20,8 @@ UNTITLED_TITLES = [
 # Unseparated dates; matches year=2000-2099 to avoid false positives.
 DATE_REGEX_UNSEPARATED = r"(?<![0-9])20[0-9]{2}(((0[1-9]|[1-2][0-9]|3[0-1])(0[1-9]|1[0-2]))|((0[1-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])))(?![0-9])"
 
-# Dates separated with '.', '-' or '/'. Matches year=1000-2999. Day optional.
-DATE_REGEX_SEPARATED = r"(?<![0-9])[1-2][0-9]{3}(\.|-|\/)(((((0?[1-9]|[1-2][0-9]|3[0-1]))(\.|-|\/)((0?[1-9]|1[0-2])))|(((0?[1-9]|1[0-2]))\1((0?[1-9]|[1-2][0-9]|3[0-1]))))|(0?[1-9]|1[0-2]))(?![0-9])"
+# Dates separated with '.', '-', '/' or space. Matches year=1000-2999. Day optional.
+DATE_REGEX_SEPARATED = r"(?<![0-9])[1-2][0-9]{3}(\.|-|\/| )(((((0?[1-9]|[1-2][0-9]|3[0-1]))(\.|-|\/| )((0?[1-9]|1[0-2])))|(((0?[1-9]|1[0-2]))(\.|-|\/| )((0?[1-9]|[1-2][0-9]|3[0-1]))))|(0?[1-9]|1[0-2]))(?![0-9])"
 
 # Japanese dates.
 DATE_REGEX_JAPANESE = r"(?<![0-9])[1-2][0-9]{3}年((0?[1-9]|[1-2][0-9]|3[0-1]))月((0?[1-9]|1[0-2]))日(?![0-9])"
@@ -243,7 +243,7 @@ def detect_tags_main(commentary, post_id, chartags, quiet, source):
     return None
 
 def detect_tags_all(commentary, post_id, chartags, quiet, source):
-    main_tags = detect_tags_main(commentary, post_id, chartags, quiet, source)
+    main_tags = None #detect_tags_main(commentary, post_id, chartags, quiet, source)
     additional_tags = detect_tags_additional(commentary)
 
     if additional_tags and main_tags:
