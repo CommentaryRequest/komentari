@@ -243,7 +243,7 @@ def detect_tags_main(commentary, post_id, chartags, quiet, source):
     return None
 
 def detect_tags_all(commentary, post_id, chartags, quiet, source):
-    main_tags = None #detect_tags_main(commentary, post_id, chartags, quiet, source)
+    main_tags = detect_tags_main(commentary, post_id, chartags, quiet, source)
     additional_tags = detect_tags_additional(commentary)
 
     if additional_tags and main_tags:
