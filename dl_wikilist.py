@@ -20,7 +20,7 @@ def main():
     try:
         while True:
             print(f"Grabbing wikis after wiki #{last_id}")
-            wikis, _ = net_client.get(f"wiki_pages.json?search[other_name_count]=1..&search[tag][category]=3,4&search[order]=created_at&limit=1000&page=a{last_id}")
+            wikis, _ = net_client.get(f"wiki_pages.json?search[other_name_count]=1..&search[tag][category]=3,4,0&search[order]=created_at&limit=1000&page=a{last_id}")
 
             if len(wikis) == 0:
                 print("No wikis left.")
