@@ -7,7 +7,7 @@ import json
 from booru.netclient import NetworkClient
 
 def main():
-    print("komentari {settings.PROGRAM_VERSION}/wikilist downloader is up")
+    print(f"komentari {settings.PROGRAM_VERSION}/wikilist downloader is up")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("output", type=str)
