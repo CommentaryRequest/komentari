@@ -4,7 +4,8 @@ import requests
 import argparse
 import settings
 import json
-from booru.netclient import NetworkClient
+from booru.booru_url import get_booru_url
+from danbooru_netclient import NetworkClient
 
 def main():
     print(f"komentari {settings.PROGRAM_VERSION}/wikilist downloader is up")
@@ -13,7 +14,13 @@ def main():
     parser.add_argument("output", type=str)
     args = parser.parse_args()
 
-    net_client = NetworkClient(False)
+    net_client = NetworkClient(
+        get_booru_url(False),
+        settings.LOGIN,
+        settings.APIKEY,
+        settings.USERAGENT,
+        settings.REQUEST_DELAY
+    )
 
     last_id = 0
     othernames = set()

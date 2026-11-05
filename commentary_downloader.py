@@ -4,7 +4,8 @@ import settings
 import requests
 import argparse
 import json
-from booru.netclient import NetworkClient
+from booru.booru_url import get_booru_url
+from danbooru_netclient import NetworkClient
 
 class PostCommentary:
     def __init__(self, iden, post_id, original_title, original_description, translated_title, translated_description):
@@ -35,7 +36,13 @@ def main():
     parser.add_argument("output", type=str)
     args = parser.parse_args()
 
-    net_client = NetworkClient(args.test)
+    net_client = NetworkClient(
+        get_booru_url(args.test),
+        settings.TEST_LOGIN if args.test else settings.LOGIN,
+        settings.TEST_APIKEY if args.test else settings.APIKEY,
+        settings.USERAGENT,
+        settings.REQUEST_DELAY
+    )
 
     last_id = 0
     commentaries_total = []

@@ -5,7 +5,8 @@ import settings
 import json
 from booru.posts import get_posts
 from booru.tagedit import tag_edit_post
-from booru.netclient import NetworkClient
+from booru.booru_url import get_booru_url
+from danbooru_netclient import NetworkClient
 
 def check_post(post_id, exclude_tags, skip_translated, net_client):
     if not exclude_tags and not skip_translated:
@@ -38,7 +39,14 @@ def main():
     skip_translated = args.skip_translated
     resume = args.resume
 
-    net_client = NetworkClient(args.test)
+    # TODO put netclient initialization into own function for everything
+    net_client = NetworkClient(
+        get_booru_url(args.test),
+        settings.TEST_LOGIN if args.test else settings.LOGIN,
+        settings.TEST_APIKEY if args.test else settings.APIKEY,
+        settings.USERAGENT,
+        settings.REQUEST_DELAY
+    )
     if args.login and args.api_key:
         net_client.set_auth(args.login, args.api_key)
 

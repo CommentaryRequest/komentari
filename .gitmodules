@@ -1,0 +1,3 @@
+[submodule "danbooru_netclient"]
+	path = danbooru_netclient
+	url = https://github.com/CommentaryRequest/danbooru_netclient.git

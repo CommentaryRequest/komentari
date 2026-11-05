@@ -6,7 +6,8 @@ from debug import dprint, set_custom_creds
 from context import PostInfo, OfflineContext, ExecutionContext
 from tag_script import write_tag_script
 from booru.favgroup import add_to_favgroup
-from booru.netclient import NetworkClient
+from booru.booru_url import get_booru_url
+from danbooru_netclient import NetworkClient
 import settings
 import skipped
 import json
@@ -64,7 +65,13 @@ def init_net_client(args):
     if args.offline_file:
         return None
 
-    client = NetworkClient(args.test_mode)
+    client = NetworkClient(
+        get_booru_url(args.test_mode),
+        settings.TEST_LOGIN if args.test_mode else settings.LOGIN,
+        settings.TEST_APIKEY if args.test_mode else settings.APIKEY,
+        settings.USERAGENT,
+        settings.REQUEST_DELAY
+    )
 
     if args.override_login and args.override_apikey:
         client.set_auth(args.override_login, args.override_apikey)
