@@ -1,4 +1,4 @@
-from text import zhchk, jpchk, kkchk, thchk, symchk, numchk, enrecog, chartag_annihilator, hashtag_extractor, cleaner
+from text import zhchk, jpchk, krchk, thchk, symchk, numchk, enrecog, chartag_annihilator, hashtag_extractor, cleaner
 import parser
 import re
 import unicodedata
@@ -87,7 +87,7 @@ def is_empty(s):
     return not s or not s.strip()
 
 def is_latin_hashtag(h):
-    return not jpchk.detect_jp_chars(h) and not kkchk.detect_kr_chars(h) and not thchk.detect_th_chars(h)
+    return not jpchk.detect_jp_chars(h) and not krchk.detect_kr_chars(h) and not thchk.detect_th_chars(h)
 
 def detect_hashtag_only(s):
     hashtags = hashtag_extractor.extract_hashtags(s)
@@ -107,7 +107,7 @@ def has_foreign_chars(text):
     text = cleaner.remove_fullwidth(text)
     text = cleaner.remove_invisible_chars(text)
     text = symchk.strip_symbols(text)
-    return jpchk.detect_jp_chars(text) or kkchk.detect_kr_chars(text) or thchk.detect_th_chars(text) or "ó" in text
+    return jpchk.detect_jp_chars(text) or krchk.detect_kr_chars(text) or thchk.detect_th_chars(text) or "ó" in text
 
 def detect_translated(commentary):
     # If original and TL title are the same, assume TL is empty.
@@ -222,7 +222,7 @@ def detect_tags_main(commentary, post_id, chartags, quiet, source):
     if len(clean_commentary.strip()) == 0 or symchk.is_symbol_only(clean_commentary.strip()):
         return settings.AUTOTAG_FW
 
-    if kkchk.is_korea(clean_commentary):
+    if krchk.is_korea(clean_commentary):
         return settings.AUTOTAG_KK
     # TODO implement a non-Chinese source Chinese detector
     if is_chinese_source(source) and zhchk.zhongwen_yuyan_jiance_xitong(clean_commentary):
