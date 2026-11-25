@@ -113,7 +113,7 @@ def main():
     offline_posts, offline_initial_index = init_offline(args)
 
     skipped_posts = skipped.SkippedPosts()
-    exec_context = ExecutionContext(skipped_posts, 0)
+    exec_context = ExecutionContext(skipped_posts, 0, [])
     net_client = init_net_client(args)
 
     try:
