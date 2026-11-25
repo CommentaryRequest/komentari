@@ -33,7 +33,9 @@ def get_user_input(args, commentary, post):
             parsed_input = args.preset_tag
             manual_input = False
         elif args.auto:
-            parsed_input, manual_input = automode.parse(commentary, args.semi_auto, args.quiet, post.id, post.chartags + post.copytags, args.auto_debug, post.source)
+            safe_chartags = post.chartags or []
+            safe_copytags = post.copytags or []
+            parsed_input, manual_input = automode.parse(commentary, args.semi_auto, args.quiet, post.id, safe_chartags + safe_copytags, args.auto_debug, post.source)
 
         if manual_input:
             print("(h for help)")
