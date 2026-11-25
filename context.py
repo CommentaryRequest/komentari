@@ -34,3 +34,4 @@ class OfflineContext:
 class ExecutionContext:
     skipped_posts: SkippedPosts
     edit_count: int
+    banned_posts: list[int]

@@ -44,8 +44,12 @@ def run_online(args, exec_ctx, client):
             # Banned post check
             if post["is_banned"] and settings.SKIP_BANNED_POSTS:
                 if settings.BANNED_FAVGROUP:
+                    if post["id"] in exec_ctx.banned_posts:
+                        print(f"Is banned; already added to favgroup #{settings.BANNED_FAVGROUP}")
+                        continue
                     print(f"Is banned; adding to favgroup #{settings.BANNED_FAVGROUP}")
                     add_to_favgroup(settings.BANNED_FAVGROUP, post["id"], client)
+                    exec_ctx.banned_posts.append(post["id"])
                 else:
                     print("Is banned; skipping")
                 continue
